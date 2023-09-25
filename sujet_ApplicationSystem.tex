@@ -1,0 +1,53 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[frenchb]{babel}
+
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage[final]{pdfpages}
+\usepackage{tikz,pgfplots,pgf}
+\usepackage{subcaption}
+\usepackage{siunitx}
+\usepackage{sectsty}
+\usepackage[french]{minitoc} 
+\usepackage{hyperref}
+\usepackage{colortbl}
+\usepackage{mwe}
+\usepackage{amsmath}
+\usepackage{lipsum}
+\usepackage{enumitem}
+
+\hypersetup{
+	colorlinks=true, 
+	breaklinks=true, 
+	urlcolor= blue, 
+	linkcolor= black,
+	plainpages=false 
+}
+
+% Entête et pied de page
+\pagestyle{fancy}
+\rhead{\includegraphics [scale=0.035]{img/ensta-logo.png}}
+\chead{}
+\lhead{}
+\lfoot{Tanguy ROUDAUT - Melvin DUBEE}
+\rfoot{FIPA promotion 2024}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+
+\title{Sujet de projet Application System}
+\author{Tanguy ROUDAUT — Melvin DUBEE \and FIPASE 24}
+
+\begin{document}
+
+\maketitle
+
+\input{corps/content.tex}
+
+
+\end{document}
