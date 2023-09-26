@@ -58,3 +58,46 @@ kastell kêr stur bevañ. Eeun bandenn pevar-ugent. Mat nav gourc'hemenn\footnot
                                 Une autre & Une autre & Une autre & Une autre  \\ \hline
     \end{tabular}
 \end{center}
+
+
+\section{Technologies utilisées (idée)}
+
+L'idée serait de mesurer les performances d'un RaspberryPi contenant une interface graphique \textit{(Wasm ou non)}, une commande vocale et le contrôle de plusieurs capteurs le tout codé en Rust.
+\vspace{.3cm}
+
+\begin{enumerate}
+    \item \textbf{Carte:} RaspberryPi 
+    \item \textbf{Language:} Rust 
+    \item \textbf{Plugin reconnaissance vocale:} \href{https://picovoice.ai/}{Picovoice} \\
+            Picovoice est une solution de reconnaissance vocale hors ligne \textit{(contrôle total sur les données vocales et la confidentialité de l'utilisateur)} en Rust qui permet aux développeurs d'intégrer 
+            des fonctionnalités vocales puissantes et privées dans leurs projets sur Raspberry Pi, améliorant ainsi l'interaction homme-machine de manière locale et efficace. 
+
+    \item \textbf{Plugin GUI:} \href{https://tauri.app/}{Tauri} ou \href{https://yew.rs/}{Yew}
+
+        \begin{itemize}
+            \item Tauri est une bibliothèque polyvalente en Rust qui permet de créer des applications de bureau \textit{(intégrant une webview en localhost)}
+            multiplateformes sur Raspberry Pi en utilisant des technologies web, offrant ainsi une manière efficace et flexible de développer des logiciels interactifs et intégrés localement.
+
+            \item  Yew est une bibliothèque Rust pour le développement d'applications web interactives sur Raspberry Pi, 
+            offrant une combinaison de performances élevées, de sécurité et de flexibilité pour la création d'interfaces utilisateur modernes et réactives. Les UI peuvent interagir avec des capteurs, des dispositifs GPIO et d'autres fonctionnalités matérielles de manière fluide.
+            De plus, cela permettrait d'éxploiter le WebAssembly en Rust sur RPI 
+        \end{itemize}
+
+
+    \item \textbf{Crate GPIO:} \href{https://github.com/golemparts/rppal}{RPPAL} \\
+    rppal est une bibliothèque Rust pour le développement d'applications qui interagissent avec les fonctionnalités matérielles du Raspberry Pi, offrant ainsi 
+    un moyen puissant et fiable de contrôler et de surveiller les dispositifs connectés à votre Raspberry Pi en utilisant le langage Rust.
+\end{enumerate}
+
+\section{Achat estimé}
+
+\begin{center}
+    \begin{tabular}{| c | c | c | c |} \hline
+        \textbf{Composant} & \textbf{Ref} & \textbf{Site} & \textbf{Prix}  \\ \hline
+        moteur & - & - & $0$\EUR{}  \\ \hline
+        capteur de vent & - & - & $0$\EUR{}  \\ \hline
+        - & - & - & $0$\EUR{}  \\ \hline
+        - & - & - & $0$\EUR{}  \\ \hline
+        \multicolumn{3}{| c |}{\textbf{Total}} & $0$\EUR{}  \\ \hline
+    \end{tabular}
+\end{center}
