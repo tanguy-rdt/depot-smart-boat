@@ -15,6 +15,11 @@ L'idée serait de mesurer les performances d'un RaspberryPi contenant une interf
             Picovoice est une solution de reconnaissance vocale hors ligne \textit{(contrôle total sur les données vocales et la confidentialité de l'utilisateur)} en Rust qui permet aux développeurs d'intégrer 
             des fonctionnalités vocales puissantes et privées dans leurs projets sur Raspberry Pi, améliorant ainsi l'interaction homme-machine de manière locale et efficace. 
 
+    \item \textbf{Crate micro bluetooth:} \href{https://crates.io/crates/bluer}{BlueR} \\
+            Picovoice est utilisé pour lire des fichiers audio et vérifier si des données sont intéressante. Pour enregistrer de l'audio dans un fichier
+            on pourrait utiliser un biding \textit{BlueR} de la stack bluetooth linux officiel \textit{BlueZ}. On utiliserai donc un micro bluetooth et un profil
+            audio adapté pour capter l'audio puis l'enregistrer.
+
     \item \textbf{Plugin GUI:} \href{https://tauri.app/}{Tauri} ou \href{https://yew.rs/}{Yew}
 
         \begin{itemize}
