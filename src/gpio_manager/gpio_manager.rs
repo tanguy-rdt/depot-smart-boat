@@ -29,7 +29,7 @@ impl GpioItf for GpioManager {
         GpioManager { pin_gauche, pin_droite }
     }
 
-    fn init_gpio(&self){
+    fn init(&self){
         println!("Im the init in rpi mod");
     }
 }

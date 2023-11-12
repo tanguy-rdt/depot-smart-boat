@@ -7,7 +7,7 @@ impl GpioItf for GpioManagerStub {
         GpioManagerStub
     }
 
-    fn init_gpio(&self){
+    fn init(&self){
         println!("Im the init in stub mod");
     }
 }

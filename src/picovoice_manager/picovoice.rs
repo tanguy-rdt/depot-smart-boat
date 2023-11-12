@@ -1,4 +1,5 @@
 use std::{path::PathBuf, env, thread, time::Duration};
+use std::sync::{mpsc, Arc, Mutex};
 use picovoice::{rhino::RhinoInference, PicovoiceBuilder};
 use itertools::Itertools;
 
@@ -12,10 +13,11 @@ pub struct Picovoice {
     access_key: String,
     ppn_model_path: &'static str,
     rhn_model_path: &'static str,
+    msgq: Arc<Mutex<mpsc::Sender<String>>>,
 }
 
 impl Picovoice {
-    pub fn new(input_audio: PathBuf, keyword_path: &'static str, context_path: &'static str, access_key: String) -> Self {
+    pub fn new(input_audio: PathBuf, keyword_path: &'static str, context_path: &'static str, access_key: String, msgq: Arc<Mutex<mpsc::Sender<String>>>) -> Self {
         Picovoice {
             input_audio,
             keyword_path,
@@ -23,6 +25,7 @@ impl Picovoice {
             access_key,
             ppn_model_path: PPN_MODEL_PATH,
             rhn_model_path: RHN_MODEL_PATH,
+            msgq,
         }
     }
 
@@ -96,12 +99,22 @@ impl Picovoice {
     }
 
     fn treat_inference(&self, inference: RhinoInference){
+        let mut action: String = String::new();
+
         match inference.intent.as_deref() {
-            Some("direction_tribord") => println!("toto"),
-            Some("direction_babord") => println!("tutu"),
+            Some("direction_tribord") => action = "direction_tribord".to_string(),
+            Some("direction_babord") => action = "direction_babord".to_string(),
             _ => {
                 println!("Unknown intent: {}", inference.intent.unwrap());
             }
+        }
+
+        if !action.is_empty() {
+            self.msgq
+            .lock()
+            .unwrap()
+            .send(action)
+            .unwrap();
         }
     }
 }
