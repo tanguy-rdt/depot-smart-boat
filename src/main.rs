@@ -31,8 +31,8 @@ fn main(){
         }
     };
 
-    let (sender, receiver) = mpsc::channel();
-    let msgq = Arc::new(Mutex::new(sender));
+    let (msgq_sender, msgq_receiver) = mpsc::channel();
+    let msgq = Arc::new(Mutex::new(msgq_sender));
 
     let mut model = Model::new();
     let gui = Gui::new(Arc::clone(&msgq));
@@ -45,7 +45,7 @@ fn main(){
     //gui.set_mainsail_angle(1);
 
     loop {
-        match receiver.recv() {
+        match msgq_receiver.recv() {
             Ok(action) => {
                 model.treat_action(action.as_str());
                 gui.update(&model);
