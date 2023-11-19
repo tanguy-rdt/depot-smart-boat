@@ -38,4 +38,10 @@ impl GpioItf for GpioManager {
 
         0
     }
+
+
+    fn i2c_write_byte(&self, device_addr: u8, register: u8, value: u8){
+        println!("Im the init in rpi mod");
+
+    }
 }

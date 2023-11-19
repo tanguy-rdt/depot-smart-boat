@@ -11,15 +11,19 @@ impl BoatControler {
         }
     }
 
-    fn get_humidity(&self) {
-
+    pub fn init(&self){
+        self.bme280.init();
     }
 
-    fn get_pressure(&self) {
-
+    pub fn get_temperature(&mut self) -> i32{
+        self.bme280.get_temperature()
     }
 
-    fn get_temperature(&self) {
-        
+    pub fn get_pressure(&self) -> u32{
+        self.bme280.get_pressure()
+    }
+
+    pub fn get_humidity(&self) -> i32{
+        self.bme280.get_humidity()
     }
 }
