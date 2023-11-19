@@ -1,4 +1,4 @@
-use crate::gpio_manager::gpio_itf::GpioItf;
+use crate::boat_control::gpio_manager::gpio_itf::GpioItf;
 
 #[cfg(feature = "on_target")]
 use rppal::gpio::{Gpio, Level};
@@ -31,5 +31,11 @@ impl GpioItf for GpioManager {
 
     fn init(&self){
         println!("Im the init in rpi mod");
+    }
+
+    fn i2c_read_byte_from(&self, device_addr: u8, register: u8) -> u8{
+        println!("Im the init in rpi mod");
+
+        0
     }
 }

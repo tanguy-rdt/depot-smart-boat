@@ -1,8 +1,7 @@
-use crate::gpio_manager::gpio_itf::GpioItf;
-use crate::gpio_manager::Gpio;
+use crate::boat_control::BoatControler;
 
 pub struct Model{
-    gpio: Gpio,
+    gpio: BoatControler,
     mainsail_angle: i8,
     foque_angle: i8
 }
@@ -10,14 +9,13 @@ pub struct Model{
 impl Model {
     pub fn new() -> Self {
         Model {
-            gpio: Gpio::new(),
+            gpio: BoatControler::new(),
             mainsail_angle: 0,
             foque_angle: 0,
         }
     }
 
     pub fn init_model(&self) {
-        &self.gpio.init();
     }
 
     pub fn get_mainsail_angle(&self) -> i8 {
