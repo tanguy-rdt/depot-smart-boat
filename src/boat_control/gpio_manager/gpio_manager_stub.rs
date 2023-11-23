@@ -9,18 +9,18 @@ impl GpioItf for GpioManagerStub {
     }
 
     fn init(&self){
-        println!("Im the init in stub mod");
     }
 
-    fn i2c_read_byte_from(&self, device_addr: u8, register: u8) -> u8{
-        println!("Im the init in stub mod");
 
-        let mut rng = rand::thread_rng();
-        rng.gen()
+    fn i2c_set_slave_addr(&mut self, addr: u8){
+        println!("I2C slave {} is set", addr);
     }
 
-    fn i2c_write_byte(&self, device_addr: u8, register: u8, value: u8){
-        println!("Im the init in rpi mod");
+    fn i2c_read_byte_from(&self, register: u8) -> u8{
+        0
+    }
 
+    fn i2c_write_byte(&self, register: u8, value: u8){
+        //println!("Write {} in register {} to the I2C slave", value, register);
     }
 }
