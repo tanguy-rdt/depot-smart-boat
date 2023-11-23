@@ -1,6 +1,6 @@
 mod picovoice_manager;
 mod model;
-mod gpio_manager;
+mod boat_control;
 mod gui;
 
 use crate::picovoice_manager::Picovoice;
@@ -48,7 +48,7 @@ fn main(){
         match msgq_receiver.recv() {
             Ok(action) => {
                 model.treat_action(action.as_str());
-                gui.update(&model);
+                gui.update(&mut model);
             }
             Err(_) => break,
         }

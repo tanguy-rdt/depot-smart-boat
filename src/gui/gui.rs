@@ -27,12 +27,15 @@ impl Gui {
         }
     }
 
-    pub fn update(&self, model: &Model){
+    pub fn update(&self, model: &mut Model){
         println!("*********************************");
         println!("         Affichage dans UI");
         println!("*********************************");
 
         println!("angle mainsail: {}", model.get_mainsail_angle());
         println!("angle foque: {}", model.get_foque_angle());
+        println!("temperature: {} C", model.get_temperature());
+        println!("humidity: {} %", model.get_humidity());
+        println!("pressure: {} Pa", model.get_pressure());
     }
 }

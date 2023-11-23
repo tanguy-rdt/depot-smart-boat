@@ -1,23 +1,43 @@
-use crate::gpio_manager::gpio_itf::GpioItf;
-use crate::gpio_manager::Gpio;
+use crate::boat_control::BoatControler;
 
 pub struct Model{
-    gpio: Gpio,
+    boat_controler: BoatControler,
     mainsail_angle: i8,
-    foque_angle: i8
+    foque_angle: i8,
+    temperature: f32,
+    pressure: f32,
+    humidity: f32
 }
 
 impl Model {
     pub fn new() -> Self {
         Model {
-            gpio: Gpio::new(),
+            boat_controler: BoatControler::new(),
             mainsail_angle: 0,
             foque_angle: 0,
+            temperature: 0.0,
+            pressure: 0.0,
+            humidity: 0.0
         }
     }
 
-    pub fn init_model(&self) {
-        &self.gpio.init();
+    pub fn init_model(&mut self) {
+        self.boat_controler.init();
+    }
+
+    pub fn get_temperature(&mut self) -> f32 {
+        self.temperature = self.boat_controler.get_temperature();
+        self.temperature
+    }
+
+    pub fn get_pressure(&mut self) -> f32 {
+        self.pressure = self.boat_controler.get_pressure();
+        self.pressure
+    }
+
+    pub fn get_humidity(&mut self) -> f32 {
+        self.humidity = self.boat_controler.get_humidity();
+        self.humidity
     }
 
     pub fn get_mainsail_angle(&self) -> i8 {
@@ -26,11 +46,6 @@ impl Model {
 
     fn set_mainsail_angle(&mut self, angle: i8) {
         self.mainsail_angle = angle;
-
-        println!("*********************************");
-        println!("         Move motor");
-        println!("*********************************");
-        println!("Move mainsail to {}", angle);
     }
 
     pub fn get_foque_angle(&self) -> i8 {
@@ -39,10 +54,6 @@ impl Model {
 
     fn set_foque_angle(&mut self, angle: i8) {
         self.foque_angle = angle;
-        println!("*********************************");
-        println!("         Move motor");
-        println!("*********************************");
-        println!("Move foque to {}", angle);
     }
 
     fn direction_tribord(&mut self){
