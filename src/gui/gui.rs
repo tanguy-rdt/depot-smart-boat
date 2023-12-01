@@ -1,9 +1,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 
 use crate::gui::map::Osm;
+use crate::gui::{SidePanel, SidePanelSelection};
 
 use std::sync::{mpsc, Arc, Mutex};
-use eframe::egui;
+use eframe::{egui::{self, Button, panel::Side}, epaint::Color32};
 
 pub struct Gui{
     weather: bool,
@@ -13,6 +14,7 @@ pub struct Gui{
     pressure: f32,
     msgq_rx: Arc<Mutex<mpsc::Receiver<(String, f32)>>>,
     osm: Osm,
+    side_panel: SidePanel
 }
 
 impl Gui {
@@ -25,6 +27,7 @@ impl Gui {
             pressure: 0.0,
             msgq_rx: msgq_rx,
             osm: Osm::new(egui_ctx),
+            side_panel: SidePanel::new()
         }
     }
 
@@ -61,19 +64,20 @@ impl eframe::App for Gui {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            if (self.weather) {
+            if *self.side_panel.get_current() == SidePanelSelection::WEATHER {
                 ui.label(format!("Temperature: {:.2} C", self.temperature));
                 ui.label(format!("Humidity: {:.2} %", self.humidity));
                 ui.label(format!("Pressure: {:.2} Pa", self.pressure)); 
             }
-            else if (self.map) {
+            else if *self.side_panel.get_current() == SidePanelSelection::MAP {
                 ui.add(self.osm.get_map());
                 self.osm.zoom(ui);
                 self.osm.position(ui);
     
             }
-
         });
+
+        self.side_panel.show(ctx);
 
         egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
             egui::menu::bar(ui, |ui| {
@@ -85,23 +89,5 @@ impl eframe::App for Gui {
             });
         });
 
-        egui::SidePanel::right("egui_panel")
-            .resizable(false)
-            .default_width(150.0)
-            .show(ctx, |ui| {
-
-
-                ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
-                    if (ui.button("Weather").clicked()) {
-                        self.weather = true;
-                        self.map = false;
-                    }
-                    else if (ui.button("Map").clicked()) {
-                        self.weather = false;
-                        self.map = true;
-                    }
-                });
-
-        });
     }
 }
