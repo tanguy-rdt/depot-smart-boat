@@ -1,5 +1,7 @@
 # depot-smart-boat
 
+![](./.img/gui.gif)
+
 ## Usage 
 
 ### add your ACCES_KEY
