@@ -1,41 +1,107 @@
-use crate::model::Model;
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
+
+use crate::gui::map::Osm;
 
 use std::sync::{mpsc, Arc, Mutex};
+use eframe::egui;
 
 pub struct Gui{
-    msgq: Arc<Mutex<mpsc::Sender<String>>>,
+    weather: bool,
+    map: bool,
+    temperature: f32,
+    humidity: f32,
+    pressure: f32,
+    msgq_rx: Arc<Mutex<mpsc::Receiver<(String, f32)>>>,
+    osm: Osm,
 }
 
 impl Gui {
-    pub fn new(msgq: Arc<Mutex<mpsc::Sender<String>>>) -> Self {
-        Gui { msgq }
-    }
-
-    pub fn set_mainsail_angle(&self, angle: i8){
-        if angle == 1{
-            self.msgq
-            .lock()
-            .unwrap()
-            .send("direction_tribord".to_string())
-            .unwrap();
-        } else {
-            self.msgq
-            .lock()
-            .unwrap()
-            .send("direction_babord".to_string())
-            .unwrap();
+    pub fn new(msgq_rx: Arc<Mutex<mpsc::Receiver<(String, f32)>>>, egui_ctx: egui::Context) -> Self {
+        Self {
+            weather: true,
+            map: false,
+            temperature: 0.0,
+            humidity: 0.0,
+            pressure: 0.0,
+            msgq_rx: msgq_rx,
+            osm: Osm::new(egui_ctx),
         }
     }
 
-    pub fn update(&self, model: &mut Model){
-        println!("*********************************");
-        println!("         Affichage dans UI");
-        println!("*********************************");
+    fn get_current_value(&mut self) {
+        loop {
+            match self.msgq_rx.lock().unwrap().try_recv() {
+                Ok((var, value)) => {
+                    match var.as_str() {
+                        "temperature" => self.temperature = value,
+                        "humidity" => self.humidity = value,
+                        "pressure" => self.pressure = value,
+                        _ => (),
+                    }
+                }
+                Err(_) => {
+                    break;
+                }
+            }
+        }
+    }
+}
 
-        println!("angle mainsail: {}", model.get_mainsail_angle());
-        println!("angle foque: {}", model.get_foque_angle());
-        println!("temperature: {} C", model.get_temperature());
-        println!("humidity: {} %", model.get_humidity());
-        println!("pressure: {} Pa", model.get_pressure());
+impl eframe::App for Gui {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        ctx.request_repaint();
+        self.get_current_value();
+
+        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+            egui::menu::bar(ui, |ui| {
+                ui.vertical_centered(|ui| {
+                    ui.heading("Smart boat - control panel");
+                });
+            });
+        });
+
+        egui::CentralPanel::default().show(ctx, |ui| {
+            if (self.weather) {
+                ui.label(format!("Temperature: {:.2} C", self.temperature));
+                ui.label(format!("Humidity: {:.2} %", self.humidity));
+                ui.label(format!("Pressure: {:.2} Pa", self.pressure)); 
+            }
+            else if (self.map) {
+                ui.add(self.osm.get_map());
+                self.osm.zoom(ui);
+                self.osm.position(ui);
+    
+            }
+
+        });
+
+        egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
+            egui::menu::bar(ui, |ui| {
+                egui::widgets::global_dark_light_mode_buttons(ui);
+                ui.horizontal(|ui| {
+                    ui.spacing_mut().item_spacing.x = 0.0;
+                    ui.hyperlink_to("github", "https://github.com/tanguy-rdt/depot-smart-boat");
+                });
+            });
+        });
+
+        egui::SidePanel::right("egui_panel")
+            .resizable(false)
+            .default_width(150.0)
+            .show(ctx, |ui| {
+
+
+                ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
+                    if (ui.button("Weather").clicked()) {
+                        self.weather = true;
+                        self.map = false;
+                    }
+                    else if (ui.button("Map").clicked()) {
+                        self.weather = false;
+                        self.map = true;
+                    }
+                });
+
+        });
     }
 }

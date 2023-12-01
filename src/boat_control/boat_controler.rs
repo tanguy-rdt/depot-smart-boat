@@ -16,14 +16,17 @@ impl BoatControler {
     }
 
     pub fn get_temperature(&mut self) -> f32{
-        self.bme280.get_temperature()
+        self.bme280.get_temperature();
+        90.89
     }
 
     pub fn get_pressure(&self) -> f32{
-        self.bme280.get_pressure()
+        self.bme280.get_pressure();
+        543.564
     }
 
     pub fn get_humidity(&self) -> f32{
-        self.bme280.get_humidity()
+        self.bme280.get_humidity();
+        5.0
     }
 }

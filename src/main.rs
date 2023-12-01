@@ -2,10 +2,12 @@ mod picovoice_manager;
 mod model;
 mod boat_control;
 mod gui;
+mod msgq;
 
 use crate::picovoice_manager::Picovoice;
 use crate::model::Model;
 use crate::gui::Gui;
+use crate::msgq::MsgQ;
 
 use std::{path::PathBuf, env, thread, time::Duration};
 use std::sync::{mpsc, Arc, Mutex};
@@ -31,26 +33,35 @@ fn main(){
         }
     };
 
-    let (msgq_sender, msgq_receiver) = mpsc::channel();
-    let msgq = Arc::new(Mutex::new(msgq_sender));
+    let msgq = MsgQ::new();
 
-    let mut model = Model::new();
-    let gui = Gui::new(Arc::clone(&msgq));
-    let picovoice = Picovoice::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq));
+    let mut model = Model::new(Arc::clone(&msgq.tx_gui));
+    let picovoice = Picovoice::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq.tx_pv));
 
     thread::spawn(move || {
         picovoice.start();
     });
 
-    //gui.set_mainsail_angle(1);
-
-    loop {
-        match msgq_receiver.recv() {
-            Ok(action) => {
-                model.treat_action(action.as_str());
-                gui.update(&mut model);
+    thread::spawn(move || {
+        loop {
+            match msgq.rx_pv.lock().unwrap().try_recv() {
+                Ok(action) => {
+                    model.treat_action(action.as_str());
+                }
+                Err(_) => (),
             }
-            Err(_) => break,
+            model.get_temperature();
+            model.get_humidity();
+            model.get_pressure();
+            thread::sleep(Duration::from_millis(500));
         }
-    }
+
+    });
+
+    eframe::run_native(
+        "",
+        Default::default(),
+        Box::new(|cc| Box::new(Gui::new(msgq.rx_gui, cc.egui_ctx.clone()))),
+    );
+
 }
