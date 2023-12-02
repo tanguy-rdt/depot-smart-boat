@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 eframe = "0.23.0"
-egui_extras = { version = "0.23" }
+egui_extras = { version = "0.23", features = ["image"] }
 hound = "3.5.1"
 itertools = "0.11.0"
 picovoice = "3.0.1"

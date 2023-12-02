@@ -61,7 +61,10 @@ fn main(){
     eframe::run_native(
         "",
         Default::default(),
-        Box::new(|cc| Box::new(Gui::new(msgq.rx_gui, cc.egui_ctx.clone()))),
+        Box::new(|cc| {
+            egui_extras::install_image_loaders(&cc.egui_ctx);
+            Box::new(Gui::new(msgq.rx_gui, cc.egui_ctx.clone()))
+        }),
     );
 
 }

@@ -1,7 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 
-use crate::gui::map::Osm;
-use crate::gui::{SidePanel, SidePanelSelection};
+use crate::gui::screen::Screen;
+use crate::gui::{Menu, MenuSelection};
 
 use std::sync::{mpsc, Arc, Mutex};
 use eframe::{egui::{self, Button, panel::Side}, epaint::Color32};
@@ -13,8 +13,8 @@ pub struct Gui{
     humidity: f32,
     pressure: f32,
     msgq_rx: Arc<Mutex<mpsc::Receiver<(String, f32)>>>,
-    osm: Osm,
-    side_panel: SidePanel
+    screen: Screen,
+    menu: Menu
 }
 
 impl Gui {
@@ -26,8 +26,8 @@ impl Gui {
             humidity: 0.0,
             pressure: 0.0,
             msgq_rx: msgq_rx,
-            osm: Osm::new(egui_ctx),
-            side_panel: SidePanel::new()
+            screen: Screen::new(egui_ctx),
+            menu: Menu::new()
         }
     }
 
@@ -64,28 +64,14 @@ impl eframe::App for Gui {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            if *self.side_panel.get_current() == SidePanelSelection::WEATHER {
-                ui.label(format!("Temperature: {:.2} C", self.temperature));
-                ui.label(format!("Humidity: {:.2} %", self.humidity));
-                ui.label(format!("Pressure: {:.2} Pa", self.pressure)); 
-            }
-            else if *self.side_panel.get_current() == SidePanelSelection::MAP {
-                ui.add(self.osm.get_map());
-                self.osm.zoom(ui);
-                self.osm.position(ui);
-    
-            }
+            self.screen.show_current(self.menu.get_current(), ui);
         });
 
-        self.side_panel.show(ctx);
+        self.menu.show(ctx);
 
         egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
             egui::menu::bar(ui, |ui| {
-                egui::widgets::global_dark_light_mode_buttons(ui);
-                ui.horizontal(|ui| {
-                    ui.spacing_mut().item_spacing.x = 0.0;
-                    ui.hyperlink_to("github", "https://github.com/tanguy-rdt/depot-smart-boat");
-                });
+
             });
         });
 

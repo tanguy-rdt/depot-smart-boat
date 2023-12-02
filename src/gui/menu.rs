@@ -1,20 +1,22 @@
 use eframe::{egui, epaint::Color32};
 
 #[derive(PartialEq)]
-pub enum SidePanelSelection {
+pub enum MenuSelection {
     WEATHER,
     MAP,
+    CONTROL,
+    SETTINGS
 }
 
-pub struct SidePanel{
-    current_selection: SidePanelSelection, 
+pub struct Menu{
+    current_selection: MenuSelection, 
     weather_state: bool,
 }
 
-impl SidePanel {
+impl Menu {
     pub fn new() -> Self {
         Self {
-            current_selection: SidePanelSelection::WEATHER,
+            current_selection: MenuSelection::WEATHER,
             weather_state: true,
         }
     }
@@ -28,16 +30,22 @@ impl SidePanel {
                     ui.style_mut().visuals.widgets.active.weak_bg_fill = Color32::from_rgba_unmultiplied(0, 106, 200, 155);
                     ui.style_mut().visuals.widgets.inactive.weak_bg_fill = Color32::TRANSPARENT;
                     if ui.button("⛅ Weather").clicked() {
-                        self.current_selection = SidePanelSelection::WEATHER;
+                        self.current_selection = MenuSelection::WEATHER;
                     }
                     else if ui.button("🗺 Map").clicked() {
-                        self.current_selection = SidePanelSelection::MAP;
+                        self.current_selection = MenuSelection::MAP;
+                    }
+                    else if ui.button("⛵ Boat Control").clicked() {
+                        self.current_selection = MenuSelection::CONTROL;
+                    }
+                    else if ui.button("⛭ Settings").clicked() {
+                        self.current_selection = MenuSelection::SETTINGS;
                     }
                 });
         });
     }
 
-    pub fn get_current(&self) -> &SidePanelSelection {
+    pub fn get_current(&self) -> &MenuSelection {
         &self.current_selection
     }
 }

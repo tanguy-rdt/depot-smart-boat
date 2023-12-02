@@ -1,8 +1,8 @@
 pub mod gui;
-mod map;
-mod side_panel;
+mod screen;
+mod menu;
 
 pub use gui::Gui;
-use map::Osm;
-use side_panel::SidePanel;
-use side_panel::SidePanelSelection;
+use screen::Screen;
+use menu::Menu;
+use menu::MenuSelection;
