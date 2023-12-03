@@ -1,26 +1,31 @@
-use crate::gui::screen::map::Osm;
+use crate::gui::screen::map::Map;
 use crate::gui::screen::control::Control;
 use crate::gui::menu::MenuSelection;
 
 use eframe::egui::{Context, Ui, widgets};
 use eframe::egui;
 pub struct Screen{
-    map: Osm,
+    map: Map,
     control: Control
 }
 
 impl Screen {
     pub fn new(egui_ctx: Context) -> Self {
         Self {
-            map: Osm::new(egui_ctx),
+            map: Map::new(egui_ctx),
             control: Control::new(),
         }
     }
 
-    pub fn show_current(&mut self, menu_choice: &MenuSelection, ui: &mut Ui){
+    pub fn show_current(&mut self, menu_choice: &MenuSelection, ui: &mut Ui, ctx: &egui::Context){
         match menu_choice {
             MenuSelection::WEATHER => self.show_weather_screen(ui),
-            MenuSelection::MAP => self.show_map_screen(ui),
+            MenuSelection::MAP_CLASSIC => self.show_map_screen(ctx, ui, menu_choice),
+            MenuSelection::MAP_CLOUDS => self.show_map_screen(ctx, ui, menu_choice),
+            MenuSelection::MAP_PRECIPITATION => self.show_map_screen(ctx, ui, menu_choice),
+            MenuSelection::MAP_SEA_LEVEL_PRESSURE => self.show_map_screen(ctx, ui, menu_choice),
+            MenuSelection::MAP_WIND_SPEED => self.show_map_screen(ctx, ui, menu_choice),
+            MenuSelection::MAP_TEMPERATURE => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::CONTROL => self.show_control_screen(ui),
             MenuSelection::SETTINGS => self.show_settings_screen(ui),
             _ => (),
@@ -33,10 +38,8 @@ impl Screen {
         ui.label(format!("Pressure: {:.2} Pa", 0)); 
     }
 
-    fn show_map_screen(&mut self, ui: &mut Ui){
-        ui.add(self.map.get_map());
-        self.map.zoom(ui);
-        self.map.position(ui);
+    fn show_map_screen(&mut self, ctx: &egui::Context, ui: &mut Ui, menu_choice: &MenuSelection){
+        self.map.show(ctx, ui, menu_choice);
     }
 
     fn show_control_screen(&mut self, ui: &mut Ui){

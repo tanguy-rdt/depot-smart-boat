@@ -1,13 +1,13 @@
 use walkers::{Tiles, Map, MapMemory, Position, providers::OpenStreetMap};
 use eframe::egui::{Context, Align2, RichText, Ui, Window};
 
-pub struct Osm {
+pub struct InteractiveMap {
     tiles: Tiles,
     map_memory: MapMemory,
     coord: (f64, f64),
 }
 
-impl Osm {
+impl InteractiveMap {
     pub fn new(egui_ctx: Context) -> Self {
         Self {
             tiles: Tiles::new(OpenStreetMap, egui_ctx),
@@ -16,14 +16,15 @@ impl Osm {
         }
     }
 
-    pub fn get_map(&mut self) -> Map {
+    pub fn show(&mut self, ui: &mut Ui) {
         let (x, y) = self.coord;
-
-        Map::new(
+        ui.add(Map::new(
             Some(&mut self.tiles),
             &mut self.map_memory,
             Position::from_lon_lat(x,y)
-        )
+        ));
+        self.zoom(ui);
+        self.position(ui);
     }
 
     pub fn zoom(&mut self, ui: &Ui) {
