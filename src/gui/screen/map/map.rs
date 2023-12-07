@@ -56,7 +56,7 @@ impl Map {
             self.promise_owm = http_tools::fetch_image(ctx, url_owm);
         }
 
-        http_tools::get_image(&self.promise_mapbox, ui);
-        http_tools::get_image(&self.promise_owm, ui);
+        http_tools::get_image(&self.promise_mapbox, ui, ctx);
+        http_tools::get_image(&self.promise_owm, ui, ctx);
     }
 }

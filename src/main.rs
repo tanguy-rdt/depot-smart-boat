@@ -1,10 +1,10 @@
-mod picovoice_manager;
+mod voice_assistant;
 mod model;
 mod boat_control;
 mod gui;
 mod msgq;
 
-use crate::picovoice_manager::Picovoice;
+use crate::voice_assistant::VoiceAssistant;
 use crate::model::Model;
 use crate::gui::Gui;
 use crate::msgq::MsgQ;
@@ -36,7 +36,7 @@ fn main(){
     let msgq = MsgQ::new();
 
     let mut model = Model::new(Arc::clone(&msgq.tx_gui));
-    let picovoice = Picovoice::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq.tx_pv));
+    let picovoice = VoiceAssistant::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq.tx_model));
 
     thread::spawn(move || {
         picovoice.start();
@@ -44,9 +44,9 @@ fn main(){
 
     thread::spawn(move || {
         loop {
-            match msgq.rx_pv.lock().unwrap().try_recv() {
-                Ok(action) => {
-                    model.treat_action(action.as_str());
+            match msgq.rx_model.lock().unwrap().try_recv() {
+                Ok((var, val)) => {
+                    model.treat_action(var.as_str(), val);
                 }
                 Err(_) => (),
             }
@@ -63,7 +63,7 @@ fn main(){
         Default::default(),
         Box::new(|cc| {
             egui_extras::install_image_loaders(&cc.egui_ctx);
-            Box::new(Gui::new(msgq.rx_gui, cc.egui_ctx.clone()))
+            Box::new(Gui::new(msgq.rx_gui,msgq.tx_model, cc.egui_ctx.clone()))
         }),
     );
 

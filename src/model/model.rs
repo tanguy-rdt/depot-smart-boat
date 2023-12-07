@@ -86,10 +86,15 @@ impl Model {
         self.set_foque_angle(0);
     }
 
-    pub fn treat_action(&mut self, action: &str){
-        match action {
+    fn motor(&self, val: bool){
+        println!("motor status {}", val)
+    }
+
+    pub fn treat_action(&mut self, var: &str, val: f32){
+        match var {
             "direction_tribord" => self.direction_tribord(),
             "direction_babord" => self.direction_babord(),
+            "motor" => self.motor(val != 0.0),
             _ => (),
         };
     }

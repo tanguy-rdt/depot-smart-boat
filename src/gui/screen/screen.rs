@@ -1,23 +1,31 @@
 use crate::gui::screen::map::Map;
+use crate::gui::screen::weather::Weather;
 use crate::gui::screen::control::Control;
 use crate::gui::menu::MenuSelection;
 
+use std::sync::{mpsc, Arc, Mutex};
 use eframe::egui::{Context, Ui, widgets};
 use eframe::egui;
+
 pub struct Screen{
+    msgq_rx: Arc<Mutex<mpsc::Receiver<(String, f32)>>>,
+    control: Control,
+    weather: Weather,
     map: Map,
-    control: Control
 }
 
 impl Screen {
-    pub fn new(egui_ctx: Context) -> Self {
+    pub fn new(msgq_rx: Arc<Mutex<mpsc::Receiver<(String, f32)>>>, msgq_tx: Arc<Mutex<mpsc::Sender<(String, f32)>>>, egui_ctx: Context) -> Self {
         Self {
+            msgq_rx: msgq_rx,
             map: Map::new(egui_ctx),
-            control: Control::new(),
+            weather: Weather::new(),
+            control: Control::new(msgq_tx),
         }
     }
 
     pub fn show_current(&mut self, menu_choice: &MenuSelection, ui: &mut Ui, ctx: &egui::Context){
+        self.check_msgq_rx();
         match menu_choice {
             MenuSelection::WEATHER => self.show_weather_screen(ui),
             MenuSelection::MAP_CLASSIC => self.show_map_screen(ctx, ui, menu_choice),
@@ -33,9 +41,7 @@ impl Screen {
     }
 
     fn show_weather_screen(&mut self, ui: &mut Ui){
-        ui.label(format!("Temperature: {:.2} C", 0));
-        ui.label(format!("Humidity: {:.2} %", 0));
-        ui.label(format!("Pressure: {:.2} Pa", 0)); 
+        self.weather.show(ui);
     }
 
     fn show_map_screen(&mut self, ctx: &egui::Context, ui: &mut Ui, menu_choice: &MenuSelection){
@@ -52,5 +58,24 @@ impl Screen {
             ui.spacing_mut().item_spacing.x = 0.0;
             ui.hyperlink_to("github", "https://github.com/tanguy-rdt/depot-smart-boat");
         });
+    }
+
+    fn check_msgq_rx(&mut self){
+        loop {
+            match self.msgq_rx.lock().unwrap().try_recv() {
+                Ok((var, value)) => {
+                    match var.as_str() {
+                        "temperature" => self.weather.set_temperature(value),
+                        "humidity" => self.weather.set_humidity(value),
+                        "pressure" => self.weather.set_pressure(value),
+                        "motor" => self.control.set_motor(value != 0.0),
+                        _ => (),
+                    }
+                }
+                Err(_) => {
+                    break;
+                }
+            }
+        }
     }
 }

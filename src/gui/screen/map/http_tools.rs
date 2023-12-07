@@ -47,12 +47,12 @@ pub fn fetch_image(ctx: &egui::Context, url: String) -> Option<Promise<Result<Re
     Some(promise)
 }
 
-pub fn get_image(promise: &Option<Promise<Result<Resource, String>>>, ui: &mut Ui) {
+pub fn get_image(promise: &Option<Promise<Result<Resource, String>>>, ui: &mut Ui, ctx: &egui::Context) {
     if let Some(promise) = promise {
         if let Some(result) = promise.ready() {
             match result {
                 Ok(resource) => {
-                    ui_resource(ui, resource);
+                    ui_resource(ui, resource, ctx);
                 }
                 Err(error) => {
                     // This should only happen if the fetch API isn't available or something similar.
@@ -69,21 +69,22 @@ pub fn get_image(promise: &Option<Promise<Result<Resource, String>>>, ui: &mut U
 }
 
 
-fn ui_resource(ui: &mut egui::Ui, resource: &Resource) {
+fn ui_resource(ui: &mut egui::Ui, resource: &Resource, ctx: &egui::Context) {
     let Resource {
         response,
         text,
         image,
     } = resource;
 
-    ui.separator();
-
     if let Some(image) = image {
-
         let image = image.clone();
 
-        let size = Vec2::new(625.0, 500.0); // Taille des images
-        let rect = Rect::from_min_size(ui.min_rect().min + Vec2::new(0.0, 20.0), size);
+        let available_rect = ctx.available_rect();
+        let width = available_rect.width() - 170.0;
+        let height = available_rect.height();
+
+        let size = Vec2::new(width, height); // Taille des images
+        let rect = Rect::from_min_size(ui.min_rect().min + Vec2::new(0.0, 0.0), size);
         image.paint_at(ui, rect);
 
     } else if let Some(text) = &text {

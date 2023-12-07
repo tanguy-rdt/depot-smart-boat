@@ -6,26 +6,26 @@ use itertools::Itertools;
 const PPN_MODEL_PATH: &str = "./ressources/porcupine_params_fr.pv";
 const RHN_MODEL_PATH: &str = "./ressources/rhino_params_fr.pv";
 
-pub struct Picovoice {
+pub struct VoiceAssistant {
     input_audio: PathBuf, 
     keyword_path: &'static str, 
     context_path: &'static str, 
     access_key: String,
     ppn_model_path: &'static str,
     rhn_model_path: &'static str,
-    msgq: Arc<Mutex<mpsc::Sender<String>>>,
+    msgq_tx: Arc<Mutex<mpsc::Sender<(String, f32)>>>,
 }
 
-impl Picovoice {
-    pub fn new(input_audio: PathBuf, keyword_path: &'static str, context_path: &'static str, access_key: String, msgq: Arc<Mutex<mpsc::Sender<String>>>) -> Self {
-        Picovoice {
+impl VoiceAssistant {
+    pub fn new(input_audio: PathBuf, keyword_path: &'static str, context_path: &'static str, access_key: String, msgq_tx: Arc<Mutex<mpsc::Sender<(String, f32)>>>) -> Self {
+        Self {
             input_audio,
             keyword_path,
             context_path,
             access_key,
             ppn_model_path: PPN_MODEL_PATH,
             rhn_model_path: RHN_MODEL_PATH,
-            msgq,
+            msgq_tx,
         }
     }
 
@@ -110,10 +110,10 @@ impl Picovoice {
         }
 
         if !action.is_empty() {
-            self.msgq
+            self.msgq_tx
             .lock()
             .unwrap()
-            .send(action)
+            .send((action, 0.0))
             .unwrap();
         }
     }
