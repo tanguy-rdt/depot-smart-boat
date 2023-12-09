@@ -1,11 +1,12 @@
 use crate::gui::screen::map::InteractiveMap;
 use crate::gui::menu::MenuSelection;
-use crate::gui::screen::map::http_tools::Resource;
-use crate::gui::screen::map::http_tools;
+use crate::gui::screen::http_tools::Resource;
+use crate::gui::screen::http_tools;
 
 use std::time::{Duration, Instant};
 use eframe::egui;
 use poll_promise::Promise;
+use eframe::egui::{Image, Rect, Vec2, Ui};
 
 pub struct Map {
     interactive_map: InteractiveMap,
@@ -52,11 +53,47 @@ impl Map {
             self.last_url_owm = url_owm.clone();
 
             self.last_fetch = now;
-            self.promise_mapbox = http_tools::fetch_image(ctx, url_mapbox);
-            self.promise_owm = http_tools::fetch_image(ctx, url_owm);
+            self.promise_mapbox = http_tools::fetch_ressource(ctx, url_mapbox);
+            self.promise_owm = http_tools::fetch_ressource(ctx, url_owm);
         }
 
-        http_tools::get_image(&self.promise_mapbox, ui, ctx);
-        http_tools::get_image(&self.promise_owm, ui, ctx);
+        self.show_image(&self.promise_mapbox, ui, ctx);
+        self.show_image(&self.promise_owm, ui, ctx);
+    }
+
+    fn show_image(&self, promise: &Option<Promise<Result<Resource, String>>>, ui: &mut egui::Ui, ctx: &egui::Context) {
+        if let Some(promise) = promise {
+            if let Some(result) = promise.ready() {
+                match result {
+                    Ok(resource) => {
+                        let Resource {
+                            response,
+                            text,
+                            image,
+                        } = resource;
+
+                        if let Some(image) = image {
+                            let image = image.clone();
+                    
+                            let available_rect = ctx.available_rect();
+                            let width = available_rect.width() - 165.0;
+                            let height = available_rect.height() - 41.0;
+                    
+                            let size = Vec2::new(width, height); // Taille des images
+                            let rect = Rect::from_min_size(ui.min_rect().min + Vec2::new(0.0, 0.0), size);
+                            image.paint_at(ui, rect);
+                    
+                        } else {
+                            ui.image(egui::include_image!("../img/error-web.png"));   
+                        }
+                    }
+                    Err(error) => {
+                        ui.image(egui::include_image!("../img/error-web.png"));   
+                    }
+                }
+            } else {
+                ui.spinner();
+            }
+        }
     }
 }

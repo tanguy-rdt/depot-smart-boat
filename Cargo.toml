@@ -6,8 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+chrono = "0.4.31"
 eframe = "0.23.0"
-egui_extras = { version = "0.23", features = ["image"] }
+egui_extras = { version = "0.23", features = ["image", "all_loaders"]}
 ehttp = "0.3.1"
 hound = "3.5.1"
 itertools = "0.11.0"
@@ -15,6 +16,7 @@ picovoice = "3.0.1"
 poll-promise = "0.3.0"
 rand = "0.8.5"
 rppal = { version = "0.15.0", optional = true }
+serde_json = "1.0.108"
 walkers = "0.13.0"
 
 [features]

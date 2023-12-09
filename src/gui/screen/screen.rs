@@ -27,7 +27,7 @@ impl Screen {
     pub fn show_current(&mut self, menu_choice: &MenuSelection, ui: &mut Ui, ctx: &egui::Context){
         self.check_msgq_rx();
         match menu_choice {
-            MenuSelection::WEATHER => self.show_weather_screen(ui),
+            MenuSelection::WEATHER => self.show_weather_screen(ctx, ui),
             MenuSelection::MAP_CLASSIC => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::MAP_CLOUDS => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::MAP_PRECIPITATION => self.show_map_screen(ctx, ui, menu_choice),
@@ -40,8 +40,8 @@ impl Screen {
         };
     }
 
-    fn show_weather_screen(&mut self, ui: &mut Ui){
-        self.weather.show(ui);
+    fn show_weather_screen(&mut self, ctx: &egui::Context, ui: &mut Ui){
+        self.weather.show(ctx, ui);
     }
 
     fn show_map_screen(&mut self, ctx: &egui::Context, ui: &mut Ui, menu_choice: &MenuSelection){

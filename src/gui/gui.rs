@@ -32,11 +32,6 @@ impl eframe::App for Gui {
             });
         });
 
-        egui::CentralPanel::default().show(ctx, |ui| {
-            self.screen.show_current(self.menu.get_current(), ui, ctx);
-        });
-
-
         egui::SidePanel::right("egui_panel")
         .resizable(false)
         .default_width(150.0)
@@ -44,11 +39,20 @@ impl eframe::App for Gui {
             self.menu.show(ctx, ui);
         });
 
+
         egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
             egui::menu::bar(ui, |ui| {
 
             });
         });
+
+        egui::CentralPanel::default().show(ctx, |ui| {
+            self.screen.show_current(self.menu.get_current(), ui, ctx);
+        });
+
+
+
+
 
     }
 }
