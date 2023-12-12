@@ -1,6 +1,5 @@
 use eframe::egui;
 use poll_promise::Promise;
-use std::time::{Duration, Instant};
 use serde_json::{Value};
 use chrono::prelude::*;
 use egui_extras::{Size, StripBuilder};
@@ -31,7 +30,6 @@ pub struct Weather{
     pressure: f32,
     predictions: Vec<OwmData>,
     promise: Option<Promise<ehttp::Result<Resource>>>,
-    last_fetch: Instant,
     selected_weather_index: usize,
     color_label: egui::Color32,
 }
@@ -44,7 +42,6 @@ impl Weather{
             pressure: 0.0,
             predictions: Vec::new(),
             promise: Default::default(),
-            last_fetch: Instant::now() - Duration::from_secs(60*30),
             selected_weather_index: 0,
             color_label: egui::Color32::WHITE,
         }
@@ -156,11 +153,10 @@ impl Weather{
     fn get_predictions(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {
         let url_mapbox: String = "https://api.openweathermap.org/data/2.5/forecast?lat=48.3903&lon=-4.4853&appid=dc64e1d625ed2147ec0b6913a814f81d&units=metric".to_string();
         
-        let now = Instant::now();
-        if now.duration_since(self.last_fetch) > Duration::from_secs(60*30) {
-            self.last_fetch = now;
+        if ui.button("text").clicked() {
             self.promise = http_tools::fetch_ressource(ctx, url_mapbox);
         }
+        
 
         if let Some(promise) = &self.promise {
             if let Some(result) = promise.ready() {

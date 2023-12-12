@@ -1,62 +1,20 @@
-mod voice_assistant;
 mod model;
 mod boat_control;
 mod gui;
 mod msgq;
 
-use crate::voice_assistant::VoiceAssistant;
 use crate::model::Model;
 use crate::gui::Gui;
 use crate::msgq::MsgQ;
 
-use std::{path::PathBuf, env, thread, time::Duration};
 use std::sync::{mpsc, Arc, Mutex};
 
+#[cfg(not(target_arch = "wasm32"))]
 fn main(){
-    let input_audio_path = PathBuf::from("./ressources/audio.wav");
-    
-    #[cfg(target_os = "macos")]
-    let keyword_path = "./ressources/Ok-Bateau_fr_mac_v3_0_0.ppn";
-    #[cfg(target_os = "macos")]
-    let context_path = "./ressources/smart-boat_fr_mac_v3_0_0.rhn";
-    
-    #[cfg(target_os = "linux")]
-    let keyword_path = "./ressources/Ok-Bateau_fr_raspberry-pi_v3_0_0.ppn";
-    #[cfg(target_os = "linux")]
-    let context_path = "./ressources/smart-boat_fr_raspberry-pi_v3_0_0.rhn";
-
-    let access_key: String = match env::var("PICOVOICE_ACCES_KEY") {
-        Ok(key) => key,
-        Err(_) => {
-            eprintln!("Error: you need add your acces key 'export PICOVOICE_ACCES_KEY=\"...\"'");
-            std::process::exit(1);
-        }
-    };
-
     let msgq = MsgQ::new();
-
     let mut model = Model::new(Arc::clone(&msgq.tx_gui));
-    let picovoice = VoiceAssistant::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq.tx_model));
 
-    thread::spawn(move || {
-        picovoice.start();
-    });
 
-    thread::spawn(move || {
-        loop {
-            match msgq.rx_model.lock().unwrap().try_recv() {
-                Ok((var, val)) => {
-                    model.treat_action(var.as_str(), val);
-                }
-                Err(_) => (),
-            }
-            model.get_temperature();
-            model.get_humidity();
-            model.get_pressure();
-            thread::sleep(Duration::from_millis(500));
-        }
-
-    });
 
     eframe::run_native(
         "",
@@ -67,4 +25,30 @@ fn main(){
         }),
     );
 
+}
+
+
+#[cfg(target_arch = "wasm32")]
+fn main() {
+
+    let msgq = MsgQ::new();
+    let mut model = Model::new(Arc::clone(&msgq.tx_gui));
+
+    eframe::WebLogger::init(log::LevelFilter::Debug).ok();
+    let web_options = eframe::WebOptions::default();
+
+
+    wasm_bindgen_futures::spawn_local(async {
+        eframe::WebRunner::new()
+            .start(
+                "smart-boat", 
+                web_options, 
+                Box::new(|cc| {
+                    egui_extras::install_image_loaders(&cc.egui_ctx);
+                    Box::new(Gui::new(msgq.rx_gui,msgq.tx_model, cc.egui_ctx.clone()))
+                }),
+            )
+            .await
+            .expect("failed to start eframe");
+    });
 }

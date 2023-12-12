@@ -3,7 +3,6 @@ use crate::gui::menu::MenuSelection;
 use crate::gui::screen::http_tools::Resource;
 use crate::gui::screen::http_tools;
 
-use std::time::{Duration, Instant};
 use eframe::egui;
 use poll_promise::Promise;
 use eframe::egui::{Image, Rect, Vec2, Ui};
@@ -14,7 +13,6 @@ pub struct Map {
     last_url_owm: String,
     promise_mapbox: Option<Promise<ehttp::Result<Resource>>>,
     promise_owm: Option<Promise<ehttp::Result<Resource>>>,
-    last_fetch: Instant,
 }
 
 impl Map {
@@ -25,7 +23,6 @@ impl Map {
             last_url_owm: Default::default(),
             promise_mapbox: Default::default(),
             promise_owm: Default::default(),
-            last_fetch: Instant::now() - Duration::from_secs(60*5),
         }
     }
 
@@ -45,17 +42,15 @@ impl Map {
         let url_mapbox: String = format!("https://api.mapbox.com/styles/v1/mapbox/{}/tiles/0/0/0@2x?access_token=pk.eyJ1IjoidHJkdCIsImEiOiJjbHBwbGo3MG8wenIyMnJsZW1jY2dlaXkxIn0.w-MMac3G_ww9md68rpTugg", style_map);
         let url_owm: String = format!("https://tile.openweathermap.org/map/{}/0/0/0.png?appid=dc64e1d625ed2147ec0b6913a814f81d", style_weather);
         
-        let now = Instant::now();
-        if now.duration_since(self.last_fetch) > Duration::from_secs(60*5) ||
-            self.last_url_mapbox != url_mapbox || self.last_url_owm != url_owm {
-                
+        if ui.button("text").clicked() {
             self.last_url_mapbox = url_mapbox.clone();
             self.last_url_owm = url_owm.clone();
-
-            self.last_fetch = now;
+    
             self.promise_mapbox = http_tools::fetch_ressource(ctx, url_mapbox);
             self.promise_owm = http_tools::fetch_ressource(ctx, url_owm);
-        }
+        } 
+
+        
 
         self.show_image(&self.promise_mapbox, ui, ctx);
         self.show_image(&self.promise_owm, ui, ctx);
