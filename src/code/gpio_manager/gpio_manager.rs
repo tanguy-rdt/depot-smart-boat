@@ -1,0 +1,53 @@
+use crate::code::gpio_manager::gpio_itf::GpioItf;
+
+use rppal::{gpio::{Gpio, Level}, i2c::I2c};
+
+pub struct GpioManager{    
+    i2c: rppal::i2c::I2c
+}
+
+impl GpioItf for GpioManager {
+    fn new() -> Self {
+        let i2c_result = I2c::new();
+
+        match i2c_result {
+            Ok(i2c) => {
+                println!("I2C initialized successfully!");
+                GpioManager { i2c }
+            }
+            Err(err) => {
+                eprintln!("Error initializing I2C: {}", err);
+                panic!("Error initializing I2C");
+            }
+        }
+    }
+
+    fn init(&self){
+        println!("Im the init in rpi mod");
+    }
+
+    fn i2c_set_slave_addr(&mut self, addr: u8){
+        self.i2c.set_slave_address(addr as u16).unwrap();
+        println!("Set Slave Addr!");
+    }
+
+    fn i2c_read_byte_from(&self, register: u8) -> u8{
+        let mut buf = [0u8; 1];
+        self.i2c.block_read(register, &mut buf).unwrap();
+        println!("Read i2c");
+        buf[0]
+    }
+
+    /*fn i2c_write_byte(&self, register: u8, value: u8){
+        self.i2c.block_write(register as u8, &[value]).unwrap();
+        println!("Write i2c");
+    }*/
+
+    fn i2c_write_byte(&self, register: u8, value: u8) {
+        println!("Writing to register 0x{:02X}, value: 0x{:02X}", register, value);
+        match self.i2c.block_write(register as u8, &[value]) {
+            Ok(_) => println!("Write i2c successful"),
+            Err(e) => eprintln!("Error writing to I2C: {:?}", e),
+        }
+    }
+}
