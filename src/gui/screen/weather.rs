@@ -9,6 +9,8 @@ use eframe::egui::{Frame, Image, Rect, Vec2, Ui};
 use crate::gui::screen::http_tools::Resource;
 use crate::gui::screen::http_tools;
 
+const OWM_API_TOKEN: &str = "fb4e1347c0ed70f5a3a62f9827e26855";
+
 #[derive(Clone)]
 #[derive(Default)]
 struct OwmData{
@@ -151,9 +153,9 @@ impl Weather{
 
 
     fn get_predictions(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {
-        let url_mapbox: String = "https://api.openweathermap.org/data/2.5/forecast?lat=48.3903&lon=-4.4853&appid=dc64e1d625ed2147ec0b6913a814f81d&units=metric".to_string();
+        let url_mapbox: String = format!("https://api.openweathermap.org/data/2.5/forecast?lat=48.3903&lon=-4.4853&appid={}", OWM_API_TOKEN);
         
-        if ui.button("text").clicked() {
+        if ui.button("refresh").clicked() {
             self.promise = http_tools::fetch_ressource(ctx, url_mapbox);
         }
         

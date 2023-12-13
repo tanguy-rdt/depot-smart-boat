@@ -7,6 +7,9 @@ use eframe::egui;
 use poll_promise::Promise;
 use eframe::egui::{Image, Rect, Vec2, Ui};
 
+const OWM_API_TOKEN: &str = "fb4e1347c0ed70f5a3a62f9827e26855";
+const MAPBOX_API_TOKEN: &str = "pk.eyJ1IjoidHJkdCIsImEiOiJjbHBwbGo3MG8wenIyMnJsZW1jY2dlaXkxIn0.w-MMac3G_ww9md68rpTugg";
+
 pub struct Map {
     interactive_map: InteractiveMap,
     last_url_mapbox: String,
@@ -39,10 +42,10 @@ impl Map {
     }
 
     fn show_map(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, style_map: &str, style_weather: &str){
-        let url_mapbox: String = format!("https://api.mapbox.com/styles/v1/mapbox/{}/tiles/0/0/0@2x?access_token=pk.eyJ1IjoidHJkdCIsImEiOiJjbHBwbGo3MG8wenIyMnJsZW1jY2dlaXkxIn0.w-MMac3G_ww9md68rpTugg", style_map);
-        let url_owm: String = format!("https://tile.openweathermap.org/map/{}/0/0/0.png?appid=dc64e1d625ed2147ec0b6913a814f81d", style_weather);
+        let url_mapbox: String = format!("https://api.mapbox.com/styles/v1/mapbox/{}/tiles/0/0/0@2x?access_token={}", style_map, MAPBOX_API_TOKEN);
+        let url_owm: String = format!("https://tile.openweathermap.org/map/{}/0/0/0.png?appid={}", style_weather, OWM_API_TOKEN);
         
-        if ui.button("text").clicked() {
+        if ui.button("refresh").clicked() {
             self.last_url_mapbox = url_mapbox.clone();
             self.last_url_owm = url_owm.clone();
     
