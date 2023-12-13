@@ -102,7 +102,7 @@ impl VoiceAssistant {
         let mut action: String = String::new();
 
         match inference.intent.as_deref() {
-            Some("direction_tribord") => action = "direction_tribord".to_string(),
+            Some("direction_tribord") => action = "motor".to_string(),
             Some("direction_babord") => action = "direction_babord".to_string(),
             _ => {
                 println!("Unknown intent: {}", inference.intent.unwrap());

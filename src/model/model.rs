@@ -86,8 +86,9 @@ impl Model {
         self.set_foque_angle(0);
     }
 
-    fn motor(&self, val: bool){
-        println!("motor status {}", val)
+    fn motor(&mut self, val: bool){
+        //println!("motor status {}", val);
+        self.boat_controler.start_all_motor();
     }
 
     pub fn treat_action(&mut self, var: &str, val: f32){
