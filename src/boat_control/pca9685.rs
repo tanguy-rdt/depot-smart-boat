@@ -303,6 +303,9 @@ impl PCA9685 {
     fn set_all_led_mode(&mut self){
 
         self.gpio.i2c_write_byte(PCA9685_MODE1, MODE1_ALLCAL);
+
+        thread::sleep(Duration::from_millis(5)); 
+    
     }
 
     fn set_all_led(&mut self, on: u16, off: u16){
@@ -314,9 +317,17 @@ impl PCA9685 {
     }  
 
     pub fn start_all_motor(&mut self){
+        
+        self.restart_pwm_channels();
 
         self.set_all_led_mode();
-        self.set_all_led(0x00, 0x73A);
+
+        self.set_all_led(0x199, 0x4CC);
+    }
+
+    pub fn stop_all_motor(&mut self){
+        
+        self.set_sleep_mode();
     }
 
     fn set_led(&mut self, channel: i32, on: u16, off: u16){
@@ -345,6 +356,11 @@ impl PCA9685 {
     pub fn positionMainSailToPort(&mut self){
 
         self.rotateServoClockwise(CHANNEL0);
+    }
+
+    pub fn stopPositionMainSailToPort(&mut self){
+
+        self.set_sleep_mode();
     }
 
     pub fn positionMainSailToStartBoard(&mut self){

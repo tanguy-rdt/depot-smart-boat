@@ -36,6 +36,7 @@ fn main(){
     let msgq = MsgQ::new();
 
     let mut model = Model::new(Arc::clone(&msgq.tx_gui));
+    model.init_model();
     let picovoice = VoiceAssistant::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq.tx_model));
 
     thread::spawn(move || {

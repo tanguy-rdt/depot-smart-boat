@@ -86,14 +86,20 @@ impl Model {
         self.set_foque_angle(0);
     }
 
-    fn motor(&mut self, val: bool){
-        //println!("motor status {}", val);
-        self.boat_controler.start_all_motor();
+    fn motor(&mut self, val: bool) {
+        println!("motor status {}", val);
+    
+        if val {
+            self.boat_controler.positionMainSailToPort();
+        } else {
+            self.boat_controler.stopPositionMainSailToPort();
+        }
     }
+    
 
     pub fn treat_action(&mut self, var: &str, val: f32){
         match var {
-            "direction_tribord" => self.direction_tribord(),
+            "direction_tribord" => self.motor(val != 0.0),
             "direction_babord" => self.direction_babord(),
             "motor" => self.motor(val != 0.0),
             _ => (),

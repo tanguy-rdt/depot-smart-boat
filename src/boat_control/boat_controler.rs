@@ -39,8 +39,16 @@ impl BoatControler {
         self.pca9685.start_all_motor();
     }
 
+    pub fn stop_all_motor(&mut self){
+        self.pca9685.stop_all_motor();
+    }
+
     pub fn positionMainSailToPort(&mut self){
         self.pca9685.positionMainSailToPort();
+    }
+
+    pub fn stopPositionMainSailToPort(&mut self){
+        self.pca9685.StopPositionMainSailToPort();
     }
 
     pub fn positionMainSailToStartBoard(&mut self){
