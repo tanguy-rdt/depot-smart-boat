@@ -1,9 +1,10 @@
-use crate::boat_control::BoatControler;
+use crate::boat_control::boat_controler_itf::BoatControlerItf;
+use crate::boat_control::BoatControl;
 use std::sync::{mpsc, Arc, Mutex};
 use rand::distributions::{Distribution, Uniform};
 
 pub struct Model{
-    boat_controler: BoatControler,
+    boat_controler: BoatControl,
     mainsail_angle: i8,
     foque_angle: i8,
     temperature: f32,
@@ -15,7 +16,7 @@ pub struct Model{
 impl Model {
     pub fn new(tx_gui: Arc<Mutex<mpsc::Sender<(String, f32)>>>) -> Self {
         Model {
-            boat_controler: BoatControler::new(),
+            boat_controler: BoatControl::new(),
             mainsail_angle: 0,
             foque_angle: 0,
             temperature: 0.0,
