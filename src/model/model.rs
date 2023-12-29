@@ -32,9 +32,6 @@ impl Model {
 
     pub fn get_temperature(&mut self) -> f32 {
         self.temperature = self.boat_controler.get_temperature();
-        let mut rng = rand::thread_rng();
-        let temperature_range = Uniform::new_inclusive(19.0, 30.0);
-        self.temperature = temperature_range.sample(&mut rng);
         self.tx_gui
         .lock()
         .unwrap()
@@ -45,9 +42,6 @@ impl Model {
 
     pub fn get_pressure(&mut self) -> f32 {
         self.pressure = self.boat_controler.get_pressure();
-        let mut rng = rand::thread_rng();
-        let pressure_range = Uniform::new_inclusive(900.0, 1000.0);
-        self.pressure = pressure_range.sample(&mut rng);
         self.tx_gui
         .lock()
         .unwrap()
@@ -58,9 +52,6 @@ impl Model {
 
     pub fn get_humidity(&mut self) -> f32 {
         self.humidity = self.boat_controler.get_humidity();
-        let mut rng = rand::thread_rng();
-        let humidity_range = Uniform::new_inclusive(50.0, 100.0);
-        self.humidity = humidity_range.sample(&mut rng);
         self.tx_gui
         .lock()
         .unwrap()
