@@ -33,17 +33,24 @@ impl GpioItf for GpioManager {
         println!("Im the init in rpi mod");
     }
 
-    fn i2c_set_slave_addr(&mut self, addr: u8){
-        self.i2c.set_slave_address(addr as u16).unwrap();;
-    }
+    fn i2c_set_slave_addr(&mut self, addr: u8) {
+        if let Err(e) = self.i2c.set_slave_address(addr as u16) {
+            eprintln!("Error defining I2C slave address: {:?}", e);
+        }
+    }    
 
-    fn i2c_read_byte_from(&self, register: u8) -> u8{
+    fn i2c_read_byte_from(&self, register: u8) -> u8 {
         let mut buf = [0u8; 1];
-        self.i2c.block_read(register, &mut buf).unwrap();
+        if let Err(e) = self.i2c.block_read(register, &mut buf) {
+            eprintln!("Error reading the I2C regist: {:?}", e);
+            return 0; 
+        }
         buf[0]
     }
 
-    fn i2c_write_byte(&self, register: u8, value: u8){
-        self.i2c.block_write(register as u8, &[value]).unwrap();
-    }
+    fn i2c_write_byte(&self, register: u8, value: u8) {
+        if let Err(e) = self.i2c.block_write(register as u8, &[value]) {
+            eprintln!("Error writing to the I2C register: {:?}", e);
+        }
+    }    
 }

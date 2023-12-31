@@ -18,13 +18,13 @@ impl BoatControlerItf for BoatControlerStub {
         termp_range.sample(&mut rng)
     }
 
-    fn get_pressure(&self) -> f32{
+    fn get_pressure(&mut self) -> f32{
         let mut rng = rand::thread_rng();
         let pressure_range = Uniform::new_inclusive(900.0, 1000.0);
         pressure_range.sample(&mut rng)
     }
 
-    fn get_humidity(&self) -> f32{
+    fn get_humidity(&mut self) -> f32{
         let mut rng = rand::thread_rng();
         let hum_range = Uniform::new_inclusive(65.0, 66.0);
         hum_range.sample(&mut rng)

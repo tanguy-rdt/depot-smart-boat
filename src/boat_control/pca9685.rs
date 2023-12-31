@@ -49,37 +49,14 @@ const USMAX: u16 = 2400;   // This is the rounded 'maximum' microsecond length b
 const SERVO_FREQ: u16 = 50; // Analog servos run at ~50 Hz updates
 const PWM_FREQUENCY: f32 = 50.0;
 
-// Channel const
-const CHANNEL0: i32 = 0;
-const CHANNEL1: i32 = 1;
-const CHANNEL2: i32 = 2;
-const CHANNEL3: i32 = 3;
-const CHANNEL4: i32 = 4;
-const CHANNEL5: i32 = 5;
-const CHANNEL6: i32 = 6;
-const CHANNEL7: i32 = 7;
-const CHANNEL8: i32 = 8;
-const CHANNEL9: i32 = 9;
-const CHANNEL10: i32 = 10;
-const CHANNEL11: i32 = 11;
-const CHANNEL12: i32 = 12;
-const CHANNEL13: i32 = 13;
-const CHANNEL14: i32 = 14;
-const CHANNEL15: i32 = 15;
-
-
 pub struct PCA9685 {
     gpio: Gpio,
-    pca_i2c_addr: u8,
-    oscillator_freq: u32
 }
 
 impl PCA9685 {
     pub fn new() -> Self {
         PCA9685 {
             gpio: Gpio::new(),
-            pca_i2c_addr: 0,
-            oscillator_freq : 0
         }
     }
 
@@ -89,25 +66,27 @@ impl PCA9685 {
     }
 
     fn init_prescaler(&mut self, frequency: f32){
-
         // Calcule le prescaler nécessaire pour atteindre la fréquence PWM souhaitée
         let prescale_value = (((25000000.0 / (4096.0 * frequency)) + 0.5) - 1.0) as u8;
-
         self.gpio.i2c_write_byte(PCA9685_MODE1, MODE1_SLEEP); 
-
         self.gpio.i2c_write_byte(PCA9685_PRESCALE, prescale_value); // set prescaler PWM hz to 50 (0x7a)
 
         // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
         thread::sleep(Duration::from_millis(5)); 
-
         self.gpio.i2c_write_byte(PCA9685_MODE1, 0x00); 
-        
+    }
+
+    pub fn rotate_servo_clockwise(&mut self, channel: i32){
+        self.gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
+        self.set_led(channel, 0x199, 0x4CC);
+    }
+
+    pub fn rotate_servo_counterclockwise(&mut self, channel: i32){
+        self.gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
+        self.set_led(channel, 0x199, 0x4CC);
     }
 
     pub fn set_sleep_mode(&mut self){
-
-        println!("Set sleep mode");
-
         let mut mode1 = self.read_mode1();
 
         // Activer le mode sommeil (bit 4 à 1)
@@ -116,222 +95,21 @@ impl PCA9685 {
 
         // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
         thread::sleep(Duration::from_millis(5)); 
-
         self.read_mode1();
     }
 
-    fn reset_sleep_mode1(&mut self){
-
-        println!("Reset sleep mode");
-
-        let mut mode1 = self.read_mode1();
-
-        mode1 &= !MODE1_SLEEP;
-       
-        self.gpio.i2c_write_byte(PCA9685_MODE1, mode1);
-
-        // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
-        thread::sleep(Duration::from_millis(5)); 
-    }
-
-    fn read_mode1(&mut self) -> u8 {
-
-        // Lire le registre MODE1
-        let mode1 = self.gpio.i2c_read_byte_from(PCA9685_MODE1);
-
-        #[cfg(debug_assertions)]{
-        match mode1 & 0x0F {
-            0x00 => {
-                print!("");
-            }
-            0x01 => {
-                print!("ALLCALL ");
-            }
-            0x02 => {
-                print!("SUB 3 ");
-            }
-            0x03 => {
-                print!("ALLCALL and SUB 3 ");
-            }
-            0x04 => {
-                print!("SUB 2 ");
-            }
-            0x05 => {
-                print!("ALLCALL and SUB 2 ");
-            }
-            0x06 => {
-                print!("SUB 3 and SUB 2 ");
-            }
-            0x07 => {
-                print!("ALLCALL and SUB 3 and SUB 2 ");
-            }
-            0x08 => {
-                print!("SUB 1 ");
-            }
-            0x09 => {
-                print!("ALLCALL and SUB 1 ");
-            }
-            0x0A => {
-                print!("SUB 3 and SUB 1 ");
-            }
-            0x0B => {
-                print!("ALLCALL and SUB 3 and SUB 1 ");
-            }
-            0x0C => {
-                print!("SUB 2 and SUB 1 ");
-            }
-            0x0D => {
-                print!("ALLCALL and SUB 2 and SUB 1 ");
-            }
-            0x0E => {
-                print!("SUB 3 and SUB 2 and SUB 1 ");
-            }
-            0x0F => {
-                print!("ALLCALL and SUB 3 and SUB 2 and SUB 1 ");
-            }
-            _ => {
-                print!("Unknown MODE1 value: 0x{:02X}", mode1);
-            }
-          
-        }
-
-        if mode1 & 0x0F != 0x00{
-            print!("and ");
-        }
-        
-        match mode1 & 0xF0 {
-            0x00 => {
-                print!("NO MODE");
-            }
-            0x10 => {
-                print!("SLEEP MODE");
-            }
-            0x20 => {
-                print!("AI MODE");
-            }
-            0x30 => {
-                print!("SLEEP and AI MODE");
-            }
-            0x40 => {
-                print!("EXTCLK MODE");
-            }
-            0x50 => {
-                print!("SLEEP and EXTCLK MODE");
-            }
-            0x60 => {
-                print!("AI and EXTCLK MODE");
-            }
-            0x70 => {
-                print!("SLEEP and AI MODE and EXTCLK MODE");
-            }
-            0x80 => {
-                print!("RESTART MODE");
-            }
-            0x90 => {
-                print!("SLEEP and RESTART MODE");
-            }
-            0xA0 => {
-                print!("AI and RESTART MODE");
-            }
-            0xB0 => {
-                print!("SLEEP and AI and RESTART MODE");
-            }
-            0xC0 => {
-                print!("EXTCLK and RESTART MODE");
-            }
-            0xD0 => {
-                print!("SLEEP and EXTCLK and RESTART MODE");
-            }
-            0xE0 => {
-                print!("AI and EXTCLK and RESTART MODE");
-            }
-            0xF0 => {
-                print!("SLEEP and AI MODE and EXTCLK and RESTART MODE");
-            }
-            _ => {
-                print!("Unknown MODE1 value: 0x{:02X}", mode1);
-            }
-          
-        }
-
-        println!(" 0x{:02X}", mode1);
-        }
-
-        mode1
-    }
-
-    fn read_mode2(&mut self) -> u8 {
-
-        // Lire le registre MODE1
-        let mode2 = self.gpio.i2c_read_byte_from(PCA9685_MODE2);
-
-        match mode2 {
-            0x80 => {
-                println!("RESTART MODE");
-            }
-            0x01 => {
-                println!("MODE SLEEP");
-            }
-            0x09 => {
-                println!("MODE RESTART AND SLEEP");
-            }
-            0x00 => {
-                println!("MODE NORMAL");
-            }
-            _ => {
-                println!("Unknown MODE2 value: 0x{:02X}", mode2);
-            }
-          
-        }
-
-        mode2
-    }
-    
-    fn restart_pwm_channels(&mut self) {
-
-        let mode = self.read_mode1();
-
-        // Vérifier que le bit 7 (RESTART) est à 1 logique
-        if (mode & MODE1_RESTART) != 0 {
-            // Si c'est le cas, effacer le bit 4 (SLEEP)
-            self.reset_sleep_mode1();
-            // Écrire la logique 1 dans le bit 7 de MODE1 pour redémarrer tous les canaux PWM
-            self.gpio.i2c_write_byte(PCA9685_MODE1, MODE1_RESTART); 
-        }
-    }
-
-    fn set_all_led_mode(&mut self){
-
-        self.gpio.i2c_write_byte(PCA9685_MODE1, MODE1_ALLCAL);
-
-        thread::sleep(Duration::from_millis(5)); 
-    
-    }
-
-    fn set_all_led(&mut self, on: u16, off: u16){
-    
-        self.gpio.i2c_write_byte(PCA9685_ALLLED_ON_L, (on & 0xFF) as u8);
-        self.gpio.i2c_write_byte(PCA9685_ALLLED_ON_H, ((on >> 8) & 0xFF) as u8);
-        self.gpio.i2c_write_byte(PCA9685_ALLLED_OFF_L, (off & 0xFF) as u8);
-        self.gpio.i2c_write_byte(PCA9685_ALLLED_OFF_H, ((off >> 8) & 0xFF) as u8);   
-    }  
-
     pub fn start_all_motor(&mut self){
-        
         self.restart_pwm_channels();
-
         self.set_all_led_mode();
-
         self.set_all_led(0x199, 0x4CC);
     }
 
     pub fn stop_all_motor(&mut self){
-        
+        self.gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
         self.set_sleep_mode();
     }
 
     fn set_led(&mut self, channel: i32, on: u16, off: u16){
-
         let on_register = PCA9685_LED0_ON_L + (4 * channel) as u8;
         let off_register = PCA9685_LED0_OFF_L + (4 * channel) as u8;
   
@@ -341,44 +119,87 @@ impl PCA9685 {
         self.gpio.i2c_write_byte(off_register+1, ((off >> 8) & 0xFF) as u8);  
     }
 
-    fn rotateServoClockwise(&mut self, channel: i32){
-
-        self.gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
-        self.set_led(channel, 0x199, 0x4CC);
+    fn restart_pwm_channels(&mut self) {
+        let mode = self.read_mode1();
+        
+        // Vérifier que le bit 7 (RESTART) est à 1 logique
+        if (mode & MODE1_RESTART) != 0 {
+            self.reset_sleep_mode1(); // Si c'est le cas, effacer le bit 4 (SLEEP)
+            self.gpio.i2c_write_byte(PCA9685_MODE1, MODE1_RESTART); // Écrire la logique 1 dans le bit 7 de MODE1 pour redémarrer tous les canaux PWM
+        }
     }
 
-    fn rotateServoCounterclockwise(&mut self, channel: i32){
-
-        self.gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
-        self.set_led(channel, 0x199, 0x4CC);
+    fn set_all_led_mode(&mut self){
+        self.gpio.i2c_write_byte(PCA9685_MODE1, MODE1_ALLCAL);
+        thread::sleep(Duration::from_millis(5)); 
     }
 
-    pub fn positionMainSailToPort(&mut self){
+    fn set_all_led(&mut self, on: u16, off: u16){
+        self.gpio.i2c_write_byte(PCA9685_ALLLED_ON_L, (on & 0xFF) as u8);
+        self.gpio.i2c_write_byte(PCA9685_ALLLED_ON_H, ((on >> 8) & 0xFF) as u8);
+        self.gpio.i2c_write_byte(PCA9685_ALLLED_OFF_L, (off & 0xFF) as u8);
+        self.gpio.i2c_write_byte(PCA9685_ALLLED_OFF_H, ((off >> 8) & 0xFF) as u8);   
+    }  
 
-        self.rotateServoClockwise(CHANNEL0);
+    fn reset_sleep_mode1(&mut self){
+        let mut mode1 = self.read_mode1();
+        mode1 &= !MODE1_SLEEP;
+        self.gpio.i2c_write_byte(PCA9685_MODE1, mode1);
+
+        // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
+        thread::sleep(Duration::from_millis(5)); 
     }
 
-    pub fn stopPositionMainSailToPort(&mut self){
+    fn read_mode1(&mut self) -> u8 {
+        let mode1 = self.gpio.i2c_read_byte_from(PCA9685_MODE1);
 
-        self.set_sleep_mode();
+        #[cfg(debug_assertions)]{
+            match mode1 & 0x0F {
+                0x00 => print!(""),
+                0x01 => print!("ALLCALL "),
+                0x02 => print!("SUB 3 "),
+                0x03 => print!("ALLCALL and SUB 3 "),
+                0x04 => print!("SUB 2 "),
+                0x05 => print!("ALLCALL and SUB 2 "),
+                0x06 => print!("SUB 3 and SUB 2 "),
+                0x07 => print!("ALLCALL and SUB 3 and SUB 2 "),
+                0x08 => print!("SUB 1 "),
+                0x09 => print!("ALLCALL and SUB 1 "),
+                0x0A => print!("SUB 3 and SUB 1 "),
+                0x0B => print!("ALLCALL and SUB 3 and SUB 1 "),
+                0x0C => print!("SUB 2 and SUB 1 "),
+                0x0D => print!("ALLCALL and SUB 2 and SUB 1 "),
+                0x0E => print!("SUB 3 and SUB 2 and SUB 1 "),
+                0x0F => print!("ALLCALL and SUB 3 and SUB 2 and SUB 1 "),
+                _ => print!("Unknown MODE1 value: 0x{:02X}", mode1),
+            }
+            
+            if mode1 & 0x0F != 0x00 { print!("and "); }
+            
+            match mode1 & 0xF0 {
+                0x00 => print!("NO MODE"),
+                0x10 => print!("SLEEP MODE"),
+                0x20 => print!("AI MODE"),
+                0x30 => print!("SLEEP and AI MODE"),
+                0x40 => print!("EXTCLK MODE"),
+                0x50 => print!("SLEEP and EXTCLK MODE"),
+                0x60 => print!("AI and EXTCLK MODE"),
+                0x70 => print!("SLEEP and AI MODE and EXTCLK MODE"),
+                0x80 => print!("RESTART MODE"),
+                0x90 => print!("SLEEP and RESTART MODE"),
+                0xA0 => print!("AI and RESTART MODE"),
+                0xB0 => print!("SLEEP and AI and RESTART MODE"),
+                0xC0 => print!("EXTCLK and RESTART MODE"),
+                0xD0 => print!("SLEEP and EXTCLK and RESTART MODE"),
+                0xE0 => print!("AI and EXTCLK and RESTART MODE"),
+                0xF0 => print!("SLEEP and AI MODE and EXTCLK and RESTART MODE"),
+                _ => print!("Unknown MODE1 value: 0x{:02X}", mode1),
+            }
+
+            println!(" 0x{:02X}", mode1);
+        }
+        mode1
     }
-
-    pub fn positionMainSailToStartBoard(&mut self){
-
-        self.rotateServoCounterclockwise(CHANNEL0);
-    }
-
-    pub fn positionJibToPort(&mut self){
-
-        self.rotateServoClockwise(CHANNEL1);
-    }
-
-    pub fn positionJibToStartBoard(&mut self){
-
-        self.rotateServoCounterclockwise(CHANNEL1);
-    }
-
-
 }
 
 

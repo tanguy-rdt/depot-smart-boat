@@ -25,11 +25,11 @@ impl BoatControlerItf for BoatControler {
         self.bme280.get_temperature()
     }
 
-    fn get_pressure(&self) -> f32{
+    fn get_pressure(&mut self) -> f32{
         self.bme280.get_pressure()
     }
 
-    fn get_humidity(&self) -> f32{
+    fn get_humidity(&mut self) -> f32{
         self.bme280.get_humidity()
     }
 
@@ -42,23 +42,23 @@ impl BoatControlerItf for BoatControler {
     }
 
     fn positionMainSailToPort(&mut self){
-        self.pca9685.positionMainSailToPort();
+        self.pca9685.rotate_servo_clockwise(0);
     }
 
     fn stopPositionMainSailToPort(&mut self){
-        self.pca9685.stopPositionMainSailToPort();
+        self.pca9685.stop_all_motor();
     }
 
     fn positionMainSailToStartBoard(&mut self){
-        self.pca9685.positionMainSailToStartBoard();
+        self.pca9685.rotate_servo_counterclockwise(0);
     }
 
     fn positionJibToPort(&mut self){
-        self.pca9685.positionJibToPort();
+        self.pca9685.rotate_servo_clockwise(1);
     }
 
     fn positionJibToStartBoard(&mut self){
-        self.pca9685.positionJibToStartBoard();
+        self.pca9685.rotate_servo_counterclockwise(1);
     }
 
 

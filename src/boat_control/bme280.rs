@@ -59,6 +59,7 @@ impl BME280 {
     }
 
     pub fn get_temperature(&mut self) -> f32{
+        self.gpio.i2c_set_slave_addr(BME280_ADDR);
         let msb: u8 = self.gpio.i2c_read_byte_from(TEMP_ADDR[MSB]);
         let lsb: u8 = self.gpio.i2c_read_byte_from(TEMP_ADDR[LSB]);
         let xlsb: u8 = self.gpio.i2c_read_byte_from(TEMP_ADDR[XLSB]);
@@ -90,7 +91,8 @@ impl BME280 {
         temp
     }
 
-    pub fn get_pressure(&self) -> f32{
+    pub fn get_pressure(&mut self) -> f32{
+        self.gpio.i2c_set_slave_addr(BME280_ADDR);
         let msb: u8 = self.gpio.i2c_read_byte_from(PRESS_ADDR[MSB]);
         let lsb: u8 = self.gpio.i2c_read_byte_from(PRESS_ADDR[LSB]);
         let xlsb: u8 = self.gpio.i2c_read_byte_from(PRESS_ADDR[XLSB]);
@@ -162,7 +164,8 @@ impl BME280 {
         pressure
     }
 
-    pub fn get_humidity(&self) -> f32{
+    pub fn get_humidity(&mut self) -> f32{
+        self.gpio.i2c_set_slave_addr(BME280_ADDR);
         let msb: u8 = self.gpio.i2c_read_byte_from(HUM_ADDR[MSB]);
         let lsb: u8 = self.gpio.i2c_read_byte_from(HUM_ADDR[LSB]);
         let hum_raw: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
