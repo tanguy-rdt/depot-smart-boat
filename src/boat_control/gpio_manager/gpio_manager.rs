@@ -3,7 +3,6 @@ use crate::boat_control::gpio_manager::gpio_itf::GpioItf;
 #[cfg(feature = "on_target")]
 use rppal::{gpio::{Gpio, Level}, i2c::I2c};
 
-
 #[cfg(not(feature = "on_target"))]
 pub struct GpioManager;
 
@@ -15,7 +14,7 @@ pub struct GpioManager{
 #[cfg(feature = "on_target")]
 impl GpioItf for GpioManager {
     fn new() -> Self {
-        let i2c_result = I2c::new();
+        let i2c_result = I2c::with_bus(1);
 
         match i2c_result {
             Ok(i2c) => {
@@ -35,14 +34,14 @@ impl GpioItf for GpioManager {
 
     fn i2c_set_slave_addr(&mut self, addr: u8) {
         if let Err(e) = self.i2c.set_slave_address(addr as u16) {
-            eprintln!("Error defining I2C slave address: {:?}", e);
+            eprintln!("Error defining I2C slave address 0x{:x}: {:?}", addr, e);
         }
     }    
 
     fn i2c_read_byte_from(&self, register: u8) -> u8 {
         let mut buf = [0u8; 1];
         if let Err(e) = self.i2c.block_read(register, &mut buf) {
-            eprintln!("Error reading the I2C regist: {:?}", e);
+            eprintln!("Error reading the I2C register 0x{:x}: {:?}", register, e);
             return 0; 
         }
         buf[0]
@@ -50,7 +49,7 @@ impl GpioItf for GpioManager {
 
     fn i2c_write_byte(&self, register: u8, value: u8) {
         if let Err(e) = self.i2c.block_write(register as u8, &[value]) {
-            eprintln!("Error writing to the I2C register: {:?}", e);
+            eprintln!("Error writing to the I2C register 0x{:x}: {:?}", register, e);
         }
     }    
 }
