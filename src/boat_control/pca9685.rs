@@ -69,6 +69,7 @@ const CHANNEL15: i32 = 15;
 
 
 pub struct PCA9685 {
+    gpio: Gpio,
     pca_i2c_addr: u8,
     oscillator_freq: u32
 }
@@ -76,66 +77,67 @@ pub struct PCA9685 {
 impl PCA9685 {
     pub fn new() -> Self {
         PCA9685 {
+            gpio: Gpio::new(),
             pca_i2c_addr: 0,
             oscillator_freq : 0
         }
     }
 
-    pub fn init(&mut self, gpio: &mut Gpio){
-        gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
-        self.init_prescaler(PWM_FREQUENCY, gpio);
+    pub fn init(&mut self){
+        self.gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
+        self.init_prescaler(PWM_FREQUENCY);
     }
 
-    fn init_prescaler(&mut self, frequency: f32, gpio: &mut Gpio){
+    fn init_prescaler(&mut self, frequency: f32){
 
         // Calcule le prescaler nécessaire pour atteindre la fréquence PWM souhaitée
         let prescale_value = (((25000000.0 / (4096.0 * frequency)) + 0.5) - 1.0) as u8;
 
-        gpio.i2c_write_byte(PCA9685_MODE1, MODE1_SLEEP); 
+        self.gpio.i2c_write_byte(PCA9685_MODE1, MODE1_SLEEP); 
 
-        gpio.i2c_write_byte(PCA9685_PRESCALE, prescale_value); // set prescaler PWM hz to 50 (0x7a)
+        self.gpio.i2c_write_byte(PCA9685_PRESCALE, prescale_value); // set prescaler PWM hz to 50 (0x7a)
 
         // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
         thread::sleep(Duration::from_millis(5)); 
 
-        gpio.i2c_write_byte(PCA9685_MODE1, 0x00); 
+        self.gpio.i2c_write_byte(PCA9685_MODE1, 0x00); 
         
     }
 
-    pub fn set_sleep_mode(&mut self, gpio: &mut Gpio){
+    pub fn set_sleep_mode(&mut self){
 
         println!("Set sleep mode");
 
-        let mut mode1 = self.read_mode1(gpio);
+        let mut mode1 = self.read_mode1();
 
         // Activer le mode sommeil (bit 4 à 1)
         mode1 |= MODE1_SLEEP;
-        gpio.i2c_write_byte(PCA9685_MODE1, mode1);    // Control register set to Mode 1 Sleep to set Prescaler
+        self.gpio.i2c_write_byte(PCA9685_MODE1, mode1);    // Control register set to Mode 1 Sleep to set Prescaler
 
         // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
         thread::sleep(Duration::from_millis(5)); 
 
-        self.read_mode1(gpio);
+        self.read_mode1();
     }
 
-    fn reset_sleep_mode1(&mut self, gpio: &mut Gpio){
+    fn reset_sleep_mode1(&mut self){
 
         println!("Reset sleep mode");
 
-        let mut mode1 = self.read_mode1(gpio);
+        let mut mode1 = self.read_mode1();
 
         mode1 &= !MODE1_SLEEP;
        
-        gpio.i2c_write_byte(PCA9685_MODE1, mode1);
+        self.gpio.i2c_write_byte(PCA9685_MODE1, mode1);
 
         // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
         thread::sleep(Duration::from_millis(5)); 
     }
 
-    fn read_mode1(&mut self, gpio: &mut Gpio) -> u8 {
+    fn read_mode1(&mut self) -> u8 {
 
         // Lire le registre MODE1
-        let mode1 = gpio.i2c_read_byte_from(PCA9685_MODE1);
+        let mode1 = self.gpio.i2c_read_byte_from(PCA9685_MODE1);
 
         #[cfg(debug_assertions)]{
         match mode1 & 0x0F {
@@ -258,10 +260,10 @@ impl PCA9685 {
         mode1
     }
 
-    fn read_mode2(&mut self, gpio: &mut Gpio) -> u8 {
+    fn read_mode2(&mut self) -> u8 {
 
         // Lire le registre MODE1
-        let mode2 = gpio.i2c_read_byte_from(PCA9685_MODE2);
+        let mode2 = self.gpio.i2c_read_byte_from(PCA9685_MODE2);
 
         match mode2 {
             0x80 => {
@@ -285,95 +287,95 @@ impl PCA9685 {
         mode2
     }
     
-    fn restart_pwm_channels(&mut self, gpio: &mut Gpio) {
+    fn restart_pwm_channels(&mut self) {
 
-        let mode = self.read_mode1(gpio);
+        let mode = self.read_mode1();
 
         // Vérifier que le bit 7 (RESTART) est à 1 logique
         if (mode & MODE1_RESTART) != 0 {
             // Si c'est le cas, effacer le bit 4 (SLEEP)
-            self.reset_sleep_mode1(gpio);
+            self.reset_sleep_mode1();
             // Écrire la logique 1 dans le bit 7 de MODE1 pour redémarrer tous les canaux PWM
-            gpio.i2c_write_byte(PCA9685_MODE1, MODE1_RESTART); 
+            self.gpio.i2c_write_byte(PCA9685_MODE1, MODE1_RESTART); 
         }
     }
 
-    fn set_all_led_mode(&mut self, gpio: &mut Gpio){
+    fn set_all_led_mode(&mut self){
 
-        gpio.i2c_write_byte(PCA9685_MODE1, MODE1_ALLCAL);
+        self.gpio.i2c_write_byte(PCA9685_MODE1, MODE1_ALLCAL);
 
         thread::sleep(Duration::from_millis(5)); 
     
     }
 
-    fn set_all_led(&mut self, on: u16, off: u16, gpio: &mut Gpio){
+    fn set_all_led(&mut self, on: u16, off: u16){
     
-        gpio.i2c_write_byte(PCA9685_ALLLED_ON_L, (on & 0xFF) as u8);
-        gpio.i2c_write_byte(PCA9685_ALLLED_ON_H, ((on >> 8) & 0xFF) as u8);
-        gpio.i2c_write_byte(PCA9685_ALLLED_OFF_L, (off & 0xFF) as u8);
-        gpio.i2c_write_byte(PCA9685_ALLLED_OFF_H, ((off >> 8) & 0xFF) as u8);   
+        self.gpio.i2c_write_byte(PCA9685_ALLLED_ON_L, (on & 0xFF) as u8);
+        self.gpio.i2c_write_byte(PCA9685_ALLLED_ON_H, ((on >> 8) & 0xFF) as u8);
+        self.gpio.i2c_write_byte(PCA9685_ALLLED_OFF_L, (off & 0xFF) as u8);
+        self.gpio.i2c_write_byte(PCA9685_ALLLED_OFF_H, ((off >> 8) & 0xFF) as u8);   
     }  
 
-    pub fn start_all_motor(&mut self, gpio: &mut Gpio){
+    pub fn start_all_motor(&mut self){
         
-        self.restart_pwm_channels(gpio);
+        self.restart_pwm_channels();
 
-        self.set_all_led_mode(gpio);
+        self.set_all_led_mode();
 
-        self.set_all_led(0x199, 0x4CC, gpio);
+        self.set_all_led(0x199, 0x4CC);
     }
 
-    pub fn stop_all_motor(&mut self, gpio: &mut Gpio){
+    pub fn stop_all_motor(&mut self){
         
-        self.set_sleep_mode(gpio);
+        self.set_sleep_mode();
     }
 
-    fn set_led(&mut self, channel: i32, on: u16, off: u16, gpio: &mut Gpio){
+    fn set_led(&mut self, channel: i32, on: u16, off: u16){
 
         let on_register = PCA9685_LED0_ON_L + (4 * channel) as u8;
         let off_register = PCA9685_LED0_OFF_L + (4 * channel) as u8;
   
-        gpio.i2c_write_byte(on_register, (on & 0xFF) as u8);
-        gpio.i2c_write_byte(on_register+1, ((on >> 8) & 0xFF) as u8);
-        gpio.i2c_write_byte(off_register, (off & 0xFF) as u8);
-        gpio.i2c_write_byte(off_register+1, ((off >> 8) & 0xFF) as u8);  
+        self.gpio.i2c_write_byte(on_register, (on & 0xFF) as u8);
+        self.gpio.i2c_write_byte(on_register+1, ((on >> 8) & 0xFF) as u8);
+        self.gpio.i2c_write_byte(off_register, (off & 0xFF) as u8);
+        self.gpio.i2c_write_byte(off_register+1, ((off >> 8) & 0xFF) as u8);  
     }
 
-    fn rotateServoClockwise(&mut self, channel: i32, gpio: &mut Gpio){
+    fn rotateServoClockwise(&mut self, channel: i32){
 
-        gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
-        self.set_led(channel, 0x199, 0x4CC, gpio);
+        self.gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
+        self.set_led(channel, 0x199, 0x4CC);
     }
 
-    fn rotateServoCounterclockwise(&mut self, channel: i32, gpio: &mut Gpio){
+    fn rotateServoCounterclockwise(&mut self, channel: i32){
 
-        gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
-        self.set_led(channel, 0x199, 0x4CC, gpio);
+        self.gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
+        self.set_led(channel, 0x199, 0x4CC);
     }
 
-    pub fn positionMainSailToPort(&mut self, gpio: &mut Gpio){
+    pub fn positionMainSailToPort(&mut self){
 
-        self.rotateServoClockwise(CHANNEL0, gpio);
+        self.rotateServoClockwise(CHANNEL0);
     }
 
-    pub fn stopPositionMainSailToPort(&mut self, gpio: &mut Gpio){
+    pub fn stopPositionMainSailToPort(&mut self){
 
-        self.set_sleep_mode(gpio);
+        self.set_sleep_mode();
     }
 
-    pub fn positionMainSailToStartBoard(&mut self, gpio: &mut Gpio){
+    pub fn positionMainSailToStartBoard(&mut self){
 
-        self.rotateServoCounterclockwise(CHANNEL0, gpio);
+        self.rotateServoCounterclockwise(CHANNEL0);
     }
 
-    pub fn positionJibToPort(&mut self, gpio: &mut Gpio){
+    pub fn positionJibToPort(&mut self){
 
-        self.rotateServoClockwise(CHANNEL1, gpio);
+        self.rotateServoClockwise(CHANNEL1);
     }
 
-    pub fn positionJibToStartBoard(&mut self, gpio: &mut Gpio){
+    pub fn positionJibToStartBoard(&mut self){
 
-        self.rotateServoCounterclockwise(CHANNEL1, gpio);
+        self.rotateServoCounterclockwise(CHANNEL1);
     }
 
 

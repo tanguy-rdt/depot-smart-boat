@@ -1,7 +1,6 @@
 use crate::boat_control::boat_controler_itf::BoatControlerItf;
 use crate::boat_control::BoatControl;
 use std::sync::{mpsc, Arc, Mutex};
-use rand::distributions::{Distribution, Uniform};
 
 pub struct Model{
     boat_controler: BoatControl,

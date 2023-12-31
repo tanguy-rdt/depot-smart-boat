@@ -59,7 +59,7 @@ fn main(){
 
     });
 
-    eframe::run_native(
+    let _ = eframe::run_native(
         "",
         Default::default(),
         Box::new(|cc| {
