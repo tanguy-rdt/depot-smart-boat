@@ -37,50 +37,48 @@ const LSB : usize = 1;
 const XLSB: usize = 2;
 
 pub struct BME280{
-    gpio: Gpio,
     t_fine: i32,
     bme280: u8
 }
 
 impl BME280 {
     pub fn new() -> Self {
-        BME280 {
-            gpio: Gpio::new(),
+        Self {
             t_fine: 0,
             bme280: 0
         }
     }
     
-    pub fn init(&mut self){
-        self.gpio.i2c_set_slave_addr(BME280_ADDR);
-        self.gpio.i2c_write_byte(HUM_CTRL_ADDR, 0x01);
-        self.gpio.i2c_write_byte(CTRL_MEAS_ADDR, 0x27);
-        self.gpio.i2c_write_byte(BME280_CONFIG_ADDR, 0x00);
+    pub fn init(&mut self, gpio: &mut Gpio){
+        gpio.i2c_set_slave_addr(BME280_ADDR);
+        gpio.i2c_write_byte(HUM_CTRL_ADDR, 0x01);
+        gpio.i2c_write_byte(CTRL_MEAS_ADDR, 0x27);
+        gpio.i2c_write_byte(BME280_CONFIG_ADDR, 0x00);
     }
 
-    pub fn get_temperature(&mut self) -> f32{
-        self.gpio.i2c_set_slave_addr(BME280_ADDR);
-        let msb: u8 = self.gpio.i2c_read_byte_from(TEMP_ADDR[MSB]);
-        let lsb: u8 = self.gpio.i2c_read_byte_from(TEMP_ADDR[LSB]);
-        let xlsb: u8 = self.gpio.i2c_read_byte_from(TEMP_ADDR[XLSB]);
+    pub fn get_temperature(&mut self, gpio: &mut Gpio) -> f32{
+        gpio.i2c_set_slave_addr(BME280_ADDR);
+        let msb: u8 = gpio.i2c_read_byte_from(TEMP_ADDR[MSB]);
+        let lsb: u8 = gpio.i2c_read_byte_from(TEMP_ADDR[LSB]);
+        let xlsb: u8 = gpio.i2c_read_byte_from(TEMP_ADDR[XLSB]);
         let temp_raw: i32 = ((msb as i32) << 12) | ((lsb as i32) << 4) | xlsb as i32;
 
-        let temperature_in_C: f32 = (self.compensation_temperature(temp_raw)) as f32 / 100.0;
+        let temperature_in_C: f32 = (self.compensation_temperature(gpio, temp_raw)) as f32 / 100.0;
 
         temperature_in_C
     }
 
-    fn compensation_temperature(&mut self, temp_raw: i32) -> i32 {
-        let mut msb = self.gpio.i2c_read_byte_from(T1_ADDR[MSB]);
-        let mut lsb = self.gpio.i2c_read_byte_from(T1_ADDR[LSB]);
+    fn compensation_temperature(&mut self, gpio: &mut Gpio, temp_raw: i32) -> i32 {
+        let mut msb = gpio.i2c_read_byte_from(T1_ADDR[MSB]);
+        let mut lsb = gpio.i2c_read_byte_from(T1_ADDR[LSB]);
         let dig_t1: u16 = ((msb as u16) << 8) | lsb as u16;
 
-        msb = self.gpio.i2c_read_byte_from(T2_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(T2_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(T2_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(T2_ADDR[LSB]);
         let dig_t2: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        msb = self.gpio.i2c_read_byte_from(T3_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(T3_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(T3_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(T3_ADDR[LSB]);
         let dig_t3: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
         let var1  = ((((temp_raw >> 3) - ((dig_t1 as i32) << 1))) * (dig_t2 as i32)) >> 11; 
@@ -91,53 +89,53 @@ impl BME280 {
         temp
     }
 
-    pub fn get_pressure(&mut self) -> f32{
-        self.gpio.i2c_set_slave_addr(BME280_ADDR);
-        let msb: u8 = self.gpio.i2c_read_byte_from(PRESS_ADDR[MSB]);
-        let lsb: u8 = self.gpio.i2c_read_byte_from(PRESS_ADDR[LSB]);
-        let xlsb: u8 = self.gpio.i2c_read_byte_from(PRESS_ADDR[XLSB]);
+    pub fn get_pressure(&mut self, gpio: &mut Gpio) -> f32{
+        gpio.i2c_set_slave_addr(BME280_ADDR);
+        let msb: u8 = gpio.i2c_read_byte_from(PRESS_ADDR[MSB]);
+        let lsb: u8 = gpio.i2c_read_byte_from(PRESS_ADDR[LSB]);
+        let xlsb: u8 = gpio.i2c_read_byte_from(PRESS_ADDR[XLSB]);
         let press_raw: i32 = ((msb as i32) << 12) | ((lsb as i32) << 4) | xlsb as i32;
 
-        let pressure_in_pa = (self.compensation_pressure(press_raw) as f32)/256.0;
+        let pressure_in_pa = (self.compensation_pressure(gpio, press_raw) as f32)/256.0;
 
         pressure_in_pa
     }
 
-    fn compensation_pressure(&self, press_raw: i32) -> u32{
-        let mut msb = self.gpio.i2c_read_byte_from(P1_ADDR[MSB]);
-        let mut lsb = self.gpio.i2c_read_byte_from(P1_ADDR[LSB]);
+    fn compensation_pressure(&self, gpio: &Gpio, press_raw: i32) -> u32{
+        let mut msb = gpio.i2c_read_byte_from(P1_ADDR[MSB]);
+        let mut lsb = gpio.i2c_read_byte_from(P1_ADDR[LSB]);
         let dig_p1: u16 = ((msb as u16) << 8) | lsb as u16;
 
-        msb = self.gpio.i2c_read_byte_from(P2_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(P2_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(P2_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(P2_ADDR[LSB]);
         let dig_p2: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        msb = self.gpio.i2c_read_byte_from(P3_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(P3_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(P3_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(P3_ADDR[LSB]);
         let dig_p3: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        msb = self.gpio.i2c_read_byte_from(P4_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(P4_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(P4_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(P4_ADDR[LSB]);
         let dig_p4: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        msb = self.gpio.i2c_read_byte_from(P5_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(P5_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(P5_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(P5_ADDR[LSB]);
         let dig_p5: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        msb = self.gpio.i2c_read_byte_from(P6_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(P6_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(P6_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(P6_ADDR[LSB]);
         let dig_p6: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        msb = self.gpio.i2c_read_byte_from(P7_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(P7_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(P7_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(P7_ADDR[LSB]);
         let dig_p7: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        msb = self.gpio.i2c_read_byte_from(P8_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(P8_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(P8_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(P8_ADDR[LSB]);
         let dig_p8: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        msb = self.gpio.i2c_read_byte_from(P9_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(P9_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(P9_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(P9_ADDR[LSB]);
         let dig_p9: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
 
@@ -164,35 +162,35 @@ impl BME280 {
         pressure
     }
 
-    pub fn get_humidity(&mut self) -> f32{
-        self.gpio.i2c_set_slave_addr(BME280_ADDR);
-        let msb: u8 = self.gpio.i2c_read_byte_from(HUM_ADDR[MSB]);
-        let lsb: u8 = self.gpio.i2c_read_byte_from(HUM_ADDR[LSB]);
+    pub fn get_humidity(&mut self, gpio: &mut Gpio) -> f32{
+        gpio.i2c_set_slave_addr(BME280_ADDR);
+        let msb: u8 = gpio.i2c_read_byte_from(HUM_ADDR[MSB]);
+        let lsb: u8 = gpio.i2c_read_byte_from(HUM_ADDR[LSB]);
         let hum_raw: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        let hum_in_percent = (self.compensation_humidity(hum_raw as i32) as f32)/1024.0;
+        let hum_in_percent = (self.compensation_humidity(gpio, hum_raw as i32) as f32)/1024.0;
 
         hum_in_percent
     }
 
-    fn compensation_humidity(&self, hum_raw: i32) -> i32{
-        let dig_h1: u8 = self.gpio.i2c_read_byte_from(H1_ADDR);
+    fn compensation_humidity(&self, gpio: &Gpio, hum_raw: i32) -> i32{
+        let dig_h1: u8 = gpio.i2c_read_byte_from(H1_ADDR);
 
-        let mut msb = self.gpio.i2c_read_byte_from(H2_ADDR[MSB]);
-        let mut lsb = self.gpio.i2c_read_byte_from(H2_ADDR[LSB]);
+        let mut msb = gpio.i2c_read_byte_from(H2_ADDR[MSB]);
+        let mut lsb = gpio.i2c_read_byte_from(H2_ADDR[LSB]);
         let dig_h2: i16 = (((msb as u16) << 8) | lsb as u16) as i16;
 
-        let dig_h3: u8 = self.gpio.i2c_read_byte_from(H3_ADDR);
+        let dig_h3: u8 = gpio.i2c_read_byte_from(H3_ADDR);
 
-        msb = self.gpio.i2c_read_byte_from(H4_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(H4_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(H4_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(H4_ADDR[LSB]);
         let dig_h4: i16 = (((msb as u16) << 4) | ((lsb & 0x0f) as u16)) as i16;
 
-        msb = self.gpio.i2c_read_byte_from(H5_ADDR[MSB]);
-        lsb = self.gpio.i2c_read_byte_from(H5_ADDR[LSB]);
+        msb = gpio.i2c_read_byte_from(H5_ADDR[MSB]);
+        lsb = gpio.i2c_read_byte_from(H5_ADDR[LSB]);
         let dig_h5: i16 = (((msb as u16) << 4) | (((lsb >> 4) & 0x0f) as u16)) as i16;
 
-        let dig_h6: i8 = self.gpio.i2c_read_byte_from(H6_ADDR) as i8;
+        let dig_h6: i8 = gpio.i2c_read_byte_from(H6_ADDR) as i8;
 
         let mut v_x1: i32 = self.t_fine - (76800 as i32);
         v_x1 = ((((hum_raw << 14) -((dig_h4 as i32) << 20) - ((dig_h5 as i32) * v_x1)) + (16384 as i32)) >> 15) * (((((((v_x1 * (dig_h6 as i32)) >> 10) *
