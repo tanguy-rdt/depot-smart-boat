@@ -1,4 +1,5 @@
 use crate::boat_control::boat_controler_itf::BoatControlerItf;
+use crate::boat_control::boat_controler::SailPosition;
 
 use rand::distributions::{Distribution, Uniform};
 
@@ -30,26 +31,7 @@ impl BoatControlerItf for BoatControlerStub {
         hum_range.sample(&mut rng)
     }
 
-    fn start_all_motor(&mut self){
-    }
-
-    fn stop_all_motor(&mut self){
-    }
-
-    fn positionMainSailToPort(&mut self){
-    }
-
-    fn stopPositionMainSailToPort(&mut self){
-    }
-
-    fn positionMainSailToStartBoard(&mut self){
-    }
-
-    fn positionJibToPort(&mut self){
-    }
-
-    fn positionJibToStartBoard(&mut self){
-    }
-
-
+    fn move_mainail_to(&mut self, position: SailPosition){}
+    fn up_down_mainsail(&mut self, position: SailPosition){}
+    fn move_jib_to(&mut self, position: SailPosition){}
 }

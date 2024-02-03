@@ -4,50 +4,25 @@ use crate::boat_control::gpio_manager::Gpio;
 use std::thread;
 use std::time::Duration;
 
-const PCA9685_MODE1: u8 = 0x00;
-const PCA9685_MODE2: u8 = 0x01;
-const PCA9685_SUBADR1: u8 = 0x02;
-const PCA9685_SUBADR2: u8 = 0x03;
-const PCA9685_SUBADR3: u8 = 0x04;
-const PCA9685_ALLCALLADR: u8 = 0x05;
-const PCA9685_LED0_ON_L: u8 = 0x06;
-const PCA9685_LED0_ON_H: u8 = 0x07;
-const PCA9685_LED0_OFF_L: u8 = 0x08;
-const PCA9685_LED0_OFF_H: u8 = 0x09;
-const PCA9685_ALLLED_ON_L: u8 = 0xFA;
-const PCA9685_ALLLED_ON_H: u8 = 0xFB;
-const PCA9685_ALLLED_OFF_L: u8 = 0xFC;
-const PCA9685_ALLLED_OFF_H: u8 = 0xFD;
-const PCA9685_PRESCALE: u8 = 0xFE;
-const PCA9685_TESTMODE: u8 = 0xFF;
-
-const MODE1_ALLCAL: u8 = 0x01;
-const MODE1_SUB3: u8 = 0x02;
-const MODE1_SUB2: u8 = 0x04;
-const MODE1_SUB1: u8 = 0x08;
-const MODE1_SLEEP: u8 = 0x10;
-const MODE1_AI: u8 = 0x20;
-const MODE1_EXTCLK: u8 = 0x40;
-const MODE1_RESTART: u8 = 0x80;
-
-const MODE2_OUTNE_0: u8 = 0x01;
-const MODE2_OUTNE_1: u8 = 0x02;
-const MODE2_OUTDRV: u8 = 0x04;
-const MODE2_OCH: u8 = 0x08;
-const MODE2_INVRT: u8 = 0x10;
-
 const PCA9685_I2C_ADDRESS: u8 = 0x40;
-const FREQUENCY_OSCILLATOR: u32 = 25_000_000;
+const FREQUENCY_OSCILLATOR: f32 = 25000000.0;
 const PCA9685_PRESCALE_MIN: u8 = 3;
 const PCA9685_PRESCALE_MAX: u8 = 255;
+
+const PCA9685_MODE1: u8 = 0x00;
+const PCA9685_LED0_ON_L: u8 = 0x06;
+const PCA9685_PRESCALE: u8 = 0xFE;
+
+const MODE1_SLEEP: u8 = 0x10;
+const MODE1_AI: u8 = 0x20;
+const MODE1_RESTART: u8 = 0x80;
 
 // Constant for Servo
 const SERVOMIN: u16 = 150; // This is the 'minimum' pulse length count (out of 4096)
 const SERVOMAX: u16 = 600; // This is the 'maximum' pulse length count (out of 4096)
-const USMIN: u16 = 600;    // This is the rounded 'minimum' microsecond length based on the minimum pulse of 150
-const USMAX: u16 = 2400;   // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
-const SERVO_FREQ: u16 = 50; // Analog servos run at ~50 Hz updates
-const PWM_FREQUENCY: f32 = 50.0;
+const SERVO_FREQ: f32 = 50.0;
+const PRESCALE_MIN: u8 = 3;  
+const PRESCALE_MAX: u8 = 255;
 
 pub struct PCA9685;
 
@@ -58,92 +33,77 @@ impl PCA9685 {
 
     pub fn init(&mut self, gpio: &mut Gpio){
         gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
-        self.init_prescaler(gpio, PWM_FREQUENCY);
+        self.init_prescaler(gpio, SERVO_FREQ);
     }
 
     fn init_prescaler(&mut self, gpio: &mut Gpio, frequency: f32){
         // Calcule le prescaler nécessaire pour atteindre la fréquence PWM souhaitée
-        let prescale_value = (((25000000.0 / (4096.0 * frequency)) + 0.5) - 1.0) as u8;
-        gpio.i2c_write_byte(PCA9685_MODE1, MODE1_SLEEP); 
-        gpio.i2c_write_byte(PCA9685_PRESCALE, prescale_value); // set prescaler PWM hz to 50 (0x7a)
+        let mut prescale_value = (((FREQUENCY_OSCILLATOR / (4096.0 * frequency)) + 0.5) - 1.0) as u8;
+        
+        if prescale_value < PRESCALE_MIN {
+            prescale_value = PRESCALE_MIN;
+        }
+        else if prescale_value > PRESCALE_MAX {
+            prescale_value = PRESCALE_MAX;
+        }
 
-        // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
+        gpio.i2c_write_byte(PCA9685_MODE1, MODE1_SLEEP); 
+        let _ = self.read_mode1(gpio);
+        gpio.i2c_write_byte(PCA9685_PRESCALE, prescale_value); // set prescaler PWM hz to 50 (0x7a)
         thread::sleep(Duration::from_millis(5)); 
-        gpio.i2c_write_byte(PCA9685_MODE1, 0x00); 
+
+        gpio.i2c_write_byte(PCA9685_MODE1, MODE1_RESTART | MODE1_AI); 
+        let _ = self.read_mode1(gpio); 
     }
 
     pub fn rotate_servo_clockwise(&mut self, gpio: &mut Gpio, channel: i32){
         gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
-        self.set_led(gpio, channel, 0x199, 0x4CC);
+        self.set_led(gpio, channel, 0, 184);
+        let _ = self.read_mode1(gpio);
+    }
+
+    pub fn rotate_servo_clockwise_n_degree(&mut self, gpio: &mut Gpio, channel: i32, n_turn: f32) {
+        let degree: f32 = 360.0 * n_turn;
+        let time_for_full_rotation_ms = 800; 
+    
+        let sleep_time_ms = (degree / 360.0) * time_for_full_rotation_ms as f32;
+    
+        self.rotate_servo_clockwise(gpio, channel);
+        thread::sleep(Duration::from_millis(sleep_time_ms as u64));
+        self.stop_motor(gpio, channel);
     }
 
     pub fn rotate_servo_counterclockwise(&mut self, gpio: &mut Gpio, channel: i32){
         gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
-        self.set_led(gpio, channel, 0x199, 0x4CC);
+        self.set_led(gpio, channel, 0, 430);
     }
 
-    pub fn set_sleep_mode(&mut self, gpio: &mut Gpio){
-        let mut mode1 = self.read_mode1(gpio);
-
-        // Activer le mode sommeil (bit 4 à 1)
-        mode1 |= MODE1_SLEEP;
-        gpio.i2c_write_byte(PCA9685_MODE1, mode1);    // Control register set to Mode 1 Sleep to set Prescaler
-
-        // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
-        thread::sleep(Duration::from_millis(5)); 
-        self.read_mode1(gpio);
+    pub fn rotate_servo_counterclockwise_n_degree(&mut self, gpio: &mut Gpio, channel: i32, n_turn: f32) {
+        let degree: f32 = 360.0 * n_turn;
+        let time_for_full_rotation_ms = 800; 
+    
+        let sleep_time_ms = (degree / 360.0) * time_for_full_rotation_ms as f32;
+    
+        self.rotate_servo_counterclockwise(gpio, channel);
+        thread::sleep(Duration::from_millis(sleep_time_ms as u64));
+        self.stop_motor(gpio, channel);
     }
 
-    pub fn start_all_motor(&mut self, gpio: &mut Gpio){
-        self.restart_pwm_channels(gpio);
-        self.set_all_led_mode(gpio);
-        self.set_all_led(gpio, 0x199, 0x4CC);
-    }
-
-    pub fn stop_all_motor(&mut self, gpio: &mut Gpio){
+    pub fn stop_motor(&mut self, gpio: &mut Gpio, channel: i32){
         gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
-        self.set_sleep_mode(gpio);
+        self.set_led(gpio, channel, 0, 307);
     }
 
     fn set_led(&mut self, gpio: &mut Gpio, channel: i32, on: u16, off: u16){
         let on_register = PCA9685_LED0_ON_L + (4 * channel) as u8;
-        let off_register = PCA9685_LED0_OFF_L + (4 * channel) as u8;
-  
-        gpio.i2c_write_byte(on_register, (on & 0xFF) as u8);
-        gpio.i2c_write_byte(on_register+1, ((on >> 8) & 0xFF) as u8);
-        gpio.i2c_write_byte(off_register, (off & 0xFF) as u8);
-        gpio.i2c_write_byte(off_register+1, ((off >> 8) & 0xFF) as u8);  
-    }
 
-    fn restart_pwm_channels(&mut self, gpio: &mut Gpio) {
-        let mode = self.read_mode1(gpio);
-        
-        // Vérifier que le bit 7 (RESTART) est à 1 logique
-        if (mode & MODE1_RESTART) != 0 {
-            self.reset_sleep_mode1(gpio); // Si c'est le cas, effacer le bit 4 (SLEEP)
-            gpio.i2c_write_byte(PCA9685_MODE1, MODE1_RESTART); // Écrire la logique 1 dans le bit 7 de MODE1 pour redémarrer tous les canaux PWM
-        }
-    }
+        println!("on_register: {}", on_register);
 
-    fn set_all_led_mode(&mut self, gpio: &mut Gpio){
-        gpio.i2c_write_byte(PCA9685_MODE1, MODE1_ALLCAL);
-        thread::sleep(Duration::from_millis(5)); 
-    }
-
-    fn set_all_led(&mut self, gpio: &mut Gpio, on: u16, off: u16){
-        gpio.i2c_write_byte(PCA9685_ALLLED_ON_L, (on & 0xFF) as u8);
-        gpio.i2c_write_byte(PCA9685_ALLLED_ON_H, ((on >> 8) & 0xFF) as u8);
-        gpio.i2c_write_byte(PCA9685_ALLLED_OFF_L, (off & 0xFF) as u8);
-        gpio.i2c_write_byte(PCA9685_ALLLED_OFF_H, ((off >> 8) & 0xFF) as u8);   
-    }  
-
-    fn reset_sleep_mode1(&mut self, gpio: &mut Gpio){
-        let mut mode1 = self.read_mode1(gpio);
-        mode1 &= !MODE1_SLEEP;
-        gpio.i2c_write_byte(PCA9685_MODE1, mode1);
-
-        // Attends au moins 5 ms (délai spécifié dans la documentation du PCA9685)
-        thread::sleep(Duration::from_millis(5)); 
+        let buffer = [(on & 0xFF) as u8, 
+                      ((on >> 8) & 0xFF) as u8, 
+                      (off & 0xFF) as u8, 
+                      ((off >> 8) & 0xFF) as u8];
+        gpio.i2c_write_bytes(on_register, &buffer);
     }
 
     fn read_mode1(&mut self, gpio: &mut Gpio) -> u8 {

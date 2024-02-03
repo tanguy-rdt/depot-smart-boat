@@ -1,4 +1,5 @@
 use crate::boat_control::gpio_manager::gpio_itf::GpioItf;
+use std::{thread, time::Duration};
 
 #[cfg(feature = "on_target")]
 use rppal::{gpio::{Gpio, Level}, i2c::I2c};
@@ -52,4 +53,10 @@ impl GpioItf for GpioManager {
             eprintln!("Error writing to the I2C register 0x{:x}: {:?}", register, e);
         }
     }    
+
+    fn i2c_write_bytes(&self, register: u8, values: &[u8]) {
+        if let Err(e) = self.i2c.block_write(register as u8, values) {
+            eprintln!("Error writing to the I2C register 0x{:x}: {:?}", register, e);
+        }
+    }
 }

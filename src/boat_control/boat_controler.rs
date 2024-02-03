@@ -4,6 +4,13 @@ use crate::boat_control::boat_controler_itf::BoatControlerItf;
 use crate::boat_control::bme280::BME280;
 use crate::boat_control::pca9685::PCA9685;
 
+pub enum SailPosition {
+    Starboard, //tribord, droite
+    ToPort, //babord, gauche
+    Up, 
+    Down,
+}
+
 
 pub struct BoatControler{
     gpio: Gpio,
@@ -37,33 +44,27 @@ impl BoatControlerItf for BoatControler {
         self.bme280.get_humidity(&mut self.gpio)
     }
 
-    fn start_all_motor(&mut self){
-        self.pca9685.start_all_motor(&mut self.gpio);
+    fn move_mainail_to(&mut self, position: SailPosition){
+        match position {
+            SailPosition::Starboard => self.pca9685.rotate_servo_clockwise_n_degree(&mut self.gpio, 1, 1.0),
+            SailPosition::ToPort => self.pca9685.rotate_servo_counterclockwise_n_degree(&mut self.gpio, 1, 1.0),
+            _ => {}
+        }
     }
 
-    fn stop_all_motor(&mut self){
-        self.pca9685.stop_all_motor(&mut self.gpio);
+    fn up_down_mainsail(&mut self, position: SailPosition){
+        match position {
+            SailPosition::Up => self.pca9685.rotate_servo_clockwise_n_degree(&mut self.gpio, 3, 1.0),
+            SailPosition::Down => self.pca9685.rotate_servo_counterclockwise_n_degree(&mut self.gpio, 3, 1.0),
+            _ => {}
+        }    
     }
 
-    fn positionMainSailToPort(&mut self){
-        self.pca9685.rotate_servo_clockwise(&mut self.gpio, 0);
+    fn move_jib_to(&mut self, position: SailPosition){
+        match position {
+            SailPosition::Starboard => self.pca9685.rotate_servo_clockwise_n_degree(&mut self.gpio, 0, 1.5),
+            SailPosition::ToPort => self.pca9685.rotate_servo_counterclockwise_n_degree(&mut self.gpio, 0, 1.5),
+            _ => {}
+        }    
     }
-
-    fn stopPositionMainSailToPort(&mut self){
-        self.pca9685.stop_all_motor(&mut self.gpio);
-    }
-
-    fn positionMainSailToStartBoard(&mut self){
-        self.pca9685.rotate_servo_counterclockwise(&mut self.gpio, 0);
-    }
-
-    fn positionJibToPort(&mut self){
-        self.pca9685.rotate_servo_clockwise(&mut self.gpio, 1);
-    }
-
-    fn positionJibToStartBoard(&mut self){
-        self.pca9685.rotate_servo_counterclockwise(&mut self.gpio, 1);
-    }
-
-
 }

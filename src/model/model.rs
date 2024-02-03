@@ -1,5 +1,7 @@
 use crate::boat_control::boat_controler_itf::BoatControlerItf;
 use crate::boat_control::BoatControl;
+use crate::boat_control::SailPosition;
+
 use std::sync::{mpsc, Arc, Mutex};
 
 pub struct Model{
@@ -77,22 +79,16 @@ impl Model {
         self.set_foque_angle(0);
     }
 
-    fn motor(&mut self, val: bool) {
-        println!("motor status {}", val);
-    
-        if val {
-            self.boat_controler.positionMainSailToPort();
-        } else {
-            self.boat_controler.stopPositionMainSailToPort();
-        }
-    }
-    
-
     pub fn treat_action(&mut self, var: &str, val: f32){
         match var {
             "direction_tribord" => self.direction_tribord(),
             "direction_babord" => self.direction_babord(),
-            "motor" => self.motor(val != 0.0),
+            "jib_starboard" => self.boat_controler.move_jib_to(SailPosition::Starboard),
+            "mainsail_starboard" => self.boat_controler.move_mainail_to(SailPosition::Starboard),
+            "mainsail_up" => self.boat_controler.up_down_mainsail(SailPosition::Up),
+            "jib_to_port" => self.boat_controler.move_jib_to(SailPosition::ToPort),
+            "mainsail_to_port" => self.boat_controler.move_mainail_to(SailPosition::ToPort),
+            "mainsail_down" => self.boat_controler.up_down_mainsail(SailPosition::Down),
             _ => (),
         };
     }

@@ -9,4 +9,5 @@ impl GpioItf for GpioManagerStub {
     fn i2c_set_slave_addr(&mut self, addr: u8){}
     fn i2c_read_byte_from(&self, register: u8) -> u8{ 0 }
     fn i2c_write_byte(&self, register: u8, value: u8){}
+    fn i2c_write_bytes(&self, register: u8, values: &[u8]){}
 }
