@@ -42,7 +42,6 @@ impl eframe::App for Gui {
 
         egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
             egui::menu::bar(ui, |ui| {
-
             });
         });
 

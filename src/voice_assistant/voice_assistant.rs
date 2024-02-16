@@ -1,10 +1,13 @@
-use std::{path::PathBuf, env, thread, time::Duration};
+use std::{path::PathBuf};
 use std::sync::{mpsc, Arc, Mutex};
 use picovoice::{rhino::RhinoInference, PicovoiceBuilder};
-use itertools::Itertools;
+use pv_recorder::PvRecorderBuilder;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 const PPN_MODEL_PATH: &str = "./ressources/porcupine_params_fr.pv";
 const RHN_MODEL_PATH: &str = "./ressources/rhino_params_fr.pv";
+
+static LISTENING: AtomicBool = AtomicBool::new(false);
 
 pub struct VoiceAssistant {
     input_audio: PathBuf, 
@@ -30,7 +33,8 @@ impl VoiceAssistant {
     }
 
     pub fn start(&self){
-        let wake_word_callback = || ();
+        let audio_device_index = 0;
+        let wake_word_callback = ||  println!("Wake word detected, awaiting instruction...");
         let inference_callback = |inference: RhinoInference| {
             if inference.is_understood {
                 &self.treat_inference(inference);
@@ -52,51 +56,30 @@ impl VoiceAssistant {
                                                                 .init()
                                                                 .expect("Failed to create Picovoice");
 
-        
-        let mut wav_reader = match hound::WavReader::open(&self.input_audio.clone()) {
-            Ok(reader) => reader,
-            Err(err) => panic!(
-                "Failed to open .wav audio file {}: {}",
-                &self.input_audio.display(),
-                err
-            ),
-        };
+        let recorder = PvRecorderBuilder::new(picovoice.frame_length() as i32)
+            .device_index(audio_device_index)
+            .init()
+            .expect("Failed to initialize pvrecorder");
+        recorder.start().expect("Failed to start audio recording");
 
-        if wav_reader.spec().sample_rate != picovoice.sample_rate() {
-            panic!(
-                "Audio file should have the expected sample rate of {}, got {}",
-                picovoice.sample_rate(),
-                wav_reader.spec().sample_rate
-            );
+        LISTENING.store(true, Ordering::SeqCst);
+        ctrlc::set_handler(|| {
+            LISTENING.store(false, Ordering::SeqCst);
+        })
+        .expect("Unable to setup signal handler");
+    
+        println!("Listening for commands...");
+
+        while LISTENING.load(Ordering::SeqCst) {
+            let frame = recorder.read().expect("Failed to read audio frame");
+    
+            picovoice.process(&frame).unwrap();
         }
 
-        if wav_reader.spec().channels != 1u16 {
-            panic!(
-                "Audio file should have the expected number of channels 1, got {}",
-                wav_reader.spec().channels
-            );
-        }
-
-        if wav_reader.spec().bits_per_sample != 16u16
-            || wav_reader.spec().sample_format != hound::SampleFormat::Int
-        {
-            panic!("WAV format should be in the signed 16 bit format",);
-        }
-
-        for frame in &wav_reader
-            .samples()
-            .chunks(picovoice.frame_length() as usize)
-        {
-            let frame: Vec<i16> = frame.map(|s| s.unwrap()).collect_vec();
-            if frame.len() == picovoice.frame_length() as usize {
-                picovoice.process(&frame).unwrap();
-            }
-        }
+        println!("\nStopping...");
+        recorder.stop().expect("Failed to stop audio recording");
     }
 
-    fn wake_word(&self){
-
-    }
 
     fn treat_inference(&self, inference: RhinoInference){
         let mut action: String = String::new();
@@ -110,6 +93,7 @@ impl VoiceAssistant {
         }
 
         if !action.is_empty() {
+            println!("{action}");
             self.msgq_tx
             .lock()
             .unwrap()

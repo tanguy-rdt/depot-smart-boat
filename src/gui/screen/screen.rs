@@ -35,7 +35,6 @@ impl Screen {
             MenuSelection::MAP_WIND_SPEED => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::MAP_TEMPERATURE => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::CONTROL => self.show_control_screen(ui),
-            MenuSelection::SETTINGS => self.show_settings_screen(ui),
             _ => (),
         };
     }
@@ -50,14 +49,6 @@ impl Screen {
 
     fn show_control_screen(&mut self, ui: &mut Ui){
         self.control.show(ui)
-    }
-
-    fn show_settings_screen(&mut self, ui: &mut Ui){
-        widgets::global_dark_light_mode_buttons(ui);
-        ui.horizontal(|ui| {
-            ui.spacing_mut().item_spacing.x = 0.0;
-            ui.hyperlink_to("github", "https://github.com/tanguy-rdt/depot-smart-boat");
-        });
     }
 
     fn check_msgq_rx(&mut self){
