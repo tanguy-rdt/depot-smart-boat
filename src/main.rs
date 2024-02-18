@@ -40,7 +40,7 @@ fn main(){
     let picovoice = VoiceAssistant::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq.tx_model));
 
     thread::spawn(move || {
-        picovoice.start();
+        //picovoice.start();
     });
 
     thread::spawn(move || {

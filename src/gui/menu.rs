@@ -22,7 +22,7 @@ pub struct Menu {
 impl Menu {
     pub fn new() -> Self {
         Self {
-            current_selection: MenuSelection::WEATHER,
+            current_selection: MenuSelection::CONTROL,
             current_audio_device: 0,
             audio_device: vec![String::from("No device")],
         }
@@ -30,8 +30,8 @@ impl Menu {
 
     pub fn show(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {
         ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
-            ui.selectable_value(&mut self.current_selection, MenuSelection::WEATHER, "⛅ Weather");
             ui.selectable_value(&mut self.current_selection, MenuSelection::CONTROL, "⛵ Boat Control");
+            ui.selectable_value(&mut self.current_selection, MenuSelection::WEATHER, "⛅ Weather");
             ui.separator();
             ui.label("🗺 Map");
             ui.separator();

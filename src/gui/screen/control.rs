@@ -1,8 +1,8 @@
-use crate::gui::tools;
+use crate::gui::custom_widget::{self, circle_slider};
 
 use eframe::egui;
 use egui_extras::{Size, StripBuilder};
-use std::sync::{mpsc, Arc, Mutex};
+use std::{sync::{mpsc, Arc, Mutex}, thread::current};
 
 pub struct Control {
     msgq_tx: Arc<Mutex<mpsc::Sender<(String, f32)>>>,
@@ -13,6 +13,8 @@ pub struct Control {
     motor1_counterclockwise: bool,
     motor3_counterclockwise: bool,
     sail: bool,
+    slide_bar: f64,
+    circle_slidebar: custom_widget::circle_slider::CircleSlider,
 }
 
 impl Control {
@@ -26,6 +28,8 @@ impl Control {
             motor1_counterclockwise: false,
             motor3_counterclockwise: false,
             sail: false,
+            slide_bar: 0.5,
+            circle_slidebar: custom_widget::circle_slider::CircleSlider::new(),
         }
     }
 
@@ -36,7 +40,7 @@ impl Control {
             strip.strip(|builder| {
                 builder.sizes(Size::remainder(), 2).horizontal(|mut strip| {
                     strip.cell(|ui| {
-                        self.show_image(ui);
+                        //self.show_image(ui);
                     });
                     strip.cell(|ui| {
                         self.show_cmd(ui);
@@ -82,31 +86,31 @@ impl Control {
         .num_columns(2)
         .show(ui, |ui| {
             ui.label("Jib Starboard: ");
-            if ui.add(tools::toggle(&mut self.motor0_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("jib_starboard".to_owned(), ((self.motor0_clockwise as i8) as f32))).unwrap(); };
+            if ui.add(custom_widget::toggle::toggle(&mut self.motor0_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("jib_starboard".to_owned(), ((self.motor0_clockwise as i8) as f32))).unwrap(); };
             ui.end_row();
 
             ui.label("Jib to port: ");
-            if ui.add(tools::toggle(&mut self.motor0_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("jib_to_port".to_owned(), ((self.motor0_counterclockwise as i8) as f32))).unwrap(); };
+            if ui.add(custom_widget::toggle::toggle(&mut self.motor0_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("jib_to_port".to_owned(), ((self.motor0_counterclockwise as i8) as f32))).unwrap(); };
             ui.end_row();
 
             ui.label("Mainsail Starboard: ");
-            if ui.add(tools::toggle(&mut self.motor1_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_starboard".to_owned(), ((self.motor1_clockwise as i8) as f32))).unwrap(); };
+            if ui.add(custom_widget::toggle::toggle(&mut self.motor1_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_starboard".to_owned(), ((self.motor1_clockwise as i8) as f32))).unwrap(); };
             ui.end_row();
 
             ui.label("Mainsail to port: ");
-            if ui.add(tools::toggle(&mut self.motor1_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_to_port".to_owned(), ((self.motor1_counterclockwise as i8) as f32))).unwrap(); };
+            if ui.add(custom_widget::toggle::toggle(&mut self.motor1_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_to_port".to_owned(), ((self.motor1_counterclockwise as i8) as f32))).unwrap(); };
             ui.end_row();
 
             ui.label("Mainsail up: ");
-            if ui.add(tools::toggle(&mut self.motor3_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_up".to_owned(), ((self.motor3_clockwise as i8) as f32))).unwrap(); };
+            if ui.add(custom_widget::toggle::toggle(&mut self.motor3_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_up".to_owned(), ((self.motor3_clockwise as i8) as f32))).unwrap(); };
             ui.end_row();
 
             ui.label("Mainsail down: ");
-            if ui.add(tools::toggle(&mut self.motor3_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_down".to_owned(), ((self.motor3_counterclockwise as i8) as f32))).unwrap(); };
+            if ui.add(custom_widget::toggle::toggle(&mut self.motor3_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_down".to_owned(), ((self.motor3_counterclockwise as i8) as f32))).unwrap(); };
             ui.end_row();
 
             ui.label("Sail :");
-            ui.add(tools::toggle(&mut self.sail));
+            ui.add(custom_widget::toggle::toggle(&mut self.sail));
             ui.end_row();
 
             ui.label("Safran :");
@@ -115,6 +119,8 @@ impl Control {
             ui.label("Mainsail :");
             ui.end_row();
 
+            if ui.add(self.circle_slidebar.curved_slidebar(&mut self.slide_bar)).changed() { self.msgq_tx.lock().unwrap().send(("".to_owned(), ((self.slide_bar as i8) as f32))).unwrap(); };
+            let slide_bar = self.slide_bar;
         });
     }
 

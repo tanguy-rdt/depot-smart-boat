@@ -1,4 +1,4 @@
-use eframe::egui;
+use eframe::{egui::{self, InputState}, epaint::Color32};
 
 fn toggle_ui(ui: &mut egui::Ui, on: &mut bool) -> egui::Response {
     let desired_size = ui.spacing().interact_size.y * egui::vec2(2.0, 1.0);

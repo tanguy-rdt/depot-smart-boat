@@ -1,7 +1,7 @@
 pub mod gui;
 mod screen;
 mod menu;
-mod tools;
+mod custom_widget;
 
 pub use gui::Gui;
 use screen::Screen;
