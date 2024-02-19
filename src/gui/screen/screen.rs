@@ -59,7 +59,7 @@ impl Screen {
                         "temperature" => self.weather.set_temperature(value),
                         "humidity" => self.weather.set_humidity(value),
                         "pressure" => self.weather.set_pressure(value),
-                        "motor" => self.control.set_motor(value != 0.0),
+                        "mainsail_angle" => self.control.set_mainsail_value(value),
                         _ => (),
                     }
                 }

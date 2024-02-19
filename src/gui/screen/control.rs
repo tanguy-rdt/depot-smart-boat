@@ -7,14 +7,12 @@ use std::{sync::{mpsc, Arc, Mutex}, thread::current};
 pub struct Control {
     msgq_tx: Arc<Mutex<mpsc::Sender<(String, f32)>>>,
     motor0_clockwise: bool,
-    motor1_clockwise: bool,
     motor3_clockwise: bool,
-    motor0_counterclockwise: bool,
-    motor1_counterclockwise: bool,
     motor3_counterclockwise: bool,
-    sail: bool,
-    slide_bar: f64,
-    circle_slidebar: custom_widget::circle_slider::CircleSlider,
+    slider_mainsail: custom_widget::circle_slider::CircleSlider,
+    slider_mainsail_value: f32,
+    slider_jib: custom_widget::circle_slider::CircleSlider,
+    slider_jib_value: f32,
 }
 
 impl Control {
@@ -22,20 +20,18 @@ impl Control {
         Self {
             msgq_tx: msgq_tx,
             motor0_clockwise: false,
-            motor1_clockwise: false,
             motor3_clockwise: false,
-            motor0_counterclockwise: false,
-            motor1_counterclockwise: false,
             motor3_counterclockwise: false,
-            sail: false,
-            slide_bar: 0.5,
-            circle_slidebar: custom_widget::circle_slider::CircleSlider::new(),
+            slider_mainsail: custom_widget::circle_slider::CircleSlider::new("Mainsail".to_string()),
+            slider_mainsail_value: 0.5,
+            slider_jib: custom_widget::circle_slider::CircleSlider::new("Jib".to_string()),
+            slider_jib_value: 0.5,
         }
     }
 
     pub fn show(&mut self, ui:  &mut egui::Ui){
         StripBuilder::new(ui)
-        .size(Size::relative(1.0)) // Diviser l'espace en deux colonnes, chaque colonne ayant la moitié de la largeur disponible
+        .size(Size::relative(1.0))
         .vertical(|mut strip| {
             strip.strip(|builder| {
                 builder.sizes(Size::remainder(), 2).horizontal(|mut strip| {
@@ -50,82 +46,45 @@ impl Control {
         });
     }
 
-    fn show_image(&mut self, ui:  &mut egui::Ui){
-        match self.sail {
-            true => {
-                if ui.visuals().dark_mode {
-                    ui.image(egui::include_image!(
-                        "./img/dark_theme/boat_actif.png"
-                    ));
-                }
-                else {
-                    ui.image(egui::include_image!(
-                        "./img/light_theme/boat_actif.png"
-                    ));
-                }
-
-            },
-            false => {
-                if ui.visuals().dark_mode {
-                    ui.image(egui::include_image!(
-                        "./img/dark_theme/boat_inactif.png"
-                    ));
-                }
-                else {
-                    ui.image(egui::include_image!(
-                        "./img/light_theme/boat_inactif.png"
-                    ));
-                }
-            },
-            _ => (),
-        };
-    }
-
     fn show_cmd(&mut self, ui:  &mut egui::Ui) {
         egui::Grid::new("TextLayoutDemo")
         .num_columns(2)
         .show(ui, |ui| {
-            ui.label("Jib Starboard: ");
-            if ui.add(custom_widget::toggle::toggle(&mut self.motor0_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("jib_starboard".to_owned(), ((self.motor0_clockwise as i8) as f32))).unwrap(); };
-            ui.end_row();
-
-            ui.label("Jib to port: ");
-            if ui.add(custom_widget::toggle::toggle(&mut self.motor0_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("jib_to_port".to_owned(), ((self.motor0_counterclockwise as i8) as f32))).unwrap(); };
-            ui.end_row();
-
-            ui.label("Mainsail Starboard: ");
-            if ui.add(custom_widget::toggle::toggle(&mut self.motor1_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_starboard".to_owned(), ((self.motor1_clockwise as i8) as f32))).unwrap(); };
-            ui.end_row();
-
-            ui.label("Mainsail to port: ");
-            if ui.add(custom_widget::toggle::toggle(&mut self.motor1_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_to_port".to_owned(), ((self.motor1_counterclockwise as i8) as f32))).unwrap(); };
-            ui.end_row();
-
             ui.label("Mainsail up: ");
             if ui.add(custom_widget::toggle::toggle(&mut self.motor3_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_up".to_owned(), ((self.motor3_clockwise as i8) as f32))).unwrap(); };
             ui.end_row();
 
             ui.label("Mainsail down: ");
             if ui.add(custom_widget::toggle::toggle(&mut self.motor3_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_down".to_owned(), ((self.motor3_counterclockwise as i8) as f32))).unwrap(); };
+
+            ui.end_row();
+            ui.allocate_space(egui::Vec2::new(0.0, 30.0));
             ui.end_row();
 
-            ui.label("Sail :");
-            ui.add(custom_widget::toggle::toggle(&mut self.sail));
+
             ui.end_row();
 
-            ui.label("Safran :");
-            ui.end_row();
+            if ui.add(self.slider_mainsail.curved_slider(&mut self.slider_mainsail_value)).changed() { 
+                self.msgq_tx
+                    .lock()
+                    .unwrap()
+                    .send(("".to_owned(), ((self.slider_mainsail_value as i8) as f32))).unwrap(); 
+            };
 
-            ui.label("Mainsail :");
-            ui.end_row();
+            ui.add_space(20.0);
 
-            if ui.add(self.circle_slidebar.curved_slidebar(&mut self.slide_bar)).changed() { self.msgq_tx.lock().unwrap().send(("".to_owned(), ((self.slide_bar as i8) as f32))).unwrap(); };
-            let slide_bar = self.slide_bar;
+            if ui.add(self.slider_jib.curved_slider(&mut self.slider_jib_value)).changed() { 
+                self.msgq_tx
+                    .lock()
+                    .unwrap()
+                    .send(("".to_owned(), ((self.slider_jib_value as i8) as f32))).unwrap(); 
+            };
+            ui.end_row();
         });
     }
 
-    pub fn set_motor(&mut self, value: bool) {
-        self.motor0_clockwise = value;
+    pub fn set_mainsail_value(&mut self, value: f32) {
+        self.slider_mainsail_value = value;
     }
 
     
