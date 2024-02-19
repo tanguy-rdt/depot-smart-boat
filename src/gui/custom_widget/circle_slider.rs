@@ -60,9 +60,9 @@ impl CircleSlider {
         let dy = pointer_position_y - center_y;
         let mut angle = dy.atan2(dx) + 2.0 * std::f32::consts::PI;
 
-        if angle < std::f32::consts::PI {
+        if angle > 2.5 * std::f32::consts::PI {
             angle = std::f32::consts::PI;
-        } else if angle > 2.0 * std::f32::consts::PI {
+        } else if angle > 2.0 * std::f32::consts::PI && angle < 2.5 * std::f32::consts::PI {
             angle = 2.0 * std::f32::consts::PI;
         }
         
