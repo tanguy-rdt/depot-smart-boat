@@ -28,7 +28,7 @@ impl CircleSlider {
     }
 
     fn curved_slider_ui(&mut self, ui: &mut egui::Ui, value: &mut f32) -> egui::Response {
-        let desired_size = ui.spacing().interact_size.y * egui::vec2(10.0, 10.0);
+        let desired_size = ui.spacing().interact_size.y * egui::vec2(7.0, 7.0);
         let (rect, response) = ui.allocate_exact_size(desired_size, egui::Sense::drag());
         response.widget_info(|| egui::WidgetInfo::slider(*value as f64, ""));
 

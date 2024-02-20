@@ -1,5 +1,9 @@
 use eframe::{egui::{self, InputState}, epaint::Color32};
 
+pub fn slidebar(value: &mut f64) -> impl egui::Widget + '_ {
+    move |ui: &mut egui::Ui| slidebar_ui(ui, value)
+}  
+
 fn slidebar_ui(ui: &mut egui::Ui, value: &mut f64) -> egui::Response {
     let desired_size = ui.spacing().interact_size.y * egui::vec2(10.0, 1.0);
     let (rect, mut response) = ui.allocate_exact_size(desired_size, egui::Sense::click_and_drag());

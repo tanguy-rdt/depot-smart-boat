@@ -13,6 +13,8 @@ pub struct Control {
     slider_mainsail_value: f32,
     slider_jib: custom_widget::circle_slider::CircleSlider,
     slider_jib_value: f32,
+    compass: custom_widget::compass::Compass,
+    slider: f64,
 }
 
 impl Control {
@@ -26,12 +28,14 @@ impl Control {
             slider_mainsail_value: 0.5,
             slider_jib: custom_widget::circle_slider::CircleSlider::new("Jib".to_string()),
             slider_jib_value: 0.5,
+            compass: custom_widget::compass::Compass::new(),
+            slider: 0.0,
         }
     }
 
     pub fn show(&mut self, ui:  &mut egui::Ui){
         StripBuilder::new(ui)
-        .size(Size::relative(1.0))
+        .size(Size::relative(0.5))
         .vertical(|mut strip| {
             strip.strip(|builder| {
                 builder.sizes(Size::remainder(), 2).horizontal(|mut strip| {
@@ -47,40 +51,56 @@ impl Control {
     }
 
     fn show_cmd(&mut self, ui:  &mut egui::Ui) {
-        egui::Grid::new("TextLayoutDemo")
+
+        self.compass.set_wind_direction(200.0);
+        self.compass.set_boat_direction(40.0);
+        
+        ui.vertical_centered(|ui| {
+            ui.add(self.compass.compass());
+        });
+        
+
+        egui::Grid::new("circle_slider_grid")
         .num_columns(2)
-        .show(ui, |ui| {
-            ui.label("Mainsail up: ");
-            if ui.add(custom_widget::toggle::toggle(&mut self.motor3_clockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_up".to_owned(), ((self.motor3_clockwise as i8) as f32))).unwrap(); };
-            ui.end_row();
+        .min_col_width(ui.available_width() / 2.0) // Définit la largeur minimale des colonnes pour occuper toute la largeur
+    .striped(false) // Pour un style de grille sans alternance de couleur
+    .show(ui, |ui| {
 
-            ui.label("Mainsail down: ");
-            if ui.add(custom_widget::toggle::toggle(&mut self.motor3_counterclockwise)).changed() { self.msgq_tx.lock().unwrap().send(("mainsail_down".to_owned(), ((self.motor3_counterclockwise as i8) as f32))).unwrap(); };
-
-            ui.end_row();
-            ui.allocate_space(egui::Vec2::new(0.0, 30.0));
-            ui.end_row();
+        ui.end_row();
+        ui.end_row();
+        ui.end_row();
 
 
-            ui.end_row();
-
-            if ui.add(self.slider_mainsail.curved_slider(&mut self.slider_mainsail_value)).changed() { 
-                self.msgq_tx
-                    .lock()
-                    .unwrap()
-                    .send(("".to_owned(), ((self.slider_mainsail_value as i8) as f32))).unwrap(); 
-            };
-
-            ui.add_space(20.0);
-
+        ui.vertical_centered(|ui| {
             if ui.add(self.slider_jib.curved_slider(&mut self.slider_jib_value)).changed() { 
                 self.msgq_tx
                     .lock()
                     .unwrap()
                     .send(("".to_owned(), ((self.slider_jib_value as i8) as f32))).unwrap(); 
             };
-            ui.end_row();
         });
+
+        ui.vertical_centered(|ui| {
+            if ui.add(self.slider_mainsail.curved_slider(&mut self.slider_mainsail_value)).changed() { 
+                self.msgq_tx
+                    .lock()
+                    .unwrap()
+                    .send(("".to_owned(), ((self.slider_mainsail_value as i8) as f32))).unwrap(); 
+            };
+        });
+
+
+        ui.end_row();
+        ui.allocate_space(egui::Vec2::new(0.0, 30.0));
+        ui.end_row();
+    });
+
+    ui.vertical_centered(|ui| {
+        ui.add(custom_widget::slider::slidebar(&mut self.slider));
+    });
+        
+
+
     }
 
     pub fn set_mainsail_value(&mut self, value: f32) {
