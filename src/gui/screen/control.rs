@@ -35,12 +35,17 @@ impl Control {
 
     pub fn show(&mut self, ui:  &mut egui::Ui){
         StripBuilder::new(ui)
-        .size(Size::relative(0.5))
+        .size(Size::relative(1.0))
         .vertical(|mut strip| {
             strip.strip(|builder| {
                 builder.sizes(Size::remainder(), 2).horizontal(|mut strip| {
                     strip.cell(|ui| {
-                        //self.show_image(ui);
+                        ui.vertical_centered(|ui| {
+                            ui.allocate_space(egui::Vec2::new(0.0, 20.0));
+                            ui.image(egui::include_image!("img/no_img.png"));
+                            ui.allocate_space(egui::Vec2::new(0.0, 10.0));
+                            ui.image(egui::include_image!("img/no_img.png"));
+                        });
                     });
                     strip.cell(|ui| {
                         self.show_cmd(ui);
@@ -52,8 +57,11 @@ impl Control {
 
     fn show_cmd(&mut self, ui:  &mut egui::Ui) {
 
-        self.compass.set_wind_direction(200.0);
+        self.compass.set_wind_direction(300.0);
         self.compass.set_boat_direction(40.0);
+
+        ui.allocate_space(egui::Vec2::new(0.0, 30.0));
+
         
         ui.vertical_centered(|ui| {
             ui.add(self.compass.compass());
@@ -62,11 +70,10 @@ impl Control {
 
         egui::Grid::new("circle_slider_grid")
         .num_columns(2)
-        .min_col_width(ui.available_width() / 2.0) // Définit la largeur minimale des colonnes pour occuper toute la largeur
-    .striped(false) // Pour un style de grille sans alternance de couleur
-    .show(ui, |ui| {
+        .min_col_width(ui.available_width() / 2.0) 
+        .striped(false) 
+        .show(ui, |ui| {
 
-        ui.end_row();
         ui.end_row();
         ui.end_row();
 

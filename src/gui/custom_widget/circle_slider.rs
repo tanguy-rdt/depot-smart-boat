@@ -115,7 +115,7 @@ impl CircleSlider {
                 egui::pos2(rect.center().x, rect.center().y - 15.0),
                 egui::Align2::CENTER_CENTER, 
                 self.label.to_string(),
-                egui::FontId::new(30.0, egui::FontFamily::Proportional),
+                egui::FontId::new(25.0, egui::FontFamily::Proportional),
                 ui.style().visuals.text_color()
             );
 
@@ -123,7 +123,7 @@ impl CircleSlider {
                 egui::pos2(rect.center().x, rect.center().y + 15.0),
                 egui::Align2::CENTER_CENTER, 
                 format!("{} %", self.value_percent.to_string()),
-                egui::FontId::new(25.0, egui::FontFamily::Proportional),
+                egui::FontId::new(20.0, egui::FontFamily::Proportional),
                 ui.style().visuals.text_color()
             );
         }

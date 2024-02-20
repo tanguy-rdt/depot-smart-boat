@@ -26,6 +26,14 @@ fn slidebar_ui(ui: &mut egui::Ui, value: &mut f64) -> egui::Response {
         let center = egui::pos2(circle_x, rect.center().y);
         ui.painter()
             .circle(center, 1.0 * radius, visuals.bg_fill, visuals.fg_stroke);
+
+        ui.painter().text(
+            egui::Pos2::new(rect.center_top().x, rect.center_top().y - 10.0),
+            egui::Align2::CENTER_CENTER, 
+            format!("Mainsail height: {} %", (*value * 100.0) as u32),
+            egui::FontId::new(13.0, egui::FontFamily::Proportional),
+            ui.style().visuals.text_color()
+        );
     }
 
     response

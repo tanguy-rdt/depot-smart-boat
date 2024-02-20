@@ -126,7 +126,7 @@ impl Compass {
             let angle_in_radians = (self.boat_direction - 90.0).to_radians(); 
 
             let center = egui::pos2(rect.center().x, rect.center().y);
-            let radius = 0.4 * rect.height(); 
+            let radius = 0.3 * rect.height(); 
 
             let needle_end_x = center.x + radius * angle_in_radians.cos();
             let needle_end_y = center.y + radius * angle_in_radians.sin(); 
@@ -135,10 +135,41 @@ impl Compass {
             let line_end = Pos2::new(needle_end_x, needle_end_y);
             ui.painter().line_segment([line_start, line_end], egui::Stroke::new(2.0, egui::Color32::WHITE));
             
+            let line_end_x = center.x + radius * angle_in_radians.cos();
+            let line_end_y =  center.y + radius * angle_in_radians.sin(); 
+
+            let boat_label_pos = match self.boat_direction {
+                d if d == 0.0 || d == 360.0 => Pos2::new(line_end_x, line_end_y - 10.0),
+                d if d == 90.0 => Pos2::new(line_end_x + 15.0, line_end_y - 2.0),
+                d if d == 180.0 => Pos2::new(line_end_x, line_end_y + 10.0),
+                d if d == 270.0 => Pos2::new(line_end_x - 15.0, line_end_y - 2.0),
+                d if d > 0.0 && d < 90.0 => Pos2::new(line_end_x + 10.0, line_end_y - 10.0),
+                d if d > 90.0 && d < 180.0 => Pos2::new(line_end_x + 10.0, line_end_y + 10.0),
+                d if d > 180.0 && d < 270.0 => Pos2::new(line_end_x - 10.0, line_end_y + 10.0),
+                _ => Pos2::new(line_end_x - 10.0, line_end_y - 10.0),
+            };
+            
+            ui.painter().text(
+                boat_label_pos,
+                egui::Align2::CENTER_CENTER, 
+                format!("{}°", self.boat_direction.to_string()),
+                egui::FontId::new(11.0, egui::FontFamily::Proportional),
+                egui::Color32::WHITE
+            );
+            
+
+
+
+
+
+
+
+
+
             let angle_in_radians = (self.wind_direction - 90.0).to_radians(); 
     
             let outer_radius = rect.height() * 0.525; 
-            let line_length = outer_radius * 0.20; 
+            let line_length = outer_radius * 0.10; 
             
             let line_end_x = center.x + (outer_radius + line_length) * angle_in_radians.cos();
             let line_end_y = center.y + (outer_radius + line_length) * angle_in_radians.sin(); 
@@ -149,6 +180,37 @@ impl Compass {
             let line_start = Pos2::new(line_start_x, line_start_y);
             let line_end = Pos2::new(line_end_x, line_end_y);
             ui.painter().line_segment([line_start, line_end], egui::Stroke::new(2.0, egui::Color32::LIGHT_BLUE)); 
+
+            let line_end_x = center.x + (outer_radius + line_length) * angle_in_radians.cos();
+            let line_end_y = (center.y + (outer_radius + line_length) * angle_in_radians.sin()) - 10.0; 
+
+            let wind_label_pos = match self.wind_direction {
+                d if d == 0.0 || d == 360.0 => Pos2::new(line_end_x, line_end_y - 10.0),
+                d if d == 90.0 => Pos2::new(line_end_x + 15.0, line_end_y - 2.0),
+                d if d == 180.0 => Pos2::new(line_end_x, line_end_y + 10.0),
+                d if d == 270.0 => Pos2::new(line_end_x - 15.0, line_end_y - 2.0),
+                d if d > 0.0 && d < 90.0 => Pos2::new(line_end_x + 10.0, line_end_y - 10.0),
+                d if d > 90.0 && d < 180.0 => Pos2::new(line_end_x + 10.0, line_end_y + 10.0),
+                d if d > 180.0 && d < 270.0 => Pos2::new(line_end_x - 10.0, line_end_y + 10.0),
+                _ => Pos2::new(line_end_x - 10.0, line_end_y - 10.0),
+            };
+            
+
+            ui.painter().text(
+                wind_label_pos,
+                egui::Align2::CENTER_CENTER, 
+                "wind",
+                egui::FontId::new(11.0, egui::FontFamily::Proportional),
+                egui::Color32::LIGHT_BLUE
+            );
+
+            ui.painter().text(
+                Pos2::new(wind_label_pos.x, wind_label_pos.y + 12.0),
+                egui::Align2::CENTER_CENTER, 
+                format!("{}°", self.wind_direction.to_string()),
+                egui::FontId::new(11.0, egui::FontFamily::Proportional),
+                egui::Color32::LIGHT_BLUE
+            );
             
         }
     }
