@@ -2,6 +2,7 @@ use crate::boat_control::gpio_manager::gpio_itf::GpioItf;
 use crate::boat_control::gpio_manager::Gpio;
 use crate::boat_control::boat_controler_itf::BoatControlerItf;
 use crate::boat_control::bme280::BME280;
+use crate::boat_control::bmm150::BMM150;
 use crate::boat_control::pca9685::PCA9685;
 
 pub struct BoatControler{
