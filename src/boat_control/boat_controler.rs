@@ -4,18 +4,14 @@ use crate::boat_control::boat_controler_itf::BoatControlerItf;
 use crate::boat_control::bme280::BME280;
 use crate::boat_control::pca9685::PCA9685;
 
-pub enum SailPosition {
-    Starboard, //tribord, droite
-    ToPort, //babord, gauche
-    Up, 
-    Down,
-}
-
-
 pub struct BoatControler{
     gpio: Gpio,
     bme280: BME280,
-    pca9685: PCA9685
+    pca9685: PCA9685,
+    current_mainsail_angle: f32,
+    current_jib_angle: f32,
+    current_mainsail_height: f32,
+
 }
 
 impl BoatControlerItf for BoatControler {
@@ -23,7 +19,11 @@ impl BoatControlerItf for BoatControler {
         BoatControler {
             gpio: Gpio::new(),
             bme280: BME280::new(),
-            pca9685: PCA9685::new()
+            pca9685: PCA9685::new(),
+            current_mainsail_angle: 0.5,
+            current_jib_angle: 0.5,
+            current_mainsail_height: 0.0,
+
         }
     }
 
@@ -43,28 +43,65 @@ impl BoatControlerItf for BoatControler {
     fn get_humidity(&mut self) -> f32{
         self.bme280.get_humidity(&mut self.gpio)
     }
+    
 
-    fn move_mainail_to(&mut self, position: SailPosition){
-        match position {
-            SailPosition::Starboard => self.pca9685.rotate_servo_clockwise_n_degree(&mut self.gpio, 1, 1.0),
-            SailPosition::ToPort => self.pca9685.rotate_servo_counterclockwise_n_degree(&mut self.gpio, 1, 1.0),
-            _ => {}
-        }
+    fn get_boat_direction_degree(&mut self) -> f32{
+        40.0
     }
 
-    fn up_down_mainsail(&mut self, position: SailPosition){
-        match position {
-            SailPosition::Up => self.pca9685.rotate_servo_clockwise_n_degree(&mut self.gpio, 3, 1.0),
-            SailPosition::Down => self.pca9685.rotate_servo_counterclockwise_n_degree(&mut self.gpio, 3, 1.0),
-            _ => {}
-        }    
+    fn get_wind_direction_degree(&mut self) -> f32{
+        300.0
     }
 
-    fn move_jib_to(&mut self, position: SailPosition){
+
+    fn move_mainail_to(&mut self, position: f32){
+        let n_turn_complete = 1.0;
+        let factor = position - self.current_mainsail_angle;
+        let n_turn = (n_turn_complete * factor).abs();
+
         match position {
-            SailPosition::Starboard => self.pca9685.rotate_servo_clockwise_n_degree(&mut self.gpio, 0, 1.5),
-            SailPosition::ToPort => self.pca9685.rotate_servo_counterclockwise_n_degree(&mut self.gpio, 0, 1.5),
+            p if p > self.current_mainsail_angle => {
+                self.pca9685.rotate_servo_clockwise_n_degree(&mut self.gpio, 1, n_turn)
+            },
+            p if p < self.current_mainsail_angle => {
+                self.pca9685.rotate_servo_counterclockwise_n_degree(&mut self.gpio, 1, n_turn)
+            },
             _ => {}
-        }    
+        };
+        self.current_mainsail_angle = position;
+    }
+
+    fn up_down_mainsail(&mut self, position: f32){
+        let n_turn_complete = 13.0;
+        let factor = position - self.current_mainsail_height;
+        let n_turn = (n_turn_complete * factor).abs();
+
+        match position {
+            p if p > self.current_mainsail_height => {
+                self.pca9685.rotate_servo_clockwise_n_degree(&mut self.gpio, 3, n_turn)
+            },
+            p if p < self.current_mainsail_height => {
+                self.pca9685.rotate_servo_counterclockwise_n_degree(&mut self.gpio, 3, n_turn)
+            },
+            _ => {}
+        };
+        self.current_mainsail_height = position;
+    }
+
+    fn move_jib_to(&mut self, position: f32){
+        let n_turn_complete = 1.5;
+        let factor = position - self.current_jib_angle;
+        let n_turn = (n_turn_complete * factor).abs();
+
+        match position {
+            p if p > self.current_jib_angle => {
+                self.pca9685.rotate_servo_clockwise_n_degree(&mut self.gpio, 0, n_turn)
+            },
+            p if p < self.current_jib_angle => {
+                self.pca9685.rotate_servo_counterclockwise_n_degree(&mut self.gpio, 0, n_turn)
+            },
+            _ => {}
+        };
+        self.current_jib_angle = position;
     }
 }

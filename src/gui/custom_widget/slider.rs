@@ -1,20 +1,24 @@
 use eframe::{egui::{self, InputState}, epaint::Color32};
 
-pub fn slidebar(value: &mut f64) -> impl egui::Widget + '_ {
+pub fn slidebar(value: &mut f32) -> impl egui::Widget + '_ {
     move |ui: &mut egui::Ui| slidebar_ui(ui, value)
 }  
 
-fn slidebar_ui(ui: &mut egui::Ui, value: &mut f64) -> egui::Response {
+fn slidebar_ui(ui: &mut egui::Ui, value: &mut f32) -> egui::Response {
     let desired_size = ui.spacing().interact_size.y * egui::vec2(10.0, 1.0);
     let (rect, mut response) = ui.allocate_exact_size(desired_size, egui::Sense::click_and_drag());
     if response.dragged() {
         if let Some(pointer_position) = response.interact_pointer_pos() {
-            *value = egui::remap_clamp(pointer_position.x, rect.left()..=rect.right(), 0.0..=1.0) as f64;
-            response.mark_changed();
+            let raw_value = egui::remap_clamp(pointer_position.x, rect.left()..=rect.right(), 0.0..=1.0);
+            *value = format!("{:.2}", raw_value).parse().unwrap();
         }
     }
 
-    response.widget_info(|| egui::WidgetInfo::slider(*value, ""));
+    if response.drag_released() {
+        response.mark_changed();
+    }
+
+    response.widget_info(|| egui::WidgetInfo::slider(*value as f64, ""));
 
     if ui.is_rect_visible(rect) {
         let visuals = ui.style().interact(&response);
@@ -22,7 +26,7 @@ fn slidebar_ui(ui: &mut egui::Ui, value: &mut f64) -> egui::Response {
         let radius = 0.5 * rect.height();
         ui.painter()
             .rect(rect, radius, visuals.bg_fill, visuals.bg_stroke);
-        let circle_x = egui::lerp((rect.left() + radius)..=(rect.right() - radius), *value as f32);
+        let circle_x = egui::lerp((rect.left() + radius)..=(rect.right() - radius), *value);
         let center = egui::pos2(circle_x, rect.center().y);
         ui.painter()
             .circle(center, 1.0 * radius, visuals.bg_fill, visuals.fg_stroke);

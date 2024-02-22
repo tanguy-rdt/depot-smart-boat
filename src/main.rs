@@ -40,7 +40,7 @@ fn main(){
     let picovoice = VoiceAssistant::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq.tx_model));
 
     thread::spawn(move || {
-        //picovoice.start();
+        picovoice.start();
     });
 
     thread::spawn(move || {
@@ -54,6 +54,8 @@ fn main(){
             model.get_temperature();
             model.get_humidity();
             model.get_pressure();
+            model.get_boat_direction_degree();
+            model.get_wind_direction_degree();
             thread::sleep(Duration::from_millis(500));
         }
 

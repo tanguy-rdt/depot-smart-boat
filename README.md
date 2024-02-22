@@ -28,3 +28,12 @@ $ cargo run --features=on_target
 2. content:
     1. "Tourne/va/allons à gauche"
     2. "Tourne/va/allons à droite"
+
+# TODO 
+
+- camera et combo 
+- camera speed 
+- bmm150
+- potar
+- test bateau 
+- model 

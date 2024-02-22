@@ -1,6 +1,5 @@
 use crate::boat_control::boat_controler_itf::BoatControlerItf;
 use crate::boat_control::BoatControl;
-use crate::boat_control::SailPosition;
 
 use std::sync::{mpsc, Arc, Mutex};
 
@@ -61,6 +60,24 @@ impl Model {
         self.humidity
     }
 
+    pub fn get_boat_direction_degree(&mut self) -> f32 {
+        self.tx_gui
+        .lock()
+        .unwrap()
+        .send(("boat_direction".to_string(), self.boat_controler.get_boat_direction_degree()))
+        .unwrap();
+        self.humidity
+    }
+
+    pub fn get_wind_direction_degree(&mut self) -> f32 {
+        self.tx_gui
+        .lock()
+        .unwrap()
+        .send(("wind_direction".to_string(), self.boat_controler.get_wind_direction_degree()))
+        .unwrap();
+        self.humidity
+    }
+
     fn set_mainsail_angle(&mut self, angle: i8) {
         self.mainsail_angle = angle;
     }
@@ -69,27 +86,18 @@ impl Model {
         self.foque_angle = angle;
     }
 
-    fn direction_tribord(&mut self){
-        self.set_mainsail_angle(1);
-        self.set_foque_angle(1);
-    }
-
-    fn direction_babord(&mut self){
-        self.set_mainsail_angle(0);
-        self.set_foque_angle(0);
-    }
-
     pub fn treat_action(&mut self, var: &str, val: f32){
         match var {
-            "direction_tribord" => self.direction_tribord(),
-            "direction_babord" => self.direction_babord(),
-            "jib_starboard" => self.boat_controler.move_jib_to(SailPosition::Starboard),
-            "mainsail_starboard" => self.boat_controler.move_mainail_to(SailPosition::Starboard),
-            "mainsail_up" => self.boat_controler.up_down_mainsail(SailPosition::Up),
-            "jib_to_port" => self.boat_controler.move_jib_to(SailPosition::ToPort),
-            "mainsail_to_port" => self.boat_controler.move_mainail_to(SailPosition::ToPort),
-            "mainsail_down" => self.boat_controler.up_down_mainsail(SailPosition::Down),
+            "mainsail_angle" => self.boat_controler.move_mainail_to(val),
+            "jib_angle" => self.boat_controler.move_jib_to(val),
+            "mainsail_height" => self.boat_controler.up_down_mainsail(val),
             _ => (),
         };
+
+        self.tx_gui
+        .lock()
+        .unwrap()
+        .send((var.to_string(), val))
+        .unwrap();
     }
 }

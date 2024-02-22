@@ -7,7 +7,6 @@ mod gpio_manager;
 
 
 pub use boat_controler::BoatControler;
-pub use boat_controler::SailPosition;
 pub use boat_controler_stub::BoatControlerStub;
 use bme280::BME280;
 use pca9685::PCA9685;

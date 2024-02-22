@@ -24,7 +24,7 @@ impl Screen {
         }
     }
 
-    pub fn show_current(&mut self, menu_choice: &MenuSelection, ui: &mut Ui, ctx: &egui::Context){
+    pub fn show_current(&mut self, menu_choice: &MenuSelection, cam_choice: &usize, ui: &mut Ui, ctx: &egui::Context){
         self.check_msgq_rx();
         match menu_choice {
             MenuSelection::WEATHER => self.show_weather_screen(ctx, ui),
@@ -34,7 +34,7 @@ impl Screen {
             MenuSelection::MAP_SEA_LEVEL_PRESSURE => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::MAP_WIND_SPEED => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::MAP_TEMPERATURE => self.show_map_screen(ctx, ui, menu_choice),
-            MenuSelection::CONTROL => self.show_control_screen(ui),
+            MenuSelection::CONTROL => self.show_control_screen(ctx, ui, cam_choice),
             _ => (),
         };
     }
@@ -47,8 +47,8 @@ impl Screen {
         self.map.show(ctx, ui, menu_choice);
     }
 
-    fn show_control_screen(&mut self, ui: &mut Ui){
-        self.control.show(ui)
+    fn show_control_screen(&mut self, ctx: &egui::Context, ui: &mut Ui, cam_choice: &usize){
+        self.control.show(ctx, ui, cam_choice)
     }
 
     fn check_msgq_rx(&mut self){
@@ -60,6 +60,10 @@ impl Screen {
                         "humidity" => self.weather.set_humidity(value),
                         "pressure" => self.weather.set_pressure(value),
                         "mainsail_angle" => self.control.set_mainsail_value(value),
+                        "jib_angle" => self.control.set_jib_value(value),
+                        "mainsail_height" => self.control.set_mainsail_height_value(value),
+                        "boat_direction" => self.control.set_boat_direction_degree(value),
+                        "wind_direction" => self.control.set_wind_direction_degree(value),
                         _ => (),
                     }
                 }
