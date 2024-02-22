@@ -48,6 +48,15 @@ impl GpioItf for GpioManager {
         buf[0]
     }
 
+    fn i2c_read_bytes_from(&self, register: u8, buffer: &mut [u8]) {
+        if let Err(e) = self.i2c.block_read(register, &mut buffer) {
+            eprintln!("Error reading the I2C register 0x{:x}: {:?}", register, e);
+            for byte in buffer.iter_mut() {
+                *byte = 0;
+            }
+        }
+    }
+
     fn i2c_write_byte(&self, register: u8, value: u8) {
         if let Err(e) = self.i2c.block_write(register as u8, &[value]) {
             eprintln!("Error writing to the I2C register 0x{:x}: {:?}", register, e);

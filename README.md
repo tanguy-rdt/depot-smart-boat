@@ -31,7 +31,6 @@ $ cargo run --features=on_target
 
 # TODO 
 
-- camera et combo 
 - camera speed 
 - bmm150
 - potar

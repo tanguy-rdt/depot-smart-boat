@@ -37,6 +37,8 @@ fn main(){
 
     let mut model = Model::new(Arc::clone(&msgq.tx_gui));
     model.init_model();
+
+    
     let picovoice = VoiceAssistant::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq.tx_model));
 
     thread::spawn(move || {
@@ -66,7 +68,7 @@ fn main(){
         Default::default(),
         Box::new(|cc| {
             egui_extras::install_image_loaders(&cc.egui_ctx);
-            Box::new(Gui::new(msgq.rx_gui,msgq.tx_model, cc.egui_ctx.clone()))
+            Box::new(Gui::new(msgq.rx_gui, msgq.tx_model, cc.egui_ctx.clone()))
         }),
     );
 
