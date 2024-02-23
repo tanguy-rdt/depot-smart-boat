@@ -83,10 +83,17 @@ impl VoiceAssistant {
 
     fn treat_inference(&self, inference: RhinoInference){
         let mut action: String = String::new();
+        let mut value: f32 = 0.0;
 
         match inference.intent.as_deref() {
-            Some("direction_tribord") => action = "mainsail_angle".to_string(),
-            Some("direction_babord") => action = "jib_angle".to_string(),
+            Some("direction_tribord") => {
+                action = "mainsail_angle".to_string();
+                value = 0.0;
+            },
+            Some("direction_babord") => {
+                action = "mainsail_angle".to_string();
+                value = 1.0;
+            },
             _ => {
                 println!("Unknown intent: {}", inference.intent.unwrap());
             }
@@ -97,7 +104,7 @@ impl VoiceAssistant {
             self.msgq_tx
             .lock()
             .unwrap()
-            .send((action, 0.0))
+            .send((action, value))
             .unwrap();
         }
     }
