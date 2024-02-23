@@ -46,7 +46,7 @@ impl BoatControlerItf for BoatControler {
     fn get_humidity(&mut self) -> f32{
         self.bme280.get_humidity(&mut self.gpio)
     }
-    
+
     fn get_geomagnetic(&mut self) -> (i16, i16, i16) {
         self.bmm150.get_geomagnetic(&mut self.gpio)
     }
@@ -56,7 +56,8 @@ impl BoatControlerItf for BoatControler {
         let mut compass = (x as f32).atan2(y as f32);
         if compass < 0.0 { compass += 2.0 * std::f32::consts::PI; }
         if compass > (2.0 * std::f32::consts::PI) { compass -= 2.0 * std::f32::consts::PI; }
-        (compass * 180.0 / std::f32::consts::PI) -70.0
+        compass = (compass * 180.0 / std::f32::consts::PI) -70.0;
+        format!("{:.2}", compass).parse().unwrap()
     }
 
     fn get_wind_direction_degree(&mut self) -> f32{
