@@ -66,7 +66,7 @@ impl Model {
         .unwrap()
         .send(("boat_direction".to_string(), self.boat_controler.get_boat_direction_degree()))
         .unwrap();
-        self.humidity
+        0.0
     }
 
     pub fn get_wind_direction_degree(&mut self) -> f32 {

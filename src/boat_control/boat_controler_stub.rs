@@ -77,4 +77,6 @@ impl BoatControlerItf for BoatControlerStub {
 
         println!("move_jib_to {position}, real movement {factor}, with {n_turn} turn");
     }
+
+    fn get_geomagnetic(&mut self) -> (i16, i16, i16) { (0, 0, 0) }
 }

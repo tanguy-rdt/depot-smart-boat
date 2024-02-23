@@ -49,7 +49,7 @@ impl GpioItf for GpioManager {
     }
 
     fn i2c_read_bytes_from(&self, register: u8, buffer: &mut [u8]) {
-        if let Err(e) = self.i2c.block_read(register, &mut buffer) {
+        if let Err(e) = self.i2c.block_read(register, buffer) {
             eprintln!("Error reading the I2C register 0x{:x}: {:?}", register, e);
             for byte in buffer.iter_mut() {
                 *byte = 0;

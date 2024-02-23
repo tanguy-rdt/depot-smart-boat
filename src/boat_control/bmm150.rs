@@ -59,38 +59,36 @@ struct TrimData {
 }
 
 pub struct BMM150{
-    t_fine: i32,
-    bme280: u8,
     trim_data: TrimData,
     geomagnetic_x: i16,
     geomagnetic_y: i16,
     geomagnetic_z: i16,
-    geomagnetic_r: i16,
 }
 
 impl BMM150 {
     pub fn new() -> Self {
         Self {
-            t_fine: 0,
-            bme280: 0,
             trim_data: TrimData::default(),
             geomagnetic_x: 0,
             geomagnetic_y: 0,
             geomagnetic_z: 0,
-            geomagnetic_r: 0,
         }
     }
     
-    pub fn init(&mut self, gpio: &mut Gpio) -> i8{
+    pub fn init(&mut self, gpio: &mut Gpio){
         self.set_power_bit(ENABLE_POWER, gpio);
         thread::sleep(Duration::from_millis(3)); 
         let chip_id = self.get_chip_id(gpio);
         if chip_id == CHIP_ID_VALUE {
+            println!("bmm150 init sucess");
             self.get_trim_value(gpio);
-            return 0;
+            self.set_operation_mode(POWERMODE_NORMAL, gpio);
+            self.set_preset_mode(PRESETMODE_HIGHACCURACY, gpio);
+            self.set_rate(RATE_10HZ, gpio);
+            self.set_measurement_xyz(true, true, true, gpio);
         }
         else {
-            return -1;
+            println!("bmm150 init fail");
         }
     }
 
@@ -249,7 +247,7 @@ impl BMM150 {
         gpio.i2c_write_byte(REG_AXES_ENABLE, buf);
     }
 
-    fn get_geomagnetic(&mut self, gpio: &mut Gpio) -> (i16, i16, i16){
+    pub fn get_geomagnetic(&mut self, gpio: &mut Gpio) -> (i16, i16, i16){
         gpio.i2c_set_slave_addr(BMM150_ADDR);
 
         let mut rslt = [0u8; 8];
@@ -278,27 +276,27 @@ impl BMM150 {
         (self.geomagnetic_x, self.geomagnetic_y, self.geomagnetic_z)
     }
 
-    fn compensate_x(&self, x: i16, r: u16) -> i16{ // ok
+    fn compensate_x(&self, x: i16, r: u16) -> i16{ 
         if x != -4096{
-            let mut process_comp_x0: u16 = if r != 0 { r }
+            let process_comp_x0: u16 = if r != 0 { r }
             else if self.trim_data.dig_xyz1 != 0 { self.trim_data.dig_xyz1 }
             else { 0 };
 
             if process_comp_x0 != 0 {
-                let process_comp_x1: i32 = (self.trim_data.dig_xyz1 as i32)*16384;
-                let process_comp_x2: u16 = ((process_comp_x1 as u16)/process_comp_x0) - 0x4000 as u16;
-                let mut retval: i16 = process_comp_x2 as i16;
-                let process_comp_x3: i32 = retval as i32 * retval as i32;
+                let process_comp_x1: i32 = ((self.trim_data.dig_xyz1 as i32)*16384)/process_comp_x0 as i32;
+                let process_comp_x2: i32 = (process_comp_x1 as i32) - 0x4000;
+                let mut retval: i32 = process_comp_x2;
+                let process_comp_x3: i32 = retval * retval;
                 let process_comp_x4: i32 = (self.trim_data.dig_xy2 as i32) * (process_comp_x3/128);
                 let process_comp_x5: i32 = ((self.trim_data.dig_xy1 as i16) * 128) as i32;
-                let process_comp_x6: i32 = (retval as i32) * process_comp_x5;
+                let process_comp_x6: i32 = (retval) * process_comp_x5;
                 let process_comp_x7: i32 = (process_comp_x4 + process_comp_x6)/512 + (0x100000 as i32);
                 let process_comp_x8: i32 = ((self.trim_data.dig_x2 as i16) + (0xA0 as i16)) as i32;
                 let process_comp_x9: i32 = (process_comp_x7 * process_comp_x8)/4096;
                 let process_comp_x10: i32 = (x as i32) * process_comp_x9;
-                retval = (process_comp_x10 as i16)/8192;
-                retval = (retval + (self.trim_data.dig_x1 as i16) * 8) / 16;
-                retval
+                retval = process_comp_x10/8192;
+                retval = (retval + (self.trim_data.dig_x1 as i32) * 8) / 16;
+                retval as i16
             }
             else {
                 -32768
@@ -309,15 +307,16 @@ impl BMM150 {
         }
     }
 
-    fn compensate_y(&self, y: i16, r: u16) -> i16{ //ok
+    fn compensate_y(&self, y: i16, r: u16) -> i16{ 
         if y != -4096{
-            let mut process_comp_y0: u16 = if r != 0 { r }
+            let process_comp_y0: u16 = if r != 0 { r }
             else if self.trim_data.dig_xyz1 != 0 { self.trim_data.dig_xyz1 }
             else { 0 };
 
             if process_comp_y0 != 0 {
                 let process_comp_y1: i32 = (self.trim_data.dig_xyz1 as i32)*16384/process_comp_y0 as i32;
-                let process_comp_y2: u16 = process_comp_y1 as u16 - 0x4000 as u16;
+                let process_comp_y2_temp: i32 = process_comp_y1 as i32 - 0x4000;
+                let process_comp_y2: u16 = if process_comp_y2_temp < 0 { 0 } else { process_comp_y2_temp as u16 };                
                 let mut retval: i16 = process_comp_y2 as i16;
                 let process_comp_y3: i32 = (retval as i32) * (retval as i32);
                 let process_comp_y4: i32 = self.trim_data.dig_xy2 as i32 * (process_comp_y3/128);
@@ -339,13 +338,13 @@ impl BMM150 {
         }
     }
 
-    fn compensate_z(&self, z: i16, r: u16) -> i16{ // ok
+    fn compensate_z(&self, z: i16, r: u16) -> i16{ 
         if z != -16384{
             if self.trim_data.dig_z2 != 0 && self.trim_data.dig_z1 != 0 && self.trim_data.dig_xyz1 != 0 && r != 0 {
                 let process_comp_z0: i16 = (r as i16) - (self.trim_data.dig_xyz1 as i16);
                 let process_comp_z1: i32 = (((self.trim_data.dig_z3 as i32) * (process_comp_z0 as i32)))/4;
                 let process_comp_z2: i32 = ((z - self.trim_data.dig_z4) as i32)*32768;
-                let process_comp_z3: i32 = (self.trim_data.dig_z1 as i32) * ((r as i32) * 2); // r should be i16
+                let process_comp_z3: i32 = (self.trim_data.dig_z1 as i32) * ((r as i32) * 2); 
                 let process_comp_z4: i16 = ((process_comp_z3+32768)/65536) as i16;
                 let mut retval: i32 = (process_comp_z2 - process_comp_z1)/((self.trim_data.dig_z2 as i32)+(process_comp_z4 as i32));
                 retval = retval.clamp(-32767, 32767);
@@ -359,13 +358,5 @@ impl BMM150 {
         else {
             -32768
         }
-    }
-
-    fn get_compass_degree(&mut self, gpio: &mut Gpio) -> f32 {
-        let (x, y, z) = self.get_geomagnetic(gpio);
-        let mut compass = (x as f32).atan2(y as f32);
-        if compass < 0.0 { compass += 2.0 * std::f32::consts::PI; }
-        if compass > (2.0 * std::f32::consts::PI) { compass -= 2.0 * std::f32::consts::PI; }
-        compass * 180.0 / std::f32::consts::PI
     }
 }
