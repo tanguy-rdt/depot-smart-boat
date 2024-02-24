@@ -9,24 +9,19 @@ pub struct GpioManager;
 
 #[cfg(feature = "on_target")]
 pub struct GpioManager{    
-    i2c: rppal::i2c::I2c
+    i2c: rppal::i2c::I2c,
+    spi: rppal::spi::Spi,
 }
 
 #[cfg(feature = "on_target")]
 impl GpioItf for GpioManager {
-    fn new() -> Self {
-        let i2c_result = I2c::with_bus(1);
+    pub fn new(i2c_bus: u8, spi_bus: rppal::spi::Bus, spi_ss: rppal::spi::SlaveSelect) -> Self {
+        let i2c = I2c::with_bus(i2c_bus).expect("Failed to initialize I2C");
 
-        match i2c_result {
-            Ok(i2c) => {
-                println!("I2C initialized successfully!");
-                GpioManager { i2c }
-            }
-            Err(err) => {
-                eprintln!("Error initializing I2C: {}", err);
-                panic!("Error initializing I2C");
-            }
-        }
+        let spi = rppal::spi::Spi::new(spi_bus, spi_ss, 1000000, rppal::spi::Mode::Mode0)
+            .expect("Failed to initialize SPI");
+
+        Self { i2c, spi }
     }
 
     fn init(&self){
@@ -66,6 +61,12 @@ impl GpioItf for GpioManager {
     fn i2c_write_bytes(&self, register: u8, values: &[u8]) {
         if let Err(e) = self.i2c.block_write(register as u8, values) {
             eprintln!("Error writing to the I2C register 0x{:x}: {:?}", register, e);
+        }
+    }
+
+    fn spi_transfer(&mut self, read_buffer: &mut[u8], write_buffer: &[u8]){
+        if let Err(e) = self.spi.transfer(read_buffer, write_buffer) {
+            eprintln!("Error transfer with spi protocol, erreur {e}");
         }
     }
 }

@@ -6,4 +6,5 @@ pub trait GpioItf {
     fn i2c_read_bytes_from(&self, register: u8, buffer: &mut [u8]);
     fn i2c_write_byte(&self, register: u8, value: u8);
     fn i2c_write_bytes(&self, register: u8, values: &[u8]);
+    fn spi_transfer(&mut self, read_buffer: &mut[u8], write_buffer: &[u8]);
 }

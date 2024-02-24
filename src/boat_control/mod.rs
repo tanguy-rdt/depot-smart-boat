@@ -4,6 +4,7 @@ mod boat_controler_stub;
 mod bme280;
 mod bmm150;
 mod pca9685;
+mod girouette;
 mod gpio_manager;
 
 
@@ -12,6 +13,7 @@ pub use boat_controler_stub::BoatControlerStub;
 use bme280::BME280;
 use pca9685::PCA9685;
 use bmm150::BMM150;
+use girouette::Girouette;
 use gpio_manager::Gpio;
 
 #[cfg(feature = "on_target")]

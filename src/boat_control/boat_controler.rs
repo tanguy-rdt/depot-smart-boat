@@ -4,12 +4,14 @@ use crate::boat_control::boat_controler_itf::BoatControlerItf;
 use crate::boat_control::bme280::BME280;
 use crate::boat_control::bmm150::BMM150;
 use crate::boat_control::pca9685::PCA9685;
+use crate::boat_control::girouette::Girouette;
 
 pub struct BoatControler{
     gpio: Gpio,
     bme280: BME280,
     bmm150: BMM150,
     pca9685: PCA9685,
+    girouette: Girouette,
     current_mainsail_angle: f32,
     current_jib_angle: f32,
     current_mainsail_height: f32,
@@ -23,6 +25,7 @@ impl BoatControlerItf for BoatControler {
             bme280: BME280::new(),
             bmm150: BMM150::new(),
             pca9685: PCA9685::new(),
+            girouette: Girouette::new(),
             current_mainsail_angle: 0.5,
             current_jib_angle: 0.5,
             current_mainsail_height: 0.0,
@@ -61,9 +64,10 @@ impl BoatControlerItf for BoatControler {
     }
 
     fn get_wind_direction_degree(&mut self) -> f32{
-        300.0
+        let raw_value = self.girouette.get_raw_value(&mut self.gpio);
+        let boat_direction = self.get_boat_direction_degree();
+        self.girouette.compensate_raw_value(raw_value, boat_direction)
     }
-
 
     fn move_mainail_to(&mut self, position: f32){
         let n_turn_complete = 1.0;
