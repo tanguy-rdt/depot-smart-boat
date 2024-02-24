@@ -100,7 +100,7 @@ impl BoatControlerItf for BoatControler {
     }
 
     fn move_jib_to(&mut self, position: f32){
-        let n_turn_complete = 1.5;
+        let n_turn_complete = 0.5;
         let factor = position - self.current_jib_angle;
         let n_turn = (n_turn_complete * factor).abs();
 
