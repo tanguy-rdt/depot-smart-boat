@@ -2,7 +2,7 @@ use crate::boat_control::gpio_manager::gpio_itf::GpioItf;
 use std::{thread, time::Duration};
 
 #[cfg(feature = "on_target")]
-use rppal::{gpio::{Gpio, Level}, i2c::I2c};
+use rppal::{gpio::{Gpio, Level}, i2c::I2c, spi::{Spi, Bus, SlaveSelect, Mode}};
 
 #[cfg(not(feature = "on_target"))]
 pub struct GpioManager;
@@ -15,10 +15,10 @@ pub struct GpioManager{
 
 #[cfg(feature = "on_target")]
 impl GpioItf for GpioManager {
-    pub fn new(i2c_bus: u8, spi_bus: rppal::spi::Bus, spi_ss: rppal::spi::SlaveSelect) -> Self {
-        let i2c = I2c::with_bus(i2c_bus).expect("Failed to initialize I2C");
+    fn new() -> Self {
+        let i2c = I2c::with_bus(1).expect("Failed to initialize I2C");
 
-        let spi = rppal::spi::Spi::new(spi_bus, spi_ss, 1000000, rppal::spi::Mode::Mode0)
+        let spi = rppal::spi::Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)
             .expect("Failed to initialize SPI");
 
         Self { i2c, spi }
