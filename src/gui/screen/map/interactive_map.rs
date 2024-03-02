@@ -52,7 +52,7 @@ impl InteractiveMap {
                 .collapsible(false)
                 .resizable(false)
                 .title_bar(false)
-                .anchor(Align2::RIGHT_BOTTOM, [-170., -40.])
+                .anchor(Align2::RIGHT_BOTTOM, [-20., -40.])
                 .show(ui.ctx(), |ui| {
                     ui.label(format!("{:.04} {:.04}", position.lon(), position.lat()));
                     if ui
@@ -69,7 +69,7 @@ impl InteractiveMap {
                 .collapsible(false)
                 .resizable(false)
                 .title_bar(false)
-                .anchor(Align2::RIGHT_BOTTOM, [-170., -40.])
+                .anchor(Align2::RIGHT_BOTTOM, [-20., -40.])
                 .show(ui.ctx(), |ui| {
                     ui.label(format!("{:.04} {:.04}", x, y));
                 });
