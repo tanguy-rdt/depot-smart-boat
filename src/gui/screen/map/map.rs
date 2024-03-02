@@ -79,8 +79,8 @@ impl Map {
                             let image = image.clone();
                     
                             let available_rect = ctx.available_rect();
-                            let width = available_rect.width() - 165.0;
-                            let height = available_rect.height() - 41.0;
+                            let width = available_rect.width() - 15.0;
+                            let height = available_rect.height() - 15.0;
                     
                             let size = Vec2::new(width, height); // Taille des images
                             let rect = Rect::from_min_size(ui.min_rect().min + Vec2::new(0.0, 0.0), size);
