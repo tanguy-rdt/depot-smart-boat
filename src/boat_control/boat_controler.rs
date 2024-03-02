@@ -5,6 +5,7 @@ use crate::boat_control::bme280::BME280;
 use crate::boat_control::bmm150::BMM150;
 use crate::boat_control::pca9685::PCA9685;
 use crate::boat_control::girouette::Girouette;
+use crate::boat_control::hcsr05::HCSRO5;
 
 pub struct BoatControler{
     gpio: Gpio,
@@ -12,6 +13,7 @@ pub struct BoatControler{
     bmm150: BMM150,
     pca9685: PCA9685,
     girouette: Girouette,
+    hcsr05: HCSRO5,
     current_mainsail_angle: f32,
     current_jib_angle: f32,
     current_mainsail_height: f32,
@@ -26,6 +28,7 @@ impl BoatControlerItf for BoatControler {
             bmm150: BMM150::new(),
             pca9685: PCA9685::new(),
             girouette: Girouette::new(),
+            hcsr05: HCSRO5::new(0, 1),
             current_mainsail_angle: 0.5,
             current_jib_angle: 0.5,
             current_mainsail_height: 0.0,
@@ -36,6 +39,7 @@ impl BoatControlerItf for BoatControler {
         self.bme280.init(&mut self.gpio);
         self.bmm150.init(&mut self.gpio);
         self.pca9685.init(&mut self.gpio);
+        self.hcsr05.init(&mut self.gpio);
     }
 
     fn get_temperature(&mut self) -> f32{
@@ -52,6 +56,10 @@ impl BoatControlerItf for BoatControler {
 
     fn get_geomagnetic(&mut self) -> (i16, i16, i16) {
         self.bmm150.get_geomagnetic(&mut self.gpio)
+    }
+
+    fn get_deep(&mut self) -> f32 {
+        self.hcsr05.get_value_m(&mut self.gpio)
     }
 
     fn get_boat_direction_degree(&mut self) -> f32{

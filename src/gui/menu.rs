@@ -17,9 +17,6 @@ pub struct Menu {
     current_selection: MenuSelection,
     current_audio_device: usize,
     audio_device: Vec<String>,
-    camera_device_1:  Vec<String>,
-    camera_device_1_index: usize,
-    camera_device_2:  Vec<String>,
 }
 
 impl Menu {
@@ -28,9 +25,6 @@ impl Menu {
             current_selection: MenuSelection::CONTROL,
             current_audio_device: 0,
             audio_device: vec![String::from("No device")],
-            camera_device_1: vec![String::from("No device"), String::from("Camera 1")],
-            camera_device_1_index: 0,
-            camera_device_2: vec![String::from("No device")],
         }
     }
 
@@ -64,28 +58,6 @@ impl Menu {
                     self.audio_device = self.search_audio_devices();
                 }
             });
-            ui.allocate_space(egui::Vec2::new(0.0, 5.0));
-            ui.label("Camera 1:");
-            ui.horizontal(|ui| {    
-                let combo_box_camera_device = egui::containers::ComboBox::new(1, "")
-                .selected_text(&self.camera_device_1[self.camera_device_1_index])
-                .show_ui(ui, |ui| {
-                    for (index, device) in self.camera_device_1.iter().enumerate() {
-                        ui.selectable_value(&mut self.camera_device_1_index, index, device);
-                    }
-                });
-            });
-            ui.allocate_space(egui::Vec2::new(0.0, 5.0));
-            ui.label("Camera 2:");
-            ui.horizontal(|ui| {    
-                let combo_box_camera_device = egui::containers::ComboBox::new(2, "")
-                .selected_text(&self.camera_device_2[0])
-                .show_ui(ui, |ui| {
-                    for (index, device) in self.camera_device_2.iter().enumerate() {
-                        ui.selectable_value(&mut 0, index, device);
-                    }
-                });
-            });
         });
 
         ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
@@ -99,10 +71,6 @@ impl Menu {
 
     pub fn get_current(&self) -> &MenuSelection {
         &self.current_selection
-    }
-
-    pub fn get_current_cam(&self) -> &usize {
-        &self.camera_device_1_index
     }
 
     fn search_audio_devices(&self) -> Vec<String> {

@@ -69,4 +69,30 @@ impl GpioItf for GpioManager {
             eprintln!("Error transfer with spi protocol, erreur {e}");
         }
     }
+
+    fn set_output(&mut self, pin: u8) {
+        let gpio = Gpio::new().expect("Failed to initialize GPIO");
+        let pin = gpio.get(pin).expect("Failed to get pin").into_output();
+    }
+
+    fn set_input(&mut self, pin: u8) {
+        let gpio = Gpio::new().expect("Failed to initialize GPIO");
+        let pin = gpio.get(pin).expect("Failed to get pin").into_input();
+    }
+
+    fn set_high(&mut self, pin: u8) {
+        pin.set_high();
+    }
+
+    fn set_low(&mut self, pin: u8) {
+        pin.set_low();
+    }
+
+    fn is_high(&self, pin: u8) -> bool {
+        pin.is_high()
+    }
+
+    fn is_low(&self, pin: u8) -> bool {
+        pin.is_low()
+    }
 }

@@ -78,6 +78,15 @@ impl Model {
         self.humidity
     }
 
+    pub fn get_deep(&mut self) -> f32 {
+        self.tx_gui
+        .lock()
+        .unwrap()
+        .send(("deep".to_string(), self.boat_controler.get_deep()))
+        .unwrap();
+        0.0
+    }
+
     fn set_mainsail_angle(&mut self, angle: i8) {
         self.mainsail_angle = angle;
     }

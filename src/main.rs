@@ -58,6 +58,7 @@ fn main(){
             model.get_pressure();
             model.get_boat_direction_degree();
             model.get_wind_direction_degree();
+            model.get_deep();
             thread::sleep(Duration::from_millis(500));
         }
 

@@ -29,7 +29,7 @@ impl Compass {
     
 
     fn compass_ui(&mut self, ui: &mut egui::Ui) -> egui::Response {
-        let desired_size = ui.spacing().interact_size.y * egui::vec2(13.0, 13.0);
+        let desired_size = ui.spacing().interact_size.y * egui::vec2(12.0, 12.0);
         let (rect, response) = ui.allocate_exact_size(desired_size, egui::Sense::focusable_noninteractive());
 
         self.update_ui(ui, rect, &response);

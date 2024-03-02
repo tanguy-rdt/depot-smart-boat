@@ -5,6 +5,7 @@ mod bme280;
 mod bmm150;
 mod pca9685;
 mod girouette;
+mod hcsr05;
 mod gpio_manager;
 
 
@@ -14,6 +15,7 @@ use bme280::BME280;
 use pca9685::PCA9685;
 use bmm150::BMM150;
 use girouette::Girouette;
+use hcsr05::HCSRO5;
 use gpio_manager::Gpio;
 
 #[cfg(feature = "on_target")]

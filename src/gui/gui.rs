@@ -46,7 +46,7 @@ impl eframe::App for Gui {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            self.screen.show_current(self.menu.get_current(), self.menu.get_current_cam(), ui, ctx);
+            self.screen.show_current(self.menu.get_current(), ui, ctx);
         });
 
 

@@ -51,6 +51,12 @@ impl BoatControlerItf for BoatControlerStub {
         wind_direction.sample(&mut rng)
     }
 
+    fn get_deep(&mut self) -> f32 {
+        let mut rng = rand::thread_rng();
+        let deep = Uniform::new_inclusive(-350.0, -300.0);
+        deep.sample(&mut rng)
+    }
+
     fn move_mainail_to(&mut self, position: f32) { 
         let n_turn_complete = 1.0;
         let factor = position - self.current_mainsail_angle;
