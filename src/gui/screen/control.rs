@@ -71,41 +71,41 @@ impl Control {
                         .striped(false) 
                         .show(ui, |ui| {
                 
-                        ui.end_row();
-                        ui.end_row();
+                            ui.end_row();
+                            ui.end_row();
                 
-                        ui.vertical_centered(|ui| {
-                            if ui.add(self.slider_jib.curved_slider(&mut self.slider_jib_value)).changed() { 
-                                self.msgq_tx
-                                    .lock()
-                                    .unwrap()
-                                    .send(("jib_angle".to_owned(), self.slider_jib_value)).unwrap(); 
-                            };
+                            ui.vertical_centered(|ui| {
+                                if ui.add(self.slider_jib.curved_slider(&mut self.slider_jib_value)).changed() { 
+                                    self.msgq_tx
+                                        .lock()
+                                        .unwrap()
+                                        .send(("jib_angle".to_owned(), self.slider_jib_value)).unwrap(); 
+                                };
+                            });
+                
+                            ui.vertical_centered(|ui| {
+                                if ui.add(self.slider_mainsail.curved_slider(&mut self.slider_mainsail_value)).changed() { 
+                                    self.msgq_tx
+                                        .lock()
+                                        .unwrap()
+                                        .send(("mainsail_angle".to_owned(), self.slider_mainsail_value)).unwrap(); 
+                                };
+                            });
+                
+                
+                            ui.end_row();
+                            ui.allocate_space(egui::Vec2::new(0.0, 30.0));
+                            ui.end_row();
                         });
                 
                         ui.vertical_centered(|ui| {
-                            if ui.add(self.slider_mainsail.curved_slider(&mut self.slider_mainsail_value)).changed() { 
+                            if ui.add(custom_widget::slider::slidebar(&mut self.slider_mainsail_height)).changed() { 
                                 self.msgq_tx
                                     .lock()
                                     .unwrap()
-                                    .send(("mainsail_angle".to_owned(), self.slider_mainsail_value)).unwrap(); 
+                                    .send(("mainsail_height".to_owned(), self.slider_mainsail_height)).unwrap(); 
                             };
                         });
-                
-                
-                        ui.end_row();
-                        ui.allocate_space(egui::Vec2::new(0.0, 30.0));
-                        ui.end_row();
-                    });
-                
-                    ui.vertical_centered(|ui| {
-                        if ui.add(custom_widget::slider::slidebar(&mut self.slider_mainsail_height)).changed() { 
-                            self.msgq_tx
-                                .lock()
-                                .unwrap()
-                                .send(("mainsail_height".to_owned(), self.slider_mainsail_height)).unwrap(); 
-                        };
-                    });
                     });
                 });
             });

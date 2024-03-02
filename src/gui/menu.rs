@@ -3,14 +3,15 @@ use pv_recorder::PvRecorderBuilder;
 
 #[derive(PartialEq)]
 pub enum MenuSelection {
+    CONTROL,
     WEATHER,
+    CAM,
     MAP_CLASSIC,
     MAP_CLOUDS,
     MAP_PRECIPITATION,
     MAP_SEA_LEVEL_PRESSURE,
     MAP_WIND_SPEED,
     MAP_TEMPERATURE,
-    CONTROL,
 }
 
 pub struct Menu {
@@ -31,6 +32,7 @@ impl Menu {
     pub fn show(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {
         ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
             ui.selectable_value(&mut self.current_selection, MenuSelection::CONTROL, "⛵ Boat Control");
+            ui.selectable_value(&mut self.current_selection, MenuSelection::CAM, "📷 Cam");
             ui.selectable_value(&mut self.current_selection, MenuSelection::WEATHER, "⛅ Weather");
             ui.separator();
             ui.label("🗺 Map");

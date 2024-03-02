@@ -1,6 +1,7 @@
 use crate::gui::screen::map::Map;
 use crate::gui::screen::weather::Weather;
 use crate::gui::screen::control::Control;
+use crate::gui::screen::cam::Cam;
 use crate::gui::menu::MenuSelection;
 
 use std::sync::{mpsc, Arc, Mutex};
@@ -10,6 +11,7 @@ use eframe::egui;
 pub struct Screen{
     msgq_rx: Arc<Mutex<mpsc::Receiver<(String, f32)>>>,
     control: Control,
+    cam: Cam,
     weather: Weather,
     map: Map,
 }
@@ -18,15 +20,18 @@ impl Screen {
     pub fn new(msgq_rx: Arc<Mutex<mpsc::Receiver<(String, f32)>>>, msgq_tx: Arc<Mutex<mpsc::Sender<(String, f32)>>>, egui_ctx: Context) -> Self {
         Self {
             msgq_rx: msgq_rx,
-            map: Map::new(egui_ctx),
-            weather: Weather::new(),
+            cam: Cam::new(),
             control: Control::new(msgq_tx),
+            weather: Weather::new(),
+            map: Map::new(egui_ctx),
         }
     }
 
     pub fn show_current(&mut self, menu_choice: &MenuSelection, ui: &mut Ui, ctx: &egui::Context){
         self.check_msgq_rx();
         match menu_choice {
+            MenuSelection::CONTROL => self.show_control_screen(ctx, ui),
+            MenuSelection::CAM => self.show_cam_screen(ctx, ui),
             MenuSelection::WEATHER => self.show_weather_screen(ctx, ui),
             MenuSelection::MAP_CLASSIC => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::MAP_CLOUDS => self.show_map_screen(ctx, ui, menu_choice),
@@ -34,7 +39,6 @@ impl Screen {
             MenuSelection::MAP_SEA_LEVEL_PRESSURE => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::MAP_WIND_SPEED => self.show_map_screen(ctx, ui, menu_choice),
             MenuSelection::MAP_TEMPERATURE => self.show_map_screen(ctx, ui, menu_choice),
-            MenuSelection::CONTROL => self.show_control_screen(ctx, ui),
             _ => (),
         };
     }
@@ -49,6 +53,10 @@ impl Screen {
 
     fn show_control_screen(&mut self, ctx: &egui::Context, ui: &mut Ui){
         self.control.show(ctx, ui);
+    }
+
+    fn show_cam_screen(&mut self, ctx: &egui::Context, ui: &mut Ui){
+        self.cam.show(ctx, ui);
     }
 
     fn check_msgq_rx(&mut self){
