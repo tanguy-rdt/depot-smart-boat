@@ -152,7 +152,7 @@ impl Control {
     }
 
     pub fn set_deep(&mut self, value: f32) {
-        if self.floor_deep.len() >= 200 {
+        if self.floor_deep.len() >= 100 {
             self.floor_deep.remove(0);
         }
         self.floor_deep.push(value);
