@@ -64,9 +64,14 @@ fn main(){
 
     });
 
+    let options = eframe::NativeOptions {
+        resizable: false,
+        ..Default::default()
+    };
+
     let _ = eframe::run_native(
         "",
-        Default::default(),
+        options,
         Box::new(|cc| {
             egui_extras::install_image_loaders(&cc.egui_ctx);
             Box::new(Gui::new(msgq.rx_gui, msgq.tx_model, cc.egui_ctx.clone()))
