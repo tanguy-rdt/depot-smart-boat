@@ -97,14 +97,16 @@ impl CircleSlider {
             ui.painter()
                 .rect(rect, radius, egui::Color32::TRANSPARENT, visuals.fg_stroke);
 
+            let color_segment_limit = if ui.visuals().dark_mode { egui::Color32::WHITE }
+            else { egui::Color32::BLACK };
+    
             let left_line_start = Pos2::new(rect.left_center().x - 10.0, rect.left_center().y);
             let left_line_end = Pos2::new(rect.left_center().x + 10.0, rect.left_center().y);
-            ui.painter().line_segment([left_line_start, left_line_end], egui::Stroke::new(2.0, egui::Color32::WHITE));
-
+            ui.painter().line_segment([left_line_start, left_line_end], egui::Stroke::new(2.0, color_segment_limit));
 
             let right_line_start = Pos2::new(rect.right_center().x - 10.0, rect.right_center().y);
             let right_line_end = Pos2::new(rect.right_center().x + 10.0, rect.right_center().y);
-            ui.painter().line_segment([right_line_start, right_line_end], egui::Stroke::new(2.0, egui::Color32::WHITE));
+            ui.painter().line_segment([right_line_start, right_line_end], egui::Stroke::new(2.0, color_segment_limit));
     
             let circle_x = egui::lerp((rect.left())..=(rect.right()), self.position_x);
             let circle_y = egui::lerp((rect.bottom())..=(rect.top()), self.position_y);

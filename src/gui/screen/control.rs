@@ -113,6 +113,10 @@ impl Control {
     }
 
     fn show_plot(&mut self, ui:  &mut egui::Ui) {
+        let color_area = if ui.visuals().dark_mode { egui::Color32::WHITE }
+        else { egui::Color32::BLACK };
+
+
         egui_plot::Plot::new("plot")
         .allow_zoom(false)
         .allow_drag(false)
@@ -123,7 +127,7 @@ impl Control {
         .show(ui, |plot_ui| {
             plot_ui.hline(egui_plot::HLine::new(0.0).color(egui::Color32::LIGHT_BLUE).style(egui_plot::LineStyle::dashed_dense()));
             let point = PlotPoints::from_ys_f32(&self.floor_deep);
-            plot_ui.line(Line::new(point).color(egui::Color32::WHITE).fill(-450.0));
+            plot_ui.line(Line::new(point).color(color_area).fill(-450.0));
             plot_ui.hline(egui_plot::HLine::new(-450.0).color(egui::Color32::RED).style(egui_plot::LineStyle::dashed_dense()));
             plot_ui.vline(egui_plot::VLine::new((self.floor_deep.len()-1) as f64).color(egui::Color32::RED).style(egui_plot::LineStyle::dashed_dense()));
             let text_position = PlotPoint::new((self.floor_deep.len()-1) as f64, -30.0);

@@ -53,6 +53,12 @@ impl Compass {
             ui.painter()
                 .circle(center, 0.1 * radius, visuals.bg_stroke.color, visuals.bg_stroke);
 
+            
+            
+            // --------------------------------------------------------------------------
+            // CURSOR
+            // --------------------------------------------------------------------------
+
             let line_start = Pos2::new(rect.center().x - 20.0, rect.center().y);
             let line_end = Pos2::new(rect.center().x + 20.0, rect.center().y);
             ui.painter().line_segment([line_start, line_end], egui::Stroke::new(1.0, egui::Color32::GRAY));
@@ -91,6 +97,16 @@ impl Compass {
                 ui.painter().line_segment([line_start, line_end], egui::Stroke::new(1.0, egui::Color32::GRAY));
             }
 
+            // --------------------------------------------------------------------------
+            // END CURSOR
+            // --------------------------------------------------------------------------
+
+
+
+            // --------------------------------------------------------------------------
+            // LABEL DIRECTION
+            // --------------------------------------------------------------------------
+
             ui.painter().text(
                 egui::pos2(rect.center().x, rect.center().y - 50.0),
                 egui::Align2::CENTER_CENTER, 
@@ -123,6 +139,19 @@ impl Compass {
                 ui.style().visuals.text_color()
             );
 
+            // --------------------------------------------------------------------------
+            // END LABEL DIRECTION
+            // --------------------------------------------------------------------------
+
+
+
+            // --------------------------------------------------------------------------
+            // COMPASS HAND
+            // --------------------------------------------------------------------------
+
+            let color_compass_hand = if ui.visuals().dark_mode { egui::Color32::WHITE }
+            else { egui::Color32::BLACK };
+
             let angle_in_radians = (self.boat_direction - 90.0).to_radians(); 
 
             let center = egui::pos2(rect.center().x, rect.center().y);
@@ -133,7 +162,7 @@ impl Compass {
 
             let line_start = center;
             let line_end = Pos2::new(needle_end_x, needle_end_y);
-            ui.painter().line_segment([line_start, line_end], egui::Stroke::new(2.0, egui::Color32::WHITE));
+            ui.painter().line_segment([line_start, line_end], egui::Stroke::new(2.0, color_compass_hand));
             
             let line_end_x = center.x + radius * angle_in_radians.cos();
             let line_end_y =  center.y + radius * angle_in_radians.sin(); 
@@ -154,17 +183,20 @@ impl Compass {
                 egui::Align2::CENTER_CENTER, 
                 format!("{}°", self.boat_direction.to_string()),
                 egui::FontId::new(11.0, egui::FontFamily::Proportional),
-                egui::Color32::WHITE
+                color_compass_hand
             );
             
+            // --------------------------------------------------------------------------
+            // END COMPASS HAND
+            // --------------------------------------------------------------------------
 
 
 
-
-
-
-
-
+            // --------------------------------------------------------------------------
+            // GIROUETTE HAND
+            // --------------------------------------------------------------------------
+            let color_girouette_hand = if ui.visuals().dark_mode { egui::Color32::LIGHT_BLUE }
+            else { egui::Color32::DARK_BLUE };
 
             let angle_in_radians = (self.wind_direction - 90.0).to_radians(); 
     
@@ -179,7 +211,7 @@ impl Compass {
             
             let line_start = Pos2::new(line_start_x, line_start_y);
             let line_end = Pos2::new(line_end_x, line_end_y);
-            ui.painter().line_segment([line_start, line_end], egui::Stroke::new(2.0, egui::Color32::LIGHT_BLUE)); 
+            ui.painter().line_segment([line_start, line_end], egui::Stroke::new(2.0, color_girouette_hand)); 
 
             let line_end_x = center.x + (outer_radius + line_length) * angle_in_radians.cos();
             let line_end_y = (center.y + (outer_radius + line_length) * angle_in_radians.sin()) - 10.0; 
@@ -201,7 +233,7 @@ impl Compass {
                 egui::Align2::CENTER_CENTER, 
                 "wind",
                 egui::FontId::new(11.0, egui::FontFamily::Proportional),
-                egui::Color32::LIGHT_BLUE
+                color_girouette_hand
             );
 
             ui.painter().text(
@@ -209,8 +241,12 @@ impl Compass {
                 egui::Align2::CENTER_CENTER, 
                 format!("{}°", self.wind_direction.to_string()),
                 egui::FontId::new(11.0, egui::FontFamily::Proportional),
-                egui::Color32::LIGHT_BLUE
+                color_girouette_hand
             );
+
+            // --------------------------------------------------------------------------
+            // END GIROUETTE HAND
+            // --------------------------------------------------------------------------
             
         }
     }

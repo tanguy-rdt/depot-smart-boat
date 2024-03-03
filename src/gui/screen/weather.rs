@@ -135,25 +135,6 @@ impl Weather{
 
     }
 
-    fn show_tile(&self, ui: &mut egui::Ui, predictions: &OwmData) {
-        /*ui.vertical(|ui|{
-            let image = egui::Image::new(format!("https://openweathermap.org/img/wn/{}@2x.png", predictions.icon));
-            let size = Vec2::new(50.0, 50.0); // Taille des images
-            let rect = Rect::from_min_size(ui.min_rect().min + Vec2::new(0.0, 0.0), size);
-            image.paint_at(ui, rect);
-
-            ui.allocate_space(size);
-
-            ui.label(format!("{}", predictions.time));
-            let (temp, _, _, _) = predictions.temperature;
-            ui.label(format!("{} C", temp));
-
-        });*/
-
-    }
-
-
-
 
     fn get_predictions(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {
         let url_mapbox: String = format!("https://api.openweathermap.org/data/2.5/forecast?lat=48.3903&lon=-4.4853&appid={}", OWM_API_TOKEN);
