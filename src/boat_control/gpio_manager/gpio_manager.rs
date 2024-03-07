@@ -1,8 +1,9 @@
 use crate::boat_control::gpio_manager::gpio_itf::GpioItf;
 use std::{thread, time::Duration};
+use std::collections::HashMap;
 
 #[cfg(feature = "on_target")]
-use rppal::{gpio::{Gpio, Level}, i2c::I2c, spi::{Spi, Bus, SlaveSelect, Mode}};
+use rppal::{gpio::{Gpio, OutputPin, InputPin}, i2c::I2c, spi::{Spi, Bus, SlaveSelect, Mode}};
 
 #[cfg(not(feature = "on_target"))]
 pub struct GpioManager;
@@ -11,6 +12,9 @@ pub struct GpioManager;
 pub struct GpioManager{    
     i2c: rppal::i2c::I2c,
     spi: rppal::spi::Spi,
+    gpio: rppal::gpio::Gpio,
+    output_pin: HashMap<u8, OutputPin>,
+    input_pin: HashMap<u8, InputPin>,
 }
 
 #[cfg(feature = "on_target")]
@@ -21,7 +25,13 @@ impl GpioItf for GpioManager {
         let spi = rppal::spi::Spi::new(Bus::Spi0, SlaveSelect::Ss0, 1_000_000, Mode::Mode0)
             .expect("Failed to initialize SPI");
 
-        Self { i2c, spi }
+        let gpio = Gpio::new()
+            .expect("Failed to initialize GPIO");
+
+        let output_pin = HashMap::new();
+        let input_pin = HashMap::new();
+
+        Self { i2c, spi, gpio, output_pin, input_pin }
     }
 
     fn init(&self){
@@ -70,29 +80,43 @@ impl GpioItf for GpioManager {
         }
     }
 
-    fn set_output(&mut self, pin: u8) {
-        let gpio = Gpio::new().expect("Failed to initialize GPIO");
-        let pin = gpio.get(pin).expect("Failed to get pin").into_output();
+    fn set_output(&mut self, pin_number: u8) {
+        let pin = self.gpio.get(pin_number).expect("Failed to get pin").into_output();
+        self.output_pin.insert(pin_number, pin);
     }
 
-    fn set_input(&mut self, pin: u8) {
-        let gpio = Gpio::new().expect("Failed to initialize GPIO");
-        let pin = gpio.get(pin).expect("Failed to get pin").into_input();
+    fn set_input(&mut self, pin_number: u8) {
+        let pin = self.gpio.get(pin_number).expect("Failed to get pin").into_input();
+        self.input_pin.insert(pin_number, pin);
     }
 
-    fn set_high(&mut self, pin: u8) {
-        pin.set_high();
+    fn set_high(&mut self, pin_number: u8) {
+        if let Some(pin) = self.output_pin.get_mut(&pin_number) {
+            pin.set_high();
+        }
     }
 
-    fn set_low(&mut self, pin: u8) {
-        pin.set_low();
+    fn set_low(&mut self, pin_number: u8) {
+        if let Some(pin) = self.output_pin.get_mut(&pin_number) {
+            pin.set_low();
+        }
     }
 
-    fn is_high(&self, pin: u8) -> bool {
-        pin.is_high()
+    fn is_high(&mut self, pin_number: u8) -> bool {
+        if let Some(pin) = self.input_pin.get_mut(&pin_number) {
+            pin.is_high()
+        }
+        else {
+            false
+        }
     }
 
-    fn is_low(&self, pin: u8) -> bool {
-        pin.is_low()
+    fn is_low(&mut self, pin_number: u8) -> bool {
+        if let Some(pin) = self.input_pin.get_mut(&pin_number) {
+            pin.is_low()
+        }
+        else {
+            false
+        }
     }
 }

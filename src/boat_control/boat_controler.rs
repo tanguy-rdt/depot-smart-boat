@@ -28,7 +28,7 @@ impl BoatControlerItf for BoatControler {
             bmm150: BMM150::new(),
             pca9685: PCA9685::new(),
             girouette: Girouette::new(),
-            hcsr05: HCSRO5::new(0, 1),
+            hcsr05: HCSRO5::new(23, 24),
             current_mainsail_angle: 0.5,
             current_jib_angle: 0.5,
             current_mainsail_height: 0.0,
@@ -59,7 +59,7 @@ impl BoatControlerItf for BoatControler {
     }
 
     fn get_deep(&mut self) -> f32 {
-        self.hcsr05.get_value_m(&mut self.gpio)
+        - self.hcsr05.get_value_cm(&mut self.gpio) * 10.0
     }
 
     fn get_boat_direction_degree(&mut self) -> f32{
