@@ -7,6 +7,15 @@ use crate::boat_control::pca9685::PCA9685;
 use crate::boat_control::girouette::Girouette;
 use crate::boat_control::hcsr05::HCSRO5;
 
+const HEADWIND: f32 = 0.5;
+const CLOSEWIND_BABORD: f32 = 0.375;
+const CROSSWIND_BABORD: f32 = 0.250;
+const BEAMWIND_BABORD: f32 = 0.125;
+const DOWNWIND: f32 = 0.0;
+const BEAMWIND_TRIBORD: f32 = 0.875;
+const CROSSWIND_TRIBORD: f32 = 0.750;
+const CLOSEWIND_TRIBORD: f32 = 0.625;
+
 pub struct BoatControler{
     gpio: Gpio,
     bme280: BME280,

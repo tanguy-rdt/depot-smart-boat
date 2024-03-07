@@ -16,6 +16,7 @@ pub struct Control {
     compass: custom_widget::compass::Compass,
     slider_mainsail_height: f32,
     floor_deep: Vec<f32>,
+    automation: bool,
 }
 
 impl Control {
@@ -29,6 +30,7 @@ impl Control {
             compass: custom_widget::compass::Compass::new(),
             slider_mainsail_height: 0.0,
             floor_deep: Vec::new(),
+            automation: false,
         }
     }
 
@@ -97,13 +99,24 @@ impl Control {
                             ui.allocate_space(egui::Vec2::new(0.0, 30.0));
                             ui.end_row();
                         });
-                
-                        ui.vertical_centered(|ui| {
+                        
+                        ui.horizontal_centered(|ui| {
+                            ui.add_space(40.0);
+
                             if ui.add(custom_widget::slider::slidebar(&mut self.slider_mainsail_height)).changed() { 
                                 self.msgq_tx
                                     .lock()
                                     .unwrap()
                                     .send(("mainsail_height".to_owned(), self.slider_mainsail_height)).unwrap(); 
+                            };
+
+                            ui.add_space(40.0);
+
+                            if ui.add(custom_widget::toggle::toggle(&mut self.automation)).changed() { 
+                                self.msgq_tx
+                                    .lock()
+                                    .unwrap()
+                                    .send(("automation".to_owned(), (self.automation as i8) as f32)).unwrap(); 
                             };
                         });
                     });
