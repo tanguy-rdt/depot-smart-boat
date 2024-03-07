@@ -1,0 +1,6 @@
+[book]
+authors = ["tanguy-rdt"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Smart Boat"
