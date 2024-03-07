@@ -95,22 +95,20 @@ impl Model {
         self.foque_angle = angle;
     }
 
-    pub fn automation(&mut self){
-        self.boat_controler.automation();
-    }
-
     pub fn treat_action(&mut self, var: &str, val: f32){
+        let mut ret_val = val;
         match var {
             "mainsail_angle" => self.boat_controler.move_mainail_to(val),
             "jib_angle" => self.boat_controler.move_jib_to(val),
             "mainsail_height" => self.boat_controler.up_down_mainsail(val),
+            "automation" => ret_val = self.boat_controler.automation(),
             _ => (),
         };
 
         self.tx_gui
         .lock()
         .unwrap()
-        .send((var.to_string(), val))
+        .send((var.to_string(), ret_val))
         .unwrap();
     }
 }

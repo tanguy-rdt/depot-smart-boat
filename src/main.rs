@@ -53,9 +53,8 @@ fn main(){
                 Ok((var, val)) => {
                     if var == "automation" {
                         sail_automation_enabled = val == 1.0;
-                    } else {
-                        model.treat_action(var.as_str(), val);
-                    }
+                    } 
+                    model.treat_action(var.as_str(), val);
                 }
                 Err(_) => (),
             }
@@ -67,7 +66,7 @@ fn main(){
             model.get_deep();
 
             if sail_automation_enabled {
-                model.automation();
+                model.treat_action("automation", 0.0)
             }
 
             thread::sleep(Duration::from_millis(500));

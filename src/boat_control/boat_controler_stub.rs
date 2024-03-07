@@ -92,7 +92,7 @@ impl BoatControlerItf for BoatControlerStub {
         println!("move_jib_to {position}, real movement {factor}, with {n_turn} turn");
     }
 
-    fn automation(&mut self) { 
+    fn automation(&mut self) -> f32 { 
 
         let wind_direction_degree = self.get_wind_direction_degree();
 
@@ -100,41 +100,50 @@ impl BoatControlerItf for BoatControlerStub {
             w if w <= 22.5 => {
                 self.move_mainail_to(HEADWIND);
                 self.move_jib_to(HEADWIND);
+                HEADWIND
             },
             w if w <= 67.5 => {
                 self.move_mainail_to(CLOSEWIND_BABORD);
                 self.move_jib_to(CLOSEWIND_BABORD);
+                CLOSEWIND_BABORD
             },
             w if w <= 112.5 => {
                 self.move_mainail_to(CROSSWIND_BABORD);
                 self.move_jib_to(CROSSWIND_BABORD);
+                CROSSWIND_BABORD
             },
             w if w <= 157.5 => {
                 self.move_mainail_to(BEAMWIND_BABORD);
                 self.move_jib_to(BEAMWIND_BABORD);
+                BEAMWIND_BABORD
             },
             w if w <= 202.5 => {
                 self.move_mainail_to(DOWNWIND);
                 self.move_jib_to(DOWNWIND);
+                DOWNWIND
             },
             w if w <= 247.5 => {
                 self.move_mainail_to(BEAMWIND_TRIBORD);
                 self.move_jib_to(BEAMWIND_TRIBORD);
+                BEAMWIND_TRIBORD
             },
             w if w <= 292.5 => {
                 self.move_mainail_to(CROSSWIND_TRIBORD);
                 self.move_jib_to(CROSSWIND_TRIBORD);
+                CROSSWIND_TRIBORD
             },
             w if w <= 337.5 => {
                 self.move_mainail_to(CLOSEWIND_TRIBORD);
                 self.move_jib_to(CLOSEWIND_TRIBORD);
+                CLOSEWIND_TRIBORD
             },
             w if w <= 360.0 => {
                 self.move_mainail_to(HEADWIND);
                 self.move_jib_to(HEADWIND);
+                HEADWIND
             },
-            _ => {}
-        };
+            _ => { 0.0 }
+        }
     }
 
     fn get_geomagnetic(&mut self) -> (i16, i16, i16) { (0, 0, 0) }

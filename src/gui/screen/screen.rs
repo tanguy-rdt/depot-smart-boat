@@ -69,6 +69,10 @@ impl Screen {
                         "pressure" => self.weather.set_pressure(value),
                         "mainsail_angle" => self.control.set_mainsail_value(value),
                         "jib_angle" => self.control.set_jib_value(value),
+                        "automation" => {
+                            self.control.set_jib_value(value);
+                            self.control.set_mainsail_value(value);
+                        },
                         "mainsail_height" => self.control.set_mainsail_height_value(value),
                         "boat_direction" => self.control.set_boat_direction_degree(value),
                         "wind_direction" => self.control.set_wind_direction_degree(value),
