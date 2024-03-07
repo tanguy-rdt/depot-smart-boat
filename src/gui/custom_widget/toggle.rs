@@ -20,6 +20,14 @@ fn toggle_ui(ui: &mut egui::Ui, on: &mut bool) -> egui::Response {
         let center = egui::pos2(circle_x, rect.center().y);
         ui.painter()
             .circle(center, 0.75 * radius, visuals.bg_fill, visuals.fg_stroke);
+
+        ui.painter().text(
+            egui::Pos2::new(rect.center_top().x, rect.center_top().y - 10.0),
+            egui::Align2::CENTER_CENTER, 
+            format!("Automation"),
+            egui::FontId::new(13.0, egui::FontFamily::Proportional),
+            ui.style().visuals.text_color()
+        );
     }
 
     response

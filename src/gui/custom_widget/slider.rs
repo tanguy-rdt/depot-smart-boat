@@ -5,7 +5,7 @@ pub fn slidebar(value: &mut f32) -> impl egui::Widget + '_ {
 }  
 
 fn slidebar_ui(ui: &mut egui::Ui, value: &mut f32) -> egui::Response {
-    let desired_size = ui.spacing().interact_size.y * egui::vec2(10.0, 1.0);
+    let desired_size = ui.spacing().interact_size.y * egui::vec2(7.0, 1.0);
     let (rect, mut response) = ui.allocate_exact_size(desired_size, egui::Sense::click_and_drag());
     if response.dragged() {
         if let Some(pointer_position) = response.interact_pointer_pos() {

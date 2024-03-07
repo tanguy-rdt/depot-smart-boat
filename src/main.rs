@@ -45,11 +45,17 @@ fn main(){
         picovoice.start();
     });
 
+    let mut sail_automation_enabled = false;
+
     thread::spawn(move || {
         loop {
             match msgq.rx_model.lock().unwrap().try_recv() {
                 Ok((var, val)) => {
-                    model.treat_action(var.as_str(), val);
+                    if var == "automation" {
+                        sail_automation_enabled = val == 1.0;
+                    } else {
+                        model.treat_action(var.as_str(), val);
+                    }
                 }
                 Err(_) => (),
             }
@@ -59,6 +65,11 @@ fn main(){
             model.get_boat_direction_degree();
             model.get_wind_direction_degree();
             model.get_deep();
+
+            if sail_automation_enabled {
+                model.automation();
+            }
+
             thread::sleep(Duration::from_millis(500));
         }
 

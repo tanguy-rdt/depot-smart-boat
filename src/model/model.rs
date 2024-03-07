@@ -95,6 +95,10 @@ impl Model {
         self.foque_angle = angle;
     }
 
+    pub fn automation(&mut self){
+        self.boat_controler.automation();
+    }
+
     pub fn treat_action(&mut self, var: &str, val: f32){
         match var {
             "mainsail_angle" => self.boat_controler.move_mainail_to(val),

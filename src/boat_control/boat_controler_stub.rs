@@ -1,6 +1,14 @@
 use crate::boat_control::boat_controler_itf::BoatControlerItf;
-
 use rand::distributions::{Distribution, Uniform};
+
+const HEADWIND: f32 = 0.5;
+const CLOSEWIND_BABORD: f32 = 0.375;
+const CROSSWIND_BABORD: f32 = 0.250;
+const BEAMWIND_BABORD: f32 = 0.125;
+const DOWNWIND: f32 = 0.0;
+const BEAMWIND_TRIBORD: f32 = 0.875;
+const CROSSWIND_TRIBORD: f32 = 0.750;
+const CLOSEWIND_TRIBORD: f32 = 0.625;
 
 pub struct BoatControlerStub {
     current_mainsail_angle: f32,
@@ -75,13 +83,58 @@ impl BoatControlerItf for BoatControlerStub {
         println!("up_down_mainsail {position}, real movement {factor}, with {n_turn} turn");
     }
 
-    fn move_jib_to(&mut self, position: f32) { 
+    fn move_jib_to(&mut self, position: f32) {
         let n_turn_complete = 1.5;
         let factor = position - self.current_jib_angle;
         let n_turn = (n_turn_complete * factor).abs();
         self.current_jib_angle = position;
 
         println!("move_jib_to {position}, real movement {factor}, with {n_turn} turn");
+    }
+
+    fn automation(&mut self) { 
+
+        let wind_direction_degree = self.get_wind_direction_degree();
+
+        match wind_direction_degree {
+            w if w <= 22.5 => {
+                self.move_mainail_to(HEADWIND);
+                self.move_jib_to(HEADWIND);
+            },
+            w if w <= 67.5 => {
+                self.move_mainail_to(CLOSEWIND_BABORD);
+                self.move_jib_to(CLOSEWIND_BABORD);
+            },
+            w if w <= 112.5 => {
+                self.move_mainail_to(CROSSWIND_BABORD);
+                self.move_jib_to(CROSSWIND_BABORD);
+            },
+            w if w <= 157.5 => {
+                self.move_mainail_to(BEAMWIND_BABORD);
+                self.move_jib_to(BEAMWIND_BABORD);
+            },
+            w if w <= 202.5 => {
+                self.move_mainail_to(DOWNWIND);
+                self.move_jib_to(DOWNWIND);
+            },
+            w if w <= 247.5 => {
+                self.move_mainail_to(BEAMWIND_TRIBORD);
+                self.move_jib_to(BEAMWIND_TRIBORD);
+            },
+            w if w <= 292.5 => {
+                self.move_mainail_to(CROSSWIND_TRIBORD);
+                self.move_jib_to(CROSSWIND_TRIBORD);
+            },
+            w if w <= 337.5 => {
+                self.move_mainail_to(CLOSEWIND_TRIBORD);
+                self.move_jib_to(CLOSEWIND_TRIBORD);
+            },
+            w if w <= 360.0 => {
+                self.move_mainail_to(HEADWIND);
+                self.move_jib_to(HEADWIND);
+            },
+            _ => {}
+        };
     }
 
     fn get_geomagnetic(&mut self) -> (i16, i16, i16) { (0, 0, 0) }

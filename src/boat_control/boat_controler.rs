@@ -127,4 +127,49 @@ impl BoatControlerItf for BoatControler {
         };
         self.current_jib_angle = position;
     }
+
+    fn automation(&mut self) { 
+
+        let wind_direction_degree = self.get_wind_direction_degree();
+
+        match wind_direction_degree {
+            w if w <= 22.5 => {
+                self.move_mainail_to(HEADWIND);
+                self.move_jib_to(HEADWIND);
+            },
+            w if w <= 67.5 => {
+                self.move_mainail_to(CLOSEWIND_BABORD);
+                self.move_jib_to(CLOSEWIND_BABORD);
+            },
+            w if w <= 112.5 => {
+                self.move_mainail_to(CROSSWIND_BABORD);
+                self.move_jib_to(CROSSWIND_BABORD);
+            },
+            w if w <= 157.5 => {
+                self.move_mainail_to(BEAMWIND_BABORD);
+                self.move_jib_to(BEAMWIND_BABORD);
+            },
+            w if w <= 202.5 => {
+                self.move_mainail_to(DOWNWIND);
+                self.move_jib_to(DOWNWIND);
+            },
+            w if w <= 247.5 => {
+                self.move_mainail_to(BEAMWIND_TRIBORD);
+                self.move_jib_to(BEAMWIND_TRIBORD);
+            },
+            w if w <= 292.5 => {
+                self.move_mainail_to(CROSSWIND_TRIBORD);
+                self.move_jib_to(CROSSWIND_TRIBORD);
+            },
+            w if w <= 337.5 => {
+                self.move_mainail_to(CLOSEWIND_TRIBORD);
+                self.move_jib_to(CLOSEWIND_TRIBORD);
+            },
+            w if w <= 360.0 => {
+                self.move_mainail_to(HEADWIND);
+                self.move_jib_to(HEADWIND);
+            },
+            _ => {}
+        };
+    }
 }
