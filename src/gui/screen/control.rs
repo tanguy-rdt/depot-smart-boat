@@ -77,7 +77,7 @@ impl Control {
                             ui.end_row();
                 
                             ui.vertical_centered(|ui| {
-                                if ui.add(self.slider_jib.curved_slider(&mut self.slider_jib_value)).changed() { 
+                                if ui.add(self.slider_jib.curved_slider(&mut self.slider_jib_value, &mut !self.automation)).changed() { 
                                     self.msgq_tx
                                         .lock()
                                         .unwrap()
@@ -86,7 +86,7 @@ impl Control {
                             });
                 
                             ui.vertical_centered(|ui| {
-                                if ui.add(self.slider_mainsail.curved_slider(&mut self.slider_mainsail_value)).changed() { 
+                                if ui.add(self.slider_mainsail.curved_slider(&mut self.slider_mainsail_value, &mut !self.automation)).changed() { 
                                     self.msgq_tx
                                         .lock()
                                         .unwrap()
@@ -116,7 +116,7 @@ impl Control {
                                 self.msgq_tx
                                     .lock()
                                     .unwrap()
-                                    .send(("automation".to_owned(), (self.automation as i8) as f32)).unwrap(); 
+                                    .send(("automation".to_owned(), (self.automation as i8) as f32)).unwrap();
                             };
                         });
                     });

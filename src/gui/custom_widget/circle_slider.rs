@@ -1,6 +1,7 @@
 use eframe::{egui::{self, Align2, Response, TextStyle, Vec2}, epaint::{Color32, Pos2}};
 
 pub struct CircleSlider {
+    enable: bool,
     position_x: f32,
     position_y: f32,
     value: f32,
@@ -12,6 +13,7 @@ pub struct CircleSlider {
 impl CircleSlider {
     pub fn new(label: String) -> Self {
         Self {
+            enable: true,
             position_x: 0.5,
             position_y: 0.0,
             value: 0.0,
@@ -21,15 +23,22 @@ impl CircleSlider {
         }
     }
 
-    pub fn curved_slider<'a>(&'a mut self, value: &'a mut f32) -> impl egui::Widget + 'a {
+    pub fn curved_slider<'a>(&'a mut self, value: &'a mut f32, enable: &'a mut bool) -> impl egui::Widget + 'a {
         move |ui: &mut egui::Ui| {
-            self.curved_slider_ui(ui, value)
+            self.curved_slider_ui(ui, value, enable)
         }
     }
 
-    fn curved_slider_ui(&mut self, ui: &mut egui::Ui, value: &mut f32) -> egui::Response {
+    fn curved_slider_ui(&mut self, ui: &mut egui::Ui, value: &mut f32, enable: &mut bool) -> egui::Response {
         let desired_size = ui.spacing().interact_size.y * egui::vec2(7.0, 7.0);
-        let (rect, mut response) = ui.allocate_exact_size(desired_size, egui::Sense::drag());
+
+        let (rect, mut response) = if *enable {
+            ui.allocate_exact_size(desired_size, egui::Sense::drag())
+        }
+        else {
+            ui.allocate_exact_size(desired_size, egui::Sense::focusable_noninteractive())
+        };
+
         response.widget_info(|| egui::WidgetInfo::slider(*value as f64, ""));
 
         if response.dragged() {
