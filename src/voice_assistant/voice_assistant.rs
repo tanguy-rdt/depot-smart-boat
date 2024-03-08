@@ -7,6 +7,15 @@ use std::sync::atomic::{AtomicBool, Ordering};
 const PPN_MODEL_PATH: &str = "./ressources/porcupine_params_fr.pv";
 const RHN_MODEL_PATH: &str = "./ressources/rhino_params_fr.pv";
 
+const HEADWIND: f32 = 0.5;
+const CLOSEWIND_BABORD: f32 = 0.375;
+const CROSSWIND_BABORD: f32 = 0.250;
+const BEAMWIND_BABORD: f32 = 0.125;
+const DOWNWIND: f32 = 0.0;
+const BEAMWIND_TRIBORD: f32 = 0.875;
+const CROSSWIND_TRIBORD: f32 = 0.750;
+const CLOSEWIND_TRIBORD: f32 = 0.625;
+
 static LISTENING: AtomicBool = AtomicBool::new(false);
 
 pub struct VoiceAssistant {
@@ -80,32 +89,37 @@ impl VoiceAssistant {
         recorder.stop().expect("Failed to stop audio recording");
     }
 
+    fn send_action(value: f32) {
+        self.msgq_tx
+        .lock()
+        .unwrap()
+        .send(("mainsail_angle".to_string(), value))
+        .unwrap();
+
+        self.msgq_tx
+        .lock()
+        .unwrap()
+        .send(("jib_angle".to_string(), value))
+        .unwrap();
+    }
+
 
     fn treat_inference(&self, inference: RhinoInference){
-        let mut action: String = String::new();
-        let mut value: f32 = 0.0;
-
         match inference.intent.as_deref() {
-            Some("direction_tribord") => {
-                action = "mainsail_angle".to_string();
-                value = 0.0;
-            },
-            Some("direction_babord") => {
-                action = "mainsail_angle".to_string();
-                value = 1.0;
-            },
-            _ => {
-                println!("Unknown intent: {}", inference.intent.unwrap());
-            }
-        }
-
-        if !action.is_empty() {
-            println!("{action}");
-            self.msgq_tx
-            .lock()
-            .unwrap()
-            .send((action, value))
-            .unwrap();
-        }
+            Some("direction_tribord") => self.send_action(1.0),
+            Some("direction_babord") => self.send_action(0.0),
+            Some("vent_près_tribord") => self.send_action(CLOSEWIND_TRIBORD),
+            Some("vent_près_babord") => self.send_action(CLOSEWIND_BABORD),
+            Some("vent_face") => self.send_action(HEADWIND),
+            Some("vent_arrière") => self.send_action(DOWNWIND),
+            Some("vent_largue_tribord") => self.send_action(BEAMWIND_TRIBORD),
+            Some("vent_largue_babord") => self.send_action(BEAMWIND_BABORD),
+            Some("vent_travers_babord") => self.send_action(CROSSWIND_BABORD),
+            Some("vent_travers_tribord") => self.send_action(CROSSWIND_TRIBORD),
+            _ => println!("Unknown intent: {}", inference.intent.unwrap()),
+            
+        };
     }
 }
+
+
