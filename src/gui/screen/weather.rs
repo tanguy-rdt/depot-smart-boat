@@ -137,7 +137,7 @@ impl Weather{
 
 
     fn get_predictions(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {
-        let url_mapbox: String = format!("https://api.openweathermap.org/data/2.5/forecast?lat=48.3903&lon=-4.4853&appid={}", OWM_API_TOKEN);
+        let url_mapbox: String = format!("https://api.openweathermap.org/data/2.5/forecast?lat=48.3903&lon=-4.4853&units=metric&appid={}", OWM_API_TOKEN);
         
         let now = Instant::now();
         if now.duration_since(self.last_fetch) > Duration::from_secs(60*30) {
