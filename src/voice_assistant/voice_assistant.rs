@@ -89,7 +89,7 @@ impl VoiceAssistant {
         recorder.stop().expect("Failed to stop audio recording");
     }
 
-    fn send_action(value: f32) {
+    fn send_action(&self, value: f32) {
         self.msgq_tx
         .lock()
         .unwrap()
