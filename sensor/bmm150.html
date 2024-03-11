@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Aperçu général - Smart Boat</title>
+        <title>Boussole - Smart Boat</title>
 
 
         <!-- Custom HTML head -->
@@ -12,21 +12,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
@@ -35,7 +35,7 @@
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html" class="active"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="arch.html"><strong aria-hidden="true">4.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><a href="bt.html"><strong aria-hidden="true">5.</strong> Bluetooth</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="../sensor/bmm150.html" class="active"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="../sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="../sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="../sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="../arch.html"><strong aria-hidden="true">4.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><a href="../bt.html"><strong aria-hidden="true">5.</strong> Bluetooth</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -144,7 +144,7 @@
                     <h1 class="menu-title">Smart Boat</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
 
@@ -173,58 +173,16 @@
 
                 <div id="content" class="content">
                     <main>
-                        <blockquote>
-<p>Melvin DUBEE - Tanguy ROUDAUT</p>
-<p><em>ENSTA Bretagne</em></p>
-</blockquote>
-<p>Ce projet met en ouvre un système intelligent intégrant une interface graphique basé sur <a href="https://github.com/emilk/egui"><em>egui</em></a> et une commande vocale pour le contrôle d'une maquette de bateau. Différent capteurs de naviguation et des moteurs permettent de simuler une naviguation en sécurité et assisté.</p>
-<h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
-<h3 id="installation-de-rust"><a class="header" href="#installation-de-rust">Installation de rust</a></h3>
-<p>Le code de ce projet est réalisé en rust, il est donc important de l'avoir installé.</p>
-<pre><code class="language-bash">$ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
-</code></pre>
-<h3 id="ajouter-votre-clé-daccès-picovoice"><a class="header" href="#ajouter-votre-clé-daccès-picovoice">Ajouter votre clé d'accès Picovoice</a></h3>
-<p>Vous pouvez ajouter votre clé d'accès:</p>
-<ul>
-<li>De manière temporaire dans le terminal actif avec <code>export PICOVOICE_ACCES_KEY="YOUR_ACCES_KEY"</code></li>
-<li>De manière permanente en ajoutant cette commande dans votre <code>~/.bashrc</code> ou <code>~/.zshrc</code> em fonction du shell utilisé.</li>
-</ul>
-<p><em>Si vous n'avez pas de clé d'accès vous pouvez en obtenir une en créant un compte sur le site de <a href="https://console.picovoice.ai/login">picovoice</a> gratuitement.</em></p>
-<h3 id="sur-raspberryos"><a class="header" href="#sur-raspberryos">Sur RaspberryOS</a></h3>
-<p>Cette commande marchera uniquement avec un Raspberry Pi ou un émulateur qui prend en charge les ports GPIO. Le mode sur cible prend en compte la crate rppal qui permet de contrôler les ports GPIO.</p>
-<pre><code class="language-bash">$ cargo run --features=on_target
-</code></pre>
-<p>Actuellement l'interface graphique en WASM n'a pas était réalisé. Vous devez connecter un écran au Raspberry Pi ou utiliser un serveur VNC <em>(le serveur doit être activé avec la commande <code>sudo raspi-config</code> puis activer le serveur VNC dans le menu <code>Interface</code>).</em></p>
-<h3 id="sur-un-os-différent-de-la-cible-mode-stub"><a class="header" href="#sur-un-os-différent-de-la-cible-mode-stub">Sur un OS différent de la cible <em>(Mode stub)</em></a></h3>
-<p>Le mode <em>stub</em> vous permet d'éxecuter l'interface graphique avec une maquette simulé pour s'affranchire de capteurs et des GPIO. Cependant vous-devez quand même avoir enregistré votre clé d'accès Picovoice.</p>
-<p>Cela est particulièrement utile pour réaliser des modifications sur l'interface graphique.</p>
-<pre><code class="language-bash">$ cargo run 
-</code></pre>
-<h2 id="mots-détecté-avec-la-commande-vocale"><a class="header" href="#mots-détecté-avec-la-commande-vocale">Mots détecté avec la commande vocale</a></h2>
-<ol>
-<li>wake word: "Ok Bateau"</li>
-<li>content:
-<ul>
-<li>"Tourne/va/allons à gauche/babord"</li>
-<li>"Tourne/va/allons à droite/tribord"</li>
-<li>"vent de près à gauche/babord"</li>
-<li>"vent de près à droite/tribord"</li>
-<li>"vent de face"</li>
-<li>"vent arrière"</li>
-<li>"vent largue à gauche/babord"</li>
-<li>"vent largue à droite/tribord"</li>
-<li>"vent de travers à gauche/babord"</li>
-<li>"vent de travers à droite/tribord"</li>
-</ul>
-</li>
-</ol>
-
+                        
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../sensor/bme280.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next prefetch" href="sensor/bme280.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../sensor/mcp3008.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -234,8 +192,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../sensor/bme280.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next prefetch" href="sensor/bme280.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../sensor/mcp3008.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -250,13 +211,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
 
