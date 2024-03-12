@@ -1,6 +1,15 @@
 [book]
-authors = ["tanguy-rdt"]
-language = "en"
+authors = ["Melvin DUBEE", "Tanguy ROUDAUT"]
+language = "fr"
 multilingual = false
 src = "src"
 title = "Smart Boat"
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+renderer = ["html"]
+
+[output.html]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
+mathjax-support = true
+git-repository-url = "https://github.com/tanguy-rdt/depot-smart-boat"
