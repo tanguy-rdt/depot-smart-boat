@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="fr" class="light" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -30,6 +30,8 @@
 
         <!-- Custom theme stylesheets -->
 
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     </head>
     <body class="sidebar-visible no-js">
     <div id="body-container">
@@ -147,6 +149,9 @@
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        <a href="https://github.com/tanguy-rdt/depot-smart-boat" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -173,7 +178,216 @@
 
                 <div id="content" class="content">
                     <main>
-                        
+                        <h1 id="boussole"><a class="header" href="#boussole">Boussole</a></h1>
+<p><img src="./img/main.png" alt="" /></p>
+<p>La page principal permet de controler le bateau et d'avoir différente informations. Nous allons commencé par l'aiguille blanche présente sur le cadran qui reprèsente la boussole. <br />
+Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en temps réel de la position par rapport au nord est disponnible.</p>
+<h2 id="configuration-du-bmm150"><a class="header" href="#configuration-du-bmm150">Configuration du BMM150</a></h2>
+<p>Dans un premier temps il est nécessaire de réaliser une configuration du capteur comme pour le <em>BME280</em>.</p>
+<div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>Information</th></tr></thead><tbody>
+<tr><td>CTRL_POWER_REGISTER</td><td><em>0x4b</em></td><td>Permet de configurer le mode d'allimentation</td></tr>
+<tr><td>MODE_RATE_REGISTER</td><td><em>0x4c</em></td><td>Permet de configurer la fréquence de fonctionnement</td></tr>
+<tr><td>REG_REP_XY</td><td><em>0x51</em></td><td>Permet de configurer la précison des axes X et Y</td></tr>
+<tr><td>REG_REP_Z</td><td><em>0x52</em></td><td>Permet de configurer la précision de l'axe Z</td></tr>
+<tr><td>REG_AXES_ENABLE</td><td><em>0x4e</em></td><td>Permet d'activer ou de désactiver les axes souhaités</td></tr>
+</tbody></table>
+</div>
+<p>Dans notre cas nous allons utiliser la configuration suivante:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn init(&amp;mut self, gpio: &amp;mut Gpio){
+    self.set_power_bit(ENABLE_POWER, gpio);
+    thread::sleep(Duration::from_millis(3)); 
+    let chip_id = self.get_chip_id(gpio);
+    if chip_id == CHIP_ID_VALUE {
+        println!("bmm150 init sucess");
+        self.get_trim_value(gpio);
+        self.set_operation_mode(POWERMODE_NORMAL, gpio);
+        self.set_preset_mode(PRESETMODE_HIGHACCURACY, gpio);
+        self.set_rate(RATE_10HZ, gpio);
+        self.set_measurement_xyz(true, true, true, gpio);
+    }
+    else {
+        println!("bmm150 init fail");
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Les différentes fonctions de configuration sont disponnible dans le fichier <a href="https://github.com/tanguy-rdt/depot-smart-boat/blob/main/src/boat_control/bmm150.rs"><em>bmm150.rs</em></a> de notre dépot.</p>
+<h2 id="lecture-des-paramètres-de-compensation"><a class="header" href="#lecture-des-paramètres-de-compensation">Lecture des paramètres de compensation</a></h2>
+<p>Le <em>BMM150</em> est un capteur bosch, comme pour le <em>BME280</em>. Le principe de fonctionnement est le même, les valeurs lus dans les registres sont des données brut. Il faut donc les compensés.</p>
+<div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>n bits</th></tr></thead><tbody>
+<tr><td>DIG_X1</td><td><em>0x5D</em></td><td>1 * <em>u8</em></td></tr>
+<tr><td>DIG_Z4_LSB</td><td><em>0x62</em></td><td>1 * <em>u8</em></td></tr>
+<tr><td>DIG_Z2_LSB</td><td><em>0x68</em></td><td>1 * <em>u8</em></td></tr>
+</tbody></table>
+</div>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn get_trim_value(&amp;mut self, gpio: &amp;mut Gpio) {
+    gpio.i2c_set_slave_addr(BMM150_ADDR);
+
+    let mut trim_x1_y1 = [0u8; 2];
+    gpio.i2c_read_bytes_from(DIG_X1, &amp;mut trim_x1_y1);
+
+    let mut trim_xyz_data = [0u8; 4];
+    gpio.i2c_read_bytes_from(DIG_Z4_LSB, &amp;mut trim_xyz_data);
+
+    let mut trim_xy1_xy2 = [0u8; 10];
+    gpio.i2c_read_bytes_from(DIG_Z2_LSB, &amp;mut trim_xy1_xy2);
+
+    self.trim_data.dig_x1 = trim_x1_y1[0] as i8;
+    self.trim_data.dig_y1 = trim_x1_y1[1] as i8;
+    self.trim_data.dig_x2 = trim_xyz_data[2] as i8;
+    self.trim_data.dig_y2 = trim_xyz_data[3] as i8;
+    let temp_msb: u16 = (trim_xy1_xy2[3] as u16) &lt;&lt; 8;
+    self.trim_data.dig_z1 = temp_msb | trim_xy1_xy2[2] as u16;
+    let temp_msb: u16 = (trim_xy1_xy2[1] as u16) &lt;&lt; 8;
+    self.trim_data.dig_z2 = (temp_msb | trim_xy1_xy2[0] as u16) as i16;
+    let temp_msb: u16 = (trim_xy1_xy2[7] as u16) &lt;&lt; 8;
+    self.trim_data.dig_z3 = (temp_msb | trim_xy1_xy2[6] as u16) as i16;
+    let temp_msb: u16 = (trim_xyz_data[1] as u16) &lt;&lt; 8;
+    self.trim_data.dig_z4 = (temp_msb | trim_xyz_data[0] as u16) as i16;
+    self.trim_data.dig_xy1 = trim_xy1_xy2[9];
+    self.trim_data.dig_xy2 = trim_xy1_xy2[8] as i8;
+    let temp_msb: u16 = ((trim_xy1_xy2[5] &amp; 0x7F) as u16) &lt;&lt; 8;
+    self.trim_data.dig_xyz1 = temp_msb | trim_xy1_xy2[4] as u16;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>C'est valeure ne change pas, il suffit de les lires une fois et de les utiliser au moment de la compensation.</p>
+<h2 id="lecture-des-axes-et-compensations"><a class="header" href="#lecture-des-axes-et-compensations">Lecture des axes et compensations</a></h2>
+<p>La lecture des axes peut être faite en une seule fois puisque les registres ce suivent, le premier registre à lire le <em>REG_DATA_X_LSB</em> correspond à l'adresse <em>0x42</em>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn get_geomagnetic(&amp;mut self, gpio: &amp;mut Gpio) -&gt; (i16, i16, i16){
+    gpio.i2c_set_slave_addr(BMM150_ADDR);
+
+    let mut rslt = [0u8; 8];
+    gpio.i2c_read_bytes_from(REG_DATA_X_LSB, &amp;mut rslt);
+
+    let reg_data = (rslt[0] &amp; 0xF8) &gt;&gt; 3;
+    let msb_data = ((rslt[1] as i8) as i16) * 32;
+    let geomagnetic_raw_x = msb_data | reg_data as i16;
+
+    let reg_data = (rslt[2] &amp; 0xF8) &gt;&gt; 3;
+    let msb_data = ((rslt[3] as i8) as i16) * 32;
+    let geomagnetic_raw_y = msb_data | reg_data as i16;
+
+    let reg_data = (rslt[4] &amp; 0xFE) &gt;&gt; 1;
+    let msb_data = ((rslt[5] as i8) as i16) * 128;
+    let geomagnetic_raw_z = msb_data | reg_data as i16;
+
+    let reg_data = (rslt[6] &amp; 0xFC) &gt;&gt; 2;
+    let msb_data = (rslt[7] as u16) &lt;&lt; 6;
+    let geomagnetic_raw_r = msb_data | reg_data as u16;
+
+    self.geomagnetic_x = self.compensate_x(geomagnetic_raw_x, geomagnetic_raw_r);
+    self.geomagnetic_y = self.compensate_y(geomagnetic_raw_y, geomagnetic_raw_r);
+    self.geomagnetic_z = self.compensate_z(geomagnetic_raw_z, geomagnetic_raw_r);
+
+    (self.geomagnetic_x, self.geomagnetic_y, self.geomagnetic_z)
+}
+<span class="boring">}</span></code></pre></pre>
+<p>On peut ensuite compenser c'est valeurs grâce aux constantes obtenus précédement et aux fonctions données dans la datasheet.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn compensate_x(&amp;self, x: i16, r: u16) -&gt; i16{ 
+    if x != -4096{
+        let process_comp_x0: u16 = if r != 0 { r }
+        else if self.trim_data.dig_xyz1 != 0 { self.trim_data.dig_xyz1 }
+        else { 0 };
+
+        if process_comp_x0 != 0 {
+            let process_comp_x1: i32 = ((self.trim_data.dig_xyz1 as i32)*16384)/process_comp_x0 as i32;
+            let process_comp_x2: i32 = (process_comp_x1 as i32) - 0x4000;
+            let mut retval: i32 = process_comp_x2;
+            let process_comp_x3: i32 = retval * retval;
+            let process_comp_x4: i32 = (self.trim_data.dig_xy2 as i32) * (process_comp_x3/128);
+            let process_comp_x5: i32 = ((self.trim_data.dig_xy1 as i16) * 128) as i32;
+            let process_comp_x6: i32 = (retval) * process_comp_x5;
+            let process_comp_x7: i32 = (process_comp_x4 + process_comp_x6)/512 + (0x100000 as i32);
+            let process_comp_x8: i32 = ((self.trim_data.dig_x2 as i16) + (0xA0 as i16)) as i32;
+            let process_comp_x9: i32 = (process_comp_x7 * process_comp_x8)/4096;
+            let process_comp_x10: i32 = (x as i32) * process_comp_x9;
+            retval = process_comp_x10/8192;
+            retval = (retval + (self.trim_data.dig_x1 as i32) * 8) / 16;
+            retval as i16
+        }
+        else {
+            -32768
+        }
+    }
+    else {
+        -32768
+    }
+}
+
+fn compensate_y(&amp;self, y: i16, r: u16) -&gt; i16{ 
+    if y != -4096{
+        let process_comp_y0: u16 = if r != 0 { r }
+        else if self.trim_data.dig_xyz1 != 0 { self.trim_data.dig_xyz1 }
+        else { 0 };
+
+        if process_comp_y0 != 0 {
+            let process_comp_y1: i32 = (self.trim_data.dig_xyz1 as i32)*16384/process_comp_y0 as i32;
+            let process_comp_y2_temp: i32 = process_comp_y1 as i32 - 0x4000;
+            let process_comp_y2: u16 = if process_comp_y2_temp &lt; 0 { 0 } else { process_comp_y2_temp as u16 };                
+            let mut retval: i16 = process_comp_y2 as i16;
+            let process_comp_y3: i32 = (retval as i32) * (retval as i32);
+            let process_comp_y4: i32 = self.trim_data.dig_xy2 as i32 * (process_comp_y3/128);
+            let process_comp_y5: i32 = ((self.trim_data.dig_xy1 as i16) * 128) as i32;
+            let process_comp_y6: i32 = (process_comp_y4 + (retval as i32) * process_comp_y5)/512;
+            let process_comp_y7: i32 = ((self.trim_data.dig_y2 as i16) + (0xA0 as i16)) as i32;
+            let process_comp_y8: i32 = ((process_comp_y6 + 0x100000)*process_comp_y7)/4096;
+            let process_comp_y9: i32 = (y as i32)*process_comp_y8;
+            retval = (process_comp_y9 / 8192) as i16;
+            retval = (retval + ((self.trim_data.dig_y1 as i16) * 8))/16;
+            retval
+        }
+        else {
+            -32768
+        }
+    }
+    else {
+        -32768
+    }
+}
+
+fn compensate_z(&amp;self, z: i16, r: u16) -&gt; i16{ 
+    if z != -16384{
+        if self.trim_data.dig_z2 != 0 &amp;&amp; self.trim_data.dig_z1 != 0 &amp;&amp; self.trim_data.dig_xyz1 != 0 &amp;&amp; r != 0 {
+            let process_comp_z0: i16 = (r as i16) - (self.trim_data.dig_xyz1 as i16);
+            let process_comp_z1: i32 = (((self.trim_data.dig_z3 as i32) * (process_comp_z0 as i32)))/4;
+            let process_comp_z2: i32 = ((z - self.trim_data.dig_z4) as i32)*32768;
+            let process_comp_z3: i32 = (self.trim_data.dig_z1 as i32) * ((r as i32) * 2); 
+            let process_comp_z4: i16 = ((process_comp_z3+32768)/65536) as i16;
+            let mut retval: i32 = (process_comp_z2 - process_comp_z1)/((self.trim_data.dig_z2 as i32)+(process_comp_z4 as i32));
+            retval = retval.clamp(-32767, 32767);
+            retval = retval/16;
+            retval as i16
+        }
+        else {
+            -32768
+        }
+    }
+    else {
+        -32768
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="conversion-des-coordonnées-xyz-en-degrés-par-rapport-au-nord"><a class="header" href="#conversion-des-coordonnées-xyz-en-degrés-par-rapport-au-nord">Conversion des coordonnées XYZ en degrés par rapport au nord</a></h2>
+<p>La conversion est simple puisqu'il s'agit d'appliquer des formules trigonomètriques et de s'assurer que la valeur obtenus reste entre 0 et 360 degrès.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn get_boat_direction_degree(&amp;mut self) -&gt; f32{
+    let (x, y, z) = self.bmm150.get_geomagnetic(&amp;mut self.gpio);
+    let mut compass = (x as f32).atan2(y as f32);
+    if compass &lt; 0.0 { compass += 2.0 * std::f32::consts::PI; }
+    if compass &gt; (2.0 * std::f32::consts::PI) { compass -= 2.0 * std::f32::consts::PI; }
+    compass = (compass * 180.0 / std::f32::consts::PI) -70.0;
+    format!("{:.2}", compass).parse().unwrap()
+}
+<span class="boring">}</span></code></pre></pre>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
@@ -220,6 +434,8 @@
         <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
 
 
     </div>
