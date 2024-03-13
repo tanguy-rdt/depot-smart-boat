@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="arch.html"><strong aria-hidden="true">4.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><a href="bt.html"><strong aria-hidden="true">5.</strong> Bluetooth</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocal 🔨🚧</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Création d'une nouvelle release 🔨🚧</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -796,7 +796,52 @@ fn set_pwm(&amp;mut self, gpio: &amp;mut Gpio, channel: i32, on: u16, off: u16){
     gpio.i2c_write_bytes(on_register, &amp;buffer);
 }
 <span class="boring">}</span></code></pre></pre>
-<div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="bluetooth"><a class="header" href="#bluetooth">Bluetooth</a></h1>
+<p>Il existe plusieurs manière de connecter un périphèrique en bluetooth sur un OS Linux. Si vous utilisé <em>pulseaudio</em> ou <em>pipewire</em>, cette page ne sera pas nécessaire car elle s'appuye sur l'utilisation de <em>Bluealsa</em>.</p>
+<h2 id="bluealsa-cest-quoi-"><a class="header" href="#bluealsa-cest-quoi-">Bluealsa c'est quoi ?</a></h2>
+<p>Bluealsa, c'est l'utilisation commune de <em>BlueZ</em> la stack officiel de linux qui permet l'utilisation du bluetooth et de <em>ALSA</em> un utilitaire pour configurer et utilisé des cartes audios. Finalement leurs utilisations commune permet de gérer des périphérique bluetooth audio.</p>
+<p><img src="./img/bt.png" alt="" /></p>
+<h2 id="configuration-dun-périphérique-bluetooth"><a class="header" href="#configuration-dun-périphérique-bluetooth">Configuration d'un périphérique Bluetooth</a></h2>
+<p>Avant de contrôler notre bateau par la commande vocal et un équipement bluetooth, il faut connecter l'équipement avec les commandes fournis par BlueZ.
+Le protocole est assez simple, il s'agit des mêmes étapes qu'avec l'utilisation d'une IHM mais avec des lignes de commandes.</p>
+<pre><code class="language-bash">$ bluetoothctl scan on                # permet de trouver notre équipement 
+$ bluetoothctl trust &lt;MAC_ADRESSE&gt;    # de lui faire confiance
+$ bluetoothctl pair &lt;MAC_ADRESSE&gt;     # de se lier à lui
+$ bluetoothctl connect &lt;MAC_ADRESSE&gt;  # de s'y connecter
+</code></pre>
+<p>Maintenant que l'on est connecté nous allons créer un fichier de configuration alsa pour utiliser notre casque comme périphérique par défaut. Ce fichier de configuration est à créer sous le nom de <code>~/.asoundrc</code>.</p>
+<pre><code class="language-sh"># device configuration
+pcm.btreceiver { 
+    type plug 
+    slave.pcm { 
+        type bluealsa 
+        device "MAC_ADRESSE"
+        profile "sco" # utilisation du profil HSP/HFP
+    } 
+    hint { 
+        show on 
+        description "Bluetooth Receiver" 
+    } 
+}
+
+# default device
+pcm.!default {
+    type plug
+    slave.pcm "btreceiver"
+}
+</code></pre>
+<p>Il est impotant d'utiliser le profile <em>sco</em> qui en réalité n'en est pas un, mais un protocole de communication utilisé par le profil <em>HSP/HFP</em>. Cette mention indique alors qu'on utilise les bons profile. <br />
+Le HSP/HFP les profils qui produisent les meilleurs codec pour une qualité optimal, cependant on utilise que le microphone donc cela n'est pas dérengant. De plus certain profil comme l'<em>A2DP</em> fonctionne uniquement en playback, le microphone n'est pas utilisable. Il est important de configurer notre équipement avec c'est profil pour un bon fonctionnement.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="larchitecture-du-code"><a class="header" href="#larchitecture-du-code">L'architecture du code</a></h1>
+<p>Dans le cas où vous souhaité réaliser des modifications nous avons respecter une architecture respectant le modèle <em>MVC (Model Vue Controler)</em>. \</p>
+<ul>
+<li>Le code lié à l'utilisation des capteurs et actionneur se trouve dans <em>boat controler</em></li>
+<li>Le code lié à la commande vocale dans <em>voice controler</em></li>
+<li>Le code lié à l'IHM dans <em>gui</em> et <em>model</em></li>
+</ul>
+<p>N'oublié pas que vous pouvez vous affranchire de la maquette en utilisant le mode stub, expliqué dans la section <a href="./overview.html#sur-un-os-diff%C3%A9rent-de-la-cible-mode-stub"><em>Aperçu général</em></a></p>
+<p><img src="./img/arch.png" alt="" /></p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
