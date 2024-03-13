@@ -740,6 +740,62 @@ fn init_prescaler(&amp;mut self, gpio: &amp;mut Gpio, frequency: f32){
     let _ = self.read_mode1(gpio); 
 }
 <span class="boring">}</span></code></pre></pre>
+<h2 id="fonctionnement-du-pwm"><a class="header" href="#fonctionnement-du-pwm">Fonctionnement du PWM</a></h2>
+<p>La documentation des moteurs FT90MR indique les périodes d'impulsions suivante, elles correspondent au sens de rotation pour une vitesse maximale:</p>
+<ul>
+<li>CC <em>counter clock</em>:  <strong>500/1500 us</strong></li>
+<li>Neutre: <strong>1500 us</strong></li>
+<li>CCW <em>counter clockwise</em>: <strong>1500/2500 us</strong></li>
+</ul>
+<p>Grâce à la formule suivante nous pouvons convertir les largeurs d'impulsions en une valeure <em>PWM</em>.</p>
+<p>$$
+\text{Valeur PWM} = \left( \frac{\text{Temps en }\mu s}{\text{Période Totale en }\mu s} \right) \times \text{Résolution Maximale}
+$$</p>
+<p>Après calcul nous obtenos et nous utiliserons les valeurs suivante:</p>
+<ul>
+<li>CC <em>counter clock</em>:  <strong>max 102, utilisation de 184 en hexa 0x00b8</strong></li>
+<li>Neutre: <strong>307 en hexa 0x0133</strong></li>
+<li>CCW <em>counter clockwise</em>: <strong>max 512, utilisation de 430 en hexa 0x01ae</strong></li>
+</ul>
+<h2 id="commande-des-moteurs-avec-le-pca9685"><a class="header" href="#commande-des-moteurs-avec-le-pca9685">Commande des moteurs avec le PCA9685</a></h2>
+<p>Les registres du <em>PCA</em> se suivent et pour un moteur soit un canal nous utilisons 4 octets. Nous pouvons alors facilement naviguer entre les registre d'adresses depuis la premier registre <em>0x06</em> avec la formule suivante.</p>
+<p>$$
+\text{first_register_channel_x} = ( 0x06 + (channel_x \times 4))
+$$</p>
+<p>Si on veut contrôler le channel 2 cela nous donnera comme premier registre <em>0x0e</em>, il faudra alors écrire nos 4 octets dans <em>0x0e..0x11</em>. <br />
+Pour se déplacer dans le sens horaire avec le moteur connecté au second canal on écrira alors:</p>
+<ul>
+<li><em>0x0e</em> : <em>0x0</em></li>
+<li><em>0x0f</em> : <em>0x0</em></li>
+<li><em>0x10</em> : <em>0xb</em></li>
+<li><em>0x11</em> : <em>0x8</em></li>
+</ul>
+<p>Soit <em>on</em> à 0 et <em>off</em> à 184, ce qui nous donne alors une largeur d'impulsion de 902 us.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn rotate_servo_clockwise(&amp;mut self, gpio: &amp;mut Gpio, channel: i32){
+    gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
+    self.set_pwm(gpio, channel, 0, 184);
+    let _ = self.read_mode1(gpio);
+}
+
+pub fn rotate_servo_counterclockwise(&amp;mut self, gpio: &amp;mut Gpio, channel: i32){
+    gpio.i2c_set_slave_addr(PCA9685_I2C_ADDRESS);
+    self.set_pwm(gpio, channel, 0, 430);
+}
+
+fn set_pwm(&amp;mut self, gpio: &amp;mut Gpio, channel: i32, on: u16, off: u16){
+    let on_register = PCA9685_LED0_ON_L + (4 * channel) as u8;
+
+    println!("on_register: {}", on_register);
+
+    let buffer = [(on &amp; 0xFF) as u8, 
+                    ((on &gt;&gt; 8) &amp; 0xFF) as u8, 
+                    (off &amp; 0xFF) as u8, 
+                    ((off &gt;&gt; 8) &amp; 0xFF) as u8];
+    gpio.i2c_write_bytes(on_register, &amp;buffer);
+}
+<span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><div style="break-before: page; page-break-before: always;"></div>
                     </main>
 
