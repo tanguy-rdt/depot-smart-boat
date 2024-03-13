@@ -7,6 +7,8 @@
     - [Girouette](./sensor/mcp3008.md)
     - [Capteur de profondeur](./sensor/hcsr05.md)
 - [Le mouvement des voiles](./sensor/pca9685.md)
-- [L'architecture du code](./arch.md)
 - [Bluetooth](./bt.md)
+- [L'architecture du code](./arch.md)
+- [La commande vocal 🔨🚧]()
+- [Création d'une nouvelle release 🔨🚧]()
 
