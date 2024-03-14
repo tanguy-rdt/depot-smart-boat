@@ -1,0 +1,8 @@
+Package: smart-boat-stub
+Version: 1.0.0
+Section: base
+Priority: optional
+Architecture: amd64
+Depends: 
+Maintainer: ROUDAUT Tanguy <tanguy@roudaut.xyz>
+Description: Smart boat Stub GUI

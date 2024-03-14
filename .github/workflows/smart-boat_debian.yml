@@ -1,0 +1,25 @@
+name: SmartBoat GUI Debian
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: debian:bullseye
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build Docker image
+      run: ./package_builder/debian/docker/bd_docker-img_debian.sh
+
+    - name: Run Docker image
+      run: ./package_builder/debian/run_docker-img_debian.sh
+
+    - name: Upload .deb files
+      uses: actions/upload-artifact@v2
+      with:
+        name: smart-boat-debian
+        path: ./deb/smart-boat-debian*.deb

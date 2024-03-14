@@ -1,3 +1,6 @@
+deb
+*.deb
+
 ### macOS ###
 # General
 .DS_Store
