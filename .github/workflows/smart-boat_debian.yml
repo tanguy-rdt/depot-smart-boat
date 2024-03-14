@@ -13,10 +13,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build Docker image
-      run: ./package_builder/debian/docker/bd_docker-img_debian.sh
+      run: ./package-builder/debian/docker/bd_docker-img_debian.sh
 
     - name: Run Docker image
-      run: ./package_builder/debian/run_docker-img_debian.sh
+      run: ./package-builder/debian/run_docker-img_debian.sh
 
     - name: Upload .deb files
       uses: actions/upload-artifact@v2
