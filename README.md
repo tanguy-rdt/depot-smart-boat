@@ -5,6 +5,8 @@
 > 
 > ENSTA Bretagne
 
+[![SmartBoat GUI Debian](https://github.com/tanguy-rdt/depot-smart-boat/actions/workflows/smart-boat_debian.yml/badge.svg)](https://github.com/tanguy-rdt/depot-smart-boat/actions/workflows/smart-boat_debian.yml)
+
 Ce projet met en ouvre un système intelligent intégrant une interface graphique et une commande vocale pour le contrôle d'une maquette de bateau. Différent capteurs de naviguation et des moteurs permettent de simuler une naviguation en sécurité et assisté.
 
 Une documentation plus détailé est disponnible [ici](https://tanguy-rdt.github.io/depot-smart-boat/).
