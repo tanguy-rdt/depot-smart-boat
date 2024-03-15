@@ -1,10 +1,12 @@
-name: SmartBoat GUI Debian
+name: SmartBoat GUI Debian Release
 
 on:
-  workflow_dispatch:
-  
+  push:
+    tags:
+      - 'v*'
+
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,8 +19,33 @@ jobs:
     - name: Run Docker image
       run: ./package-builder/debian/run_docker-img_debian.sh
 
-    - name: Upload .deb files
-      uses: actions/upload-artifact@v2
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: smart-boat-debian
-        path: ./deb/smart-boat-debian*.deb
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+
+    - name: Upload smart-boat-debian.deb
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./deb/smart-boat-debian.deb
+        asset_name: smart-boat-debian.deb
+        asset_content_type: application/vnd.debian.binary-package
+
+    - name: Upload smart-boat-debian-stub.deb
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./deb/smart-boat-debian-stub.deb
+        asset_name: smart-boat-debian-stub.deb
+        asset_content_type: application/vnd.debian.binary-package
