@@ -9,6 +9,6 @@
 - [Le mouvement des voiles](./sensor/pca9685.md)
 - [Bluetooth](./bt.md)
 - [L'architecture du code](./arch.md)
-- [La commande vocal 🔨🚧]()
-- [Création d'une nouvelle release 🔨🚧]()
+- [La commande vocale 🔨🚧]()
+- [Création d'une nouvelle release](./release.md)
 

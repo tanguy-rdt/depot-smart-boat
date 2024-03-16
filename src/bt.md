@@ -1,17 +1,17 @@
 # Bluetooth
 
-Il existe plusieurs manière de connecter un périphèrique en bluetooth sur un OS Linux. Si vous utilisé _pulseaudio_ ou _pipewire_, cette page ne sera pas nécessaire car elle s'appuye sur l'utilisation de _Bluealsa_.
+Il existe plusieurs manières de connecter un périphérique en Bluetooth sur un OS Linux. Si vous utilisez _pulseaudio_ ou _pipewire_, cette page ne sera pas nécessaire, car elle s'appuie sur l'utilisation de _Bluealsa_.
 
 
 ## Bluealsa c'est quoi ?
 
-Bluealsa, c'est l'utilisation commune de _BlueZ_ la stack officiel de linux qui permet l'utilisation du bluetooth et de _ALSA_ un utilitaire pour configurer et utilisé des cartes audios. Finalement leurs utilisations commune permet de gérer des périphérique bluetooth audio.
+Bluealsa, c'est l'utilisation commune de _BlueZ_ la stack officiel de Linux qui permet l'utilisation du Bluetooth et de _ALSA_ un utilitaire pour configurer et utiliser des cartes audios. Finalement leurs utilisations communes permettent de gérer des périphériques Bluetooth audio.
 
 ![](./img/bt.png)
 
 ## Configuration d'un périphérique Bluetooth
 
-Avant de contrôler notre bateau par la commande vocal et un équipement bluetooth, il faut connecter l'équipement avec les commandes fournis par BlueZ. 
+Avant de contrôler notre bateau par la commande vocale et un équipement Bluetooth, il faut connecter l'équipement avec les commandes fournies par BlueZ. 
 Le protocole est assez simple, il s'agit des mêmes étapes qu'avec l'utilisation d'une IHM mais avec des lignes de commandes.
 
 ```bash 
@@ -45,6 +45,7 @@ pcm.!default {
 }
 ```
 
-Il est impotant d'utiliser le profile _sco_ qui en réalité n'en est pas un, mais un protocole de communication utilisé par le profil _HSP/HFP_. Cette mention indique alors qu'on utilise les bons profile. \
-Le HSP/HFP les profils qui produisent les meilleurs codec pour une qualité optimal, cependant on utilise que le microphone donc cela n'est pas dérengant. De plus certain profil comme l'_A2DP_ fonctionne uniquement en playback, le microphone n'est pas utilisable. Il est important de configurer notre équipement avec c'est profil pour un bon fonctionnement.
+Il est important d'utiliser le profil _sco_ qui en réalité n'en est pas un, mais un protocole de communication utilisé par le profil _HSP/HFP_. Cette mention indique alors qu'on utilise les bons profils. \
+Le HSP/HFP ne sont pas les profils qui utilisent les meilleurs codecs pour une qualité optimale, cependant on utilise que le microphone donc cela n'est pas dérangeant. De plus certains profils comme l'_A2DP_ fonctionne uniquement en playback, le microphone n'est pas utilisable. Il est important de configurer notre équipement avec ces profils pour un bon fonctionnement.
+
 

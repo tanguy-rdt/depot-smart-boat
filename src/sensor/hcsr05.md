@@ -3,13 +3,13 @@
 ![](./img/main.png)
 
 
-Encore une fois nous nous retrouvons sur l'écran principale. \
-Cette fois-ci pour une simulation d'un sonar réalisé a l'aide d'un capteur ultrason, le _HC-SR05_.
+Encore une fois nous nous retrouvons sur l'écran principal. \
+Cette fois-ci pour une simulation d'un sonar réalisé à l'aide d'un capteur ultrason, le _HC-SR05_.
 
 ## Fonctionnement du HC-SR05
 
-Ici, aucune configuration est nécessaire. Nous allons émettre une onde que nous pouvons métaphoriquement imaginé à l'aide d'un 1 boolèen. Pour déterminer la distance par rapport au profondeur, nous allons mesurer le temps mis par l'onde pour revenir vers le récepteur. \
-Seul les gpio sont utilisés, on emet une impulsion et on la recois, la distance est ensuite calculé en fonction de la différence de temps et la vitesse du son. \
+Ici, aucune configuration n’est nécessaire. Nous allons émettre une onde que nous pouvons métaphoriquement imaginer à l'aide d'un 1 booléen. Pour déterminer la distance par rapport aux profondeurs, nous allons mesurer le temps mis par l'onde pour revenir vers le récepteur. \
+Seuls les gpio sont utilisés, on émet une impulsion et on la reçois, la distance est ensuite calculée en fonction de la différence de temps et la vitesse du son. \
 L'implémentation en rust donne le code suivant.
 
 ```rust 
