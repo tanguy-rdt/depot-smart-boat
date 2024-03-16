@@ -11,6 +11,7 @@
 
 Ce projet met en œuvre un système intelligent intégrant une interface graphique basé sur [_egui_](https://github.com/emilk/egui) et une commande vocale pour le contrôle d'une maquette de bateau. Différents capteurs de navigation et des moteurs permettent de simuler une navigation en sécurité et assisté.
 
+Une documentation plus détailé est disponnible [ici](https://tanguy-rdt.github.io/depot-smart-boat/).
 
 ## Usage 
 
@@ -101,7 +102,7 @@ Après exécution du conteneur, vous pouvez trouver le fichier `.deb` dans le do
 
 ### Pour Debian et MacOS avec GitHub action 
 
-Nous avons mis en place un workflow qui permet de compiler l'application et d'en réaliser un package en mode natif et stub. \
+Nous avons mis en place un workflow qui permet de compiler l'application et d'en réaliser un package en mode natif et stub. 
 
 Pour que ce workflow se lance, il vous suffit de pousser vos modifications avec un tag qui débute par _'v'_ suivie d'un numéro de version, par exemple _v1.0.0_. \
 L'action GitHub va alors se lancer et après sont succès vous pouvez trouver tous les packages dans une nouvelle [release](https://github.com/tanguy-rdt/depot-smart-boat/releases) qui porte comme nom la version du tag que vous avez utilisé.
