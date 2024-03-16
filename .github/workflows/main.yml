@@ -34,6 +34,7 @@ jobs:
       - name: Move stub executable
         if: matrix.platform == 'ubuntu-20.04'
         run: |
+          mkdir -p smart-boat-debian/usr/bin/
           cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat-stub
 
       - name: Run natif build (debian only)
