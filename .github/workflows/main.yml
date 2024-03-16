@@ -12,14 +12,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
+        platform: [macos-latest, ubuntu-20.04]
 
     runs-on: ${{ matrix.platform }}    
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: install dependencies (ubuntu only)
+      - name: install debian dependencies 
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
@@ -36,12 +36,10 @@ jobs:
         run: |
           cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat-stub
 
-      - name: Clean rust build
-        run: cargo clean
-
       - name: Run natif build (debian only)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
+          cargo clean
           cargo build --release --features=on_target
           cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat
 
