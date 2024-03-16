@@ -1,9 +1,9 @@
 name: SmartBoat GUI Build and Release
 
-on: push
-#  push:
-#    tags:
-#      - 'v*'
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build-and-release:
