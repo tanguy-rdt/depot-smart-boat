@@ -1,0 +1,76 @@
+name: SmartBoat GUI Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
+
+    runs-on: ${{ matrix.platform }}    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl build-essential gcc libssl-dev pkg-config
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: install Rust dep
+        run: cargo install tauri-cli
+        
+      - name: Run stub build 
+        run: cargo build
+
+      - name: Move stub executable
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat-stub
+
+      - name: Clean rust build
+        run: cargo clean
+
+      - name: Run natif build (debian only)
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          cargo build --features=on_target
+          cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat
+
+      - name: Create deb package
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          dpkg-deb --build smart-boat-debian/
+
+      - name: Get tag name
+        id: tag
+        run: echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
+
+      - name: Upload package to artifact
+        if: matrix.platform == 'ubuntu-20.04'
+        uses: actions/upload-artifact@v2
+        with:
+          name: smart-boat-debian
+          path: smart-boat-debian/*.deb
+
+      - name: Add debian package to release
+        if: matrix.platform == 'ubuntu-20.04'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            smart-boat-debian/*.deb
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Smart Boat GUI ${{ steps.tag.outputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
