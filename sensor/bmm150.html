@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="../sensor/bmm150.html" class="active"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="../sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="../sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="../sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="../bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="../arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocal 🔨🚧</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Création d'une nouvelle release 🔨🚧</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="../sensor/bmm150.html" class="active"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="../sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="../sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="../sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="../bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="../arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocale 🔨🚧</div></li><li class="chapter-item expanded "><a href="../release.html"><strong aria-hidden="true">7.</strong> Création d'une nouvelle release</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -180,16 +180,16 @@
                     <main>
                         <h1 id="boussole"><a class="header" href="#boussole">Boussole</a></h1>
 <p><img src="./img/main.png" alt="" /></p>
-<p>La page principal permet de controler le bateau et d'avoir différente informations. Nous allons commencé par l'aiguille blanche présente sur le cadran qui reprèsente la boussole. <br />
-Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en temps réel de la position par rapport au nord est disponnible.</p>
+<p>La page principale permet de contrôler le bateau et d'avoir différentes informations. Nous allons commencer par l'aiguille blanche présente sur le cadran qui représente la boussole. <br />
+Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en temps réel de la position par rapport au nord est disponible.</p>
 <h2 id="configuration-du-bmm150"><a class="header" href="#configuration-du-bmm150">Configuration du BMM150</a></h2>
 <p>Dans un premier temps il est nécessaire de réaliser une configuration du capteur comme pour le <em>BME280</em>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>Information</th></tr></thead><tbody>
-<tr><td>CTRL_POWER_REGISTER</td><td><em>0x4b</em></td><td>Permet de configurer le mode d'allimentation</td></tr>
-<tr><td>MODE_RATE_REGISTER</td><td><em>0x4c</em></td><td>Permet de configurer la fréquence de fonctionnement</td></tr>
-<tr><td>REG_REP_XY</td><td><em>0x51</em></td><td>Permet de configurer la précison des axes X et Y</td></tr>
-<tr><td>REG_REP_Z</td><td><em>0x52</em></td><td>Permet de configurer la précision de l'axe Z</td></tr>
-<tr><td>REG_AXES_ENABLE</td><td><em>0x4e</em></td><td>Permet d'activer ou de désactiver les axes souhaités</td></tr>
+<tr><td>CTRL_POWER_REGISTER</td><td><em>0x4b</em></td><td>Permets de configurer le mode d'alimentation</td></tr>
+<tr><td>MODE_RATE_REGISTER</td><td><em>0x4c</em></td><td>Permets de configurer la fréquence de fonctionnement</td></tr>
+<tr><td>REG_REP_XY</td><td><em>0x51</em></td><td>Permets de configurer la précision des axes X et Y</td></tr>
+<tr><td>REG_REP_Z</td><td><em>0x52</em></td><td>Permets de configurer la précision de l'axe Z</td></tr>
+<tr><td>REG_AXES_ENABLE</td><td><em>0x4e</em></td><td>Permets d'activer ou de désactiver les axes souhaités.</td></tr>
 </tbody></table>
 </div>
 <p>Dans notre cas nous allons utiliser la configuration suivante:</p>
@@ -212,9 +212,9 @@ Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en 
     }
 }
 <span class="boring">}</span></code></pre></pre>
-<p>Les différentes fonctions de configuration sont disponnible dans le fichier <a href="https://github.com/tanguy-rdt/depot-smart-boat/blob/main/src/boat_control/bmm150.rs"><em>bmm150.rs</em></a> de notre dépot.</p>
+<p>Les différentes fonctions de configuration sont disponibles dans le fichier <a href="https://github.com/tanguy-rdt/depot-smart-boat/blob/main/src/boat_control/bmm150.rs"><em>bmm150.rs</em></a> de notre dépôt.</p>
 <h2 id="lecture-des-paramètres-de-compensation"><a class="header" href="#lecture-des-paramètres-de-compensation">Lecture des paramètres de compensation</a></h2>
-<p>Le <em>BMM150</em> est un capteur bosch, comme pour le <em>BME280</em>. Le principe de fonctionnement est le même, les valeurs lus dans les registres sont des données brut. Il faut donc les compensés.</p>
+<p>Le <em>BMM150</em> est un capteur Bosch, comme pour le <em>BME280</em>. Le principe de fonctionnement est le même, les valeurs lues dans les registres sont des données brutes. Il faut donc les compenser.</p>
 <div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>n bits</th></tr></thead><tbody>
 <tr><td>DIG_X1</td><td><em>0x5D</em></td><td>1 * <em>u8</em></td></tr>
 <tr><td>DIG_Z4_LSB</td><td><em>0x62</em></td><td>1 * <em>u8</em></td></tr>
@@ -253,9 +253,9 @@ Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en 
     self.trim_data.dig_xyz1 = temp_msb | trim_xy1_xy2[4] as u16;
 }
 <span class="boring">}</span></code></pre></pre>
-<p>C'est valeure ne change pas, il suffit de les lires une fois et de les utiliser au moment de la compensation.</p>
+<p>C'est des valeurs qui ne change pas, il suffit de les lires une fois et de les utiliser au moment de la compensation.</p>
 <h2 id="lecture-des-axes-et-compensations"><a class="header" href="#lecture-des-axes-et-compensations">Lecture des axes et compensations</a></h2>
-<p>La lecture des axes peut être faite en une seule fois puisque les registres ce suivent, le premier registre à lire le <em>REG_DATA_X_LSB</em> correspond à l'adresse <em>0x42</em>.</p>
+<p>La lecture des axes peut être faite en une seule fois puisque les registres se suivent, le premier registre à lire le <em>REG_DATA_X_LSB</em> correspond à l'adresse <em>0x42</em>.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn get_geomagnetic(&amp;mut self, gpio: &amp;mut Gpio) -&gt; (i16, i16, i16){
@@ -287,7 +287,7 @@ Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en 
     (self.geomagnetic_x, self.geomagnetic_y, self.geomagnetic_z)
 }
 <span class="boring">}</span></code></pre></pre>
-<p>On peut ensuite compenser c'est valeurs grâce aux constantes obtenus précédement et aux fonctions données dans la datasheet.</p>
+<p>On peut ensuite compenser ces valeurs grâce aux constantes obtenues précédemment et aux fonctions données dans la documentation.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn compensate_x(&amp;self, x: i16, r: u16) -&gt; i16{ 
@@ -375,7 +375,7 @@ fn compensate_z(&amp;self, z: i16, r: u16) -&gt; i16{
 }
 <span class="boring">}</span></code></pre></pre>
 <h2 id="conversion-des-coordonnées-xyz-en-degrés-par-rapport-au-nord"><a class="header" href="#conversion-des-coordonnées-xyz-en-degrés-par-rapport-au-nord">Conversion des coordonnées XYZ en degrés par rapport au nord</a></h2>
-<p>La conversion est simple puisqu'il s'agit d'appliquer des formules trigonomètriques et de s'assurer que la valeur obtenus reste entre 0 et 360 degrès.</p>
+<p>La conversion est simple puisqu'il s'agit d'appliquer des formules trigonométriques et de s'assurer que la valeur obtenue reste entre 0 et 360 degrés.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn get_boat_direction_degree(&amp;mut self) -&gt; f32{

@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html" class="active"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocal 🔨🚧</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Création d'une nouvelle release 🔨🚧</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html" class="active"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocale 🔨🚧</div></li><li class="chapter-item expanded "><a href="release.html"><strong aria-hidden="true">7.</strong> Création d'une nouvelle release</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -182,7 +182,7 @@
 <p>Melvin DUBEE - Tanguy ROUDAUT</p>
 <p><em>ENSTA Bretagne</em></p>
 </blockquote>
-<p>Ce projet met en ouvre un système intelligent intégrant une interface graphique basé sur <a href="https://github.com/emilk/egui"><em>egui</em></a> et une commande vocale pour le contrôle d'une maquette de bateau. Différent capteurs de naviguation et des moteurs permettent de simuler une naviguation en sécurité et assisté.</p>
+<p>Ce projet met en œuvre un système intelligent intégrant une interface graphique basé sur <a href="https://github.com/emilk/egui"><em>egui</em></a> et une commande vocale pour le contrôle d'une maquette de bateau. Différents capteurs de navigation et des moteurs permettent de simuler une navigation en sécurité et assisté.</p>
 <h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
 <h3 id="installation-de-rust"><a class="header" href="#installation-de-rust">Installation de rust</a></h3>
 <p>Le code de ce projet est réalisé en rust, il est donc important de l'avoir installé.</p>
@@ -192,20 +192,20 @@
 <p>Vous pouvez ajouter votre clé d'accès:</p>
 <ul>
 <li>De manière temporaire dans le terminal actif avec <code>export PICOVOICE_ACCES_KEY="YOUR_ACCES_KEY"</code></li>
-<li>De manière permanente en ajoutant cette commande dans votre <code>~/.bashrc</code> ou <code>~/.zshrc</code> em fonction du shell utilisé.</li>
+<li>De manière permanente en ajoutant cette commande dans votre <code>~/.bashrc</code> ou <code>~/.zshrc</code> en fonction du shell utilisé.</li>
 </ul>
-<p><em>Si vous n'avez pas de clé d'accès vous pouvez en obtenir une en créant un compte sur le site de <a href="https://console.picovoice.ai/login">picovoice</a> gratuitement.</em></p>
+<p><em>Si vous n'avez pas de clé d'accès, vous pouvez en obtenir une en créant un compte sur le site de <a href="https://console.picovoice.ai/login">picovoice</a> gratuitement.</em></p>
 <h3 id="sur-raspberryos"><a class="header" href="#sur-raspberryos">Sur RaspberryOS</a></h3>
 <p>Cette commande marchera uniquement avec un Raspberry Pi ou un émulateur qui prend en charge les ports GPIO. Le mode sur cible prend en compte la crate rppal qui permet de contrôler les ports GPIO.</p>
 <pre><code class="language-bash">$ cargo run --features=on_target
 </code></pre>
 <p>Actuellement l'interface graphique en WASM n'a pas était réalisé. Vous devez connecter un écran au Raspberry Pi ou utiliser un serveur VNC <em>(le serveur doit être activé avec la commande <code>sudo raspi-config</code> puis activer le serveur VNC dans le menu <code>Interface</code>).</em></p>
 <h3 id="sur-un-os-différent-de-la-cible-mode-stub"><a class="header" href="#sur-un-os-différent-de-la-cible-mode-stub">Sur un OS différent de la cible <em>(Mode stub)</em></a></h3>
-<p>Le mode <em>stub</em> vous permet d'éxecuter l'interface graphique avec une maquette simulé pour s'affranchire de capteurs et des GPIO. Cependant vous-devez quand même avoir enregistré votre clé d'accès Picovoice.</p>
+<p>Le mode <em>stub</em> vous permet d'exécuter l'interface graphique avec une maquette simulée pour s'affranchir de capteurs et des GPIO. Cependant vous devez quand même avoir enregistré votre clé d'accès Picovoice.</p>
 <p>Cela est particulièrement utile pour réaliser des modifications sur l'interface graphique.</p>
 <pre><code class="language-bash">$ cargo run 
 </code></pre>
-<h2 id="mots-détecté-avec-la-commande-vocale"><a class="header" href="#mots-détecté-avec-la-commande-vocale">Mots détecté avec la commande vocale</a></h2>
+<h2 id="mots-détectés-avec-la-commande-vocale"><a class="header" href="#mots-détectés-avec-la-commande-vocale">Mots détectés avec la commande vocale</a></h2>
 <ol>
 <li>wake word: "Ok Bateau"</li>
 <li>content:

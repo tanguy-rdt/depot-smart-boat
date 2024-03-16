@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sensor/bme280.html" class="active"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="../sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="../sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="../sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="../sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="../bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="../arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocal 🔨🚧</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Création d'une nouvelle release 🔨🚧</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sensor/bme280.html" class="active"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="../sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="../sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="../sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="../sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="../bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="../arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocale 🔨🚧</div></li><li class="chapter-item expanded "><a href="../release.html"><strong aria-hidden="true">7.</strong> Création d'une nouvelle release</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -181,13 +181,13 @@
                         <h1 id="capteur-de-température-humidité-et-pression"><a class="header" href="#capteur-de-température-humidité-et-pression">Capteur de température, humidité et pression</a></h1>
 <p><img src="./img/weather.png" alt="" /></p>
 <p>La page <em>Weather</em> de l'interface graphique permet d'avoir une prédiction météorologique incluant la température, la vitesse du vent ainsi que sa direction sur 5 jours. <br />
-Grâce à un capteur i2c intégré au bateau, le <em>BME280</em>, une mesure en temps réel de la température, humidité et pression est également disponnible.</p>
+Grâce à un capteur i2c intégré au bateau, le <em>BME280</em>, une mesure en temps réel de la température, humidité et pression est également disponible.</p>
 <h2 id="configuration-du-bme280"><a class="header" href="#configuration-du-bme280">Configuration du BME280</a></h2>
 <p>Avant de réaliser une lecture de donnée météorologique, il est nécessaire de configurer le capteur. On notera 3 registres:</p>
 <div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>Information</th></tr></thead><tbody>
-<tr><td>HUM_CTRL</td><td><em>0xf2</em></td><td></td></tr>
-<tr><td>MEAS_CTRL</td><td><em>0xf4</em></td><td></td></tr>
-<tr><td>CONFIG</td><td><em>0xf5</em></td><td></td></tr>
+<tr><td>HUM_CTRL</td><td><em>0xf2</em></td><td>Configuration du prescaler et de la précision pour la mesure d'humidité</td></tr>
+<tr><td>MEAS_CTRL</td><td><em>0xf4</em></td><td>Configuration du prescaler et de la précision pour la mesure de température et de pression</td></tr>
+<tr><td>CONFIG</td><td><em>0xf5</em></td><td>Configuration du mode d'allimentation</td></tr>
 </tbody></table>
 </div>
 <p>Dans notre cas nous avons décidé d'utiliser les valeurs suivantes:</p>
@@ -201,7 +201,7 @@ Grâce à un capteur i2c intégré au bateau, le <em>BME280</em>, une mesure en 
 }
 <span class="boring">}</span></code></pre></pre>
 <h2 id="lecture-de-la-température"><a class="header" href="#lecture-de-la-température">Lecture de la température</a></h2>
-<p>Une fois que le capteur est configuré nous pouvons commencer par lire la température qui est une valeur sur 3 octets, il faut alors lire les registres suivants: <em>0xfa, 0xfb, 0xfc</em></p>
+<p>Une fois que le capteur est configuré, nous pouvons commencer par lire la température qui est une valeur sur 3 octets, il faut alors lire les registres suivants: <em>0xfa, 0xfb, 0xfc</em></p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn get_temperature(&amp;mut self, gpio: &amp;mut Gpio) -&gt; f32{
@@ -216,15 +216,15 @@ Grâce à un capteur i2c intégré au bateau, le <em>BME280</em>, une mesure en 
     temperature_in_C
 }
 <span class="boring">}</span></code></pre></pre>
-<p>La valeure obtenue <em>temp_raw</em>, correspond à la température brute. Il faut compenser cette valeur à l'aide de constantes propres à chaque capteur qui sont ajusté en usine. <br />
-Pour la température, les registres intéressant sont les suivantes:</p>
+<p>La valeur obtenue <em>temp_raw</em>, correspond à la température brute. Il faut compenser cette valeur à l'aide de constantes propres à chaque capteur qui sont ajustées en usine. <br />
+Pour la température, les registres intéressants sont les suivantes:</p>
 <div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>n bits</th></tr></thead><tbody>
 <tr><td>T1_ADDR</td><td><em>0x89, 0x88</em></td><td>2 * <em>u8</em></td></tr>
 <tr><td>T2_ADDR</td><td><em>0x8b, 0x8a</em></td><td>2 * <em>u8</em></td></tr>
 <tr><td>T3_ADDR</td><td><em>0x8d, 0x8c</em></td><td>2 * <em>u8</em></td></tr>
 </tbody></table>
 </div>
-<p>Avec la fonction <code>compensation_temperature</code> on obtient alors la température en degrés celcius. Les fonctions de compensation sont donnée dans la documentation du BME280.</p>
+<p>Avec la fonction <code>compensation_temperature</code> on obtient alors la température en degrés Celsius. Les fonctions de compensation sont données dans la documentation du BME280.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn compensation_temperature(&amp;mut self, gpio: &amp;mut Gpio, temp_raw: i32) -&gt; i32 {

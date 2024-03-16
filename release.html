@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Capteur de profondeur - Smart Boat</title>
+        <title>Création d&#x27;une nouvelle release - Smart Boat</title>
 
 
         <!-- Custom HTML head -->
@@ -12,21 +12,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon.svg">
-        <link rel="shortcut icon" href="../favicon.png">
-        <link rel="stylesheet" href="../css/variables.css">
-        <link rel="stylesheet" href="../css/general.css">
-        <link rel="stylesheet" href="../css/chrome.css">
-        <link rel="stylesheet" href="../css/print.css" media="print">
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../highlight.css">
-        <link rel="stylesheet" href="../tomorrow-night.css">
-        <link rel="stylesheet" href="../ayu-highlight.css">
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
@@ -37,7 +37,7 @@
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "../";
+            var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
@@ -90,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="../sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="../sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="../sensor/hcsr05.html" class="active"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="../sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="../bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="../arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocale 🔨🚧</div></li><li class="chapter-item expanded "><a href="../release.html"><strong aria-hidden="true">7.</strong> Création d'une nouvelle release</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocale 🔨🚧</div></li><li class="chapter-item expanded "><a href="release.html" class="active"><strong aria-hidden="true">7.</strong> Création d'une nouvelle release</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -146,7 +146,7 @@
                     <h1 class="menu-title">Smart Boat</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/tanguy-rdt/depot-smart-boat" title="Git repository" aria-label="Git repository">
@@ -178,42 +178,42 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="capteur-de-profondeur"><a class="header" href="#capteur-de-profondeur">Capteur de profondeur</a></h1>
-<p><img src="./img/main.png" alt="" /></p>
-<p>Encore une fois nous nous retrouvons sur l'écran principal. <br />
-Cette fois-ci pour une simulation d'un sonar réalisé à l'aide d'un capteur ultrason, le <em>HC-SR05</em>.</p>
-<h2 id="fonctionnement-du-hc-sr05"><a class="header" href="#fonctionnement-du-hc-sr05">Fonctionnement du HC-SR05</a></h2>
-<p>Ici, aucune configuration n’est nécessaire. Nous allons émettre une onde que nous pouvons métaphoriquement imaginer à l'aide d'un 1 booléen. Pour déterminer la distance par rapport aux profondeurs, nous allons mesurer le temps mis par l'onde pour revenir vers le récepteur. <br />
-Seuls les gpio sont utilisés, on émet une impulsion et on la reçois, la distance est ensuite calculée en fonction de la différence de temps et la vitesse du son. <br />
-L'implémentation en rust donne le code suivant.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn read_value(&amp;self, gpio: &amp;mut Gpio) -&gt; f64 {
-    gpio.set_high(self.trigger_pin);
-    thread::sleep(Duration::from_micros(10));
-    gpio.set_low(self.trigger_pin);
-
-    while gpio.is_low(self.echo_pin) {}
-    let start = std::time::Instant::now();
-
-    while gpio.is_high(self.echo_pin) {}
-    let duration = start.elapsed();
-
-    duration.as_secs_f64() * 340.0 / 2.0 * 100.0
-}
-<span class="boring">}</span></code></pre></pre>
+                        <h1 id="création-dune-nouvelle-release"><a class="header" href="#création-dune-nouvelle-release">Création d'une nouvelle release</a></h1>
+<p>Plusieurs solutions s'offrent à vous si vous avez réalisé des modifications et que vous souhaitez compiler un nouveau package d'application.</p>
+<h2 id="pour-debian---deb"><a class="header" href="#pour-debian---deb">Pour debian  → <code>.deb</code></a></h2>
+<h3 id="sur-debian"><a class="header" href="#sur-debian">Sur debian</a></h3>
+<p>Cette méthode est simple, il suffit d'exécuter un script qui réalisera pour vous un <code>.deb</code> qui est placé après compilation dans le dossier <code>./deb</code>.</p>
+<pre><code class="language-bash">$ ./package-builder/debian/bd_smart-boat-gui_debian.sh
+</code></pre>
+<p><em>Cependant, si vous ne développez pas sur Linux alors il faut utiliser les méthodes suivantes.</em></p>
+<h3 id="sur-un-os-différent-avec-docker"><a class="header" href="#sur-un-os-différent-avec-docker">Sur un OS différent avec Docker</a></h3>
+<p>Nous avons mis en place un conteneur docker pour réaliser un package compatible sur debian en mode natif et stub depuis un OS de compilation différent. \</p>
+<p>Pour utiliser docker il vous suffit:</p>
+<ol>
+<li>D'installer docker</li>
+<li>Compilation de l'image docker
+<pre><code class="language-bash">$ ./package-builder/debian/docker/bd_docker-img_debian.sh
+</code></pre>
+</li>
+<li>Lancement du conteneur
+<pre><code class="language-bash">$ ./package-builder/debian/run_docker-img_debian.sh
+</code></pre>
+</li>
+</ol>
+<p>Après exécution du conteneur, vous pouvez trouver le fichier <code>.deb</code> dans le dossier <code>./deb</code>. Le docker exécute simplement un conteneur debian et le script que vous auriez exécuté si vous utilisez un OS de compilation Linux.</p>
+<h2 id="pour-debian-et-macos-avec-github-action"><a class="header" href="#pour-debian-et-macos-avec-github-action">Pour Debian et MacOS avec GitHub action</a></h2>
+<p>Nous avons mis en place un workflow qui permet de compiler l'application et d'en réaliser un package en mode natif et stub. \</p>
+<p>Pour que ce workflow se lance, il vous suffit de pousser vos modifications avec un tag qui débute par <em>'v'</em> suivie d'un numéro de version, par exemple <em>v1.0.0</em>. <br />
+L'action GitHub va alors se lancer et après sont succès vous pouvez trouver tous les packages dans une nouvelle <a href="https://github.com/tanguy-rdt/depot-smart-boat/releases">release</a> qui porte comme nom la version du tag que vous avez utilisé.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../sensor/mcp3008.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="arch.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../sensor/pca9685.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -221,13 +221,10 @@ L'implémentation en rust donne le code suivant.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../sensor/mcp3008.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="arch.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../sensor/pca9685.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
             </nav>
 
         </div>
@@ -240,17 +237,17 @@ L'implémentation en rust donne le code suivant.</p>
         </script>
 
 
-        <script src="../elasticlunr.min.js"></script>
-        <script src="../mark.min.js"></script>
-        <script src="../searcher.js"></script>
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
 
-        <script src="../clipboard.min.js"></script>
-        <script src="../highlight.js"></script>
-        <script src="../book.js"></script>
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="../mermaid.min.js"></script>
-        <script src="../mermaid-init.js"></script>
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
 
 
     </div>

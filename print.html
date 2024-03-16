@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocal 🔨🚧</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Création d'une nouvelle release 🔨🚧</div></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="overview.html"><strong aria-hidden="true">1.</strong> Aperçu général</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.</strong> Fonctionnement des capteurs</div></li><li><ol class="section"><li class="chapter-item expanded "><a href="sensor/bme280.html"><strong aria-hidden="true">2.1.</strong> Capteur de température, humidité et pression</a></li><li class="chapter-item expanded "><a href="sensor/bmm150.html"><strong aria-hidden="true">2.2.</strong> Boussole</a></li><li class="chapter-item expanded "><a href="sensor/mcp3008.html"><strong aria-hidden="true">2.3.</strong> Girouette</a></li><li class="chapter-item expanded "><a href="sensor/hcsr05.html"><strong aria-hidden="true">2.4.</strong> Capteur de profondeur</a></li></ol></li><li class="chapter-item expanded "><a href="sensor/pca9685.html"><strong aria-hidden="true">3.</strong> Le mouvement des voiles</a></li><li class="chapter-item expanded "><a href="bt.html"><strong aria-hidden="true">4.</strong> Bluetooth</a></li><li class="chapter-item expanded "><a href="arch.html"><strong aria-hidden="true">5.</strong> L'architecture du code</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">6.</strong> La commande vocale 🔨🚧</div></li><li class="chapter-item expanded "><a href="release.html"><strong aria-hidden="true">7.</strong> Création d'une nouvelle release</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -183,7 +183,7 @@
 <p>Melvin DUBEE - Tanguy ROUDAUT</p>
 <p><em>ENSTA Bretagne</em></p>
 </blockquote>
-<p>Ce projet met en ouvre un système intelligent intégrant une interface graphique basé sur <a href="https://github.com/emilk/egui"><em>egui</em></a> et une commande vocale pour le contrôle d'une maquette de bateau. Différent capteurs de naviguation et des moteurs permettent de simuler une naviguation en sécurité et assisté.</p>
+<p>Ce projet met en œuvre un système intelligent intégrant une interface graphique basé sur <a href="https://github.com/emilk/egui"><em>egui</em></a> et une commande vocale pour le contrôle d'une maquette de bateau. Différents capteurs de navigation et des moteurs permettent de simuler une navigation en sécurité et assisté.</p>
 <h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
 <h3 id="installation-de-rust"><a class="header" href="#installation-de-rust">Installation de rust</a></h3>
 <p>Le code de ce projet est réalisé en rust, il est donc important de l'avoir installé.</p>
@@ -193,20 +193,20 @@
 <p>Vous pouvez ajouter votre clé d'accès:</p>
 <ul>
 <li>De manière temporaire dans le terminal actif avec <code>export PICOVOICE_ACCES_KEY="YOUR_ACCES_KEY"</code></li>
-<li>De manière permanente en ajoutant cette commande dans votre <code>~/.bashrc</code> ou <code>~/.zshrc</code> em fonction du shell utilisé.</li>
+<li>De manière permanente en ajoutant cette commande dans votre <code>~/.bashrc</code> ou <code>~/.zshrc</code> en fonction du shell utilisé.</li>
 </ul>
-<p><em>Si vous n'avez pas de clé d'accès vous pouvez en obtenir une en créant un compte sur le site de <a href="https://console.picovoice.ai/login">picovoice</a> gratuitement.</em></p>
+<p><em>Si vous n'avez pas de clé d'accès, vous pouvez en obtenir une en créant un compte sur le site de <a href="https://console.picovoice.ai/login">picovoice</a> gratuitement.</em></p>
 <h3 id="sur-raspberryos"><a class="header" href="#sur-raspberryos">Sur RaspberryOS</a></h3>
 <p>Cette commande marchera uniquement avec un Raspberry Pi ou un émulateur qui prend en charge les ports GPIO. Le mode sur cible prend en compte la crate rppal qui permet de contrôler les ports GPIO.</p>
 <pre><code class="language-bash">$ cargo run --features=on_target
 </code></pre>
 <p>Actuellement l'interface graphique en WASM n'a pas était réalisé. Vous devez connecter un écran au Raspberry Pi ou utiliser un serveur VNC <em>(le serveur doit être activé avec la commande <code>sudo raspi-config</code> puis activer le serveur VNC dans le menu <code>Interface</code>).</em></p>
 <h3 id="sur-un-os-différent-de-la-cible-mode-stub"><a class="header" href="#sur-un-os-différent-de-la-cible-mode-stub">Sur un OS différent de la cible <em>(Mode stub)</em></a></h3>
-<p>Le mode <em>stub</em> vous permet d'éxecuter l'interface graphique avec une maquette simulé pour s'affranchire de capteurs et des GPIO. Cependant vous-devez quand même avoir enregistré votre clé d'accès Picovoice.</p>
+<p>Le mode <em>stub</em> vous permet d'exécuter l'interface graphique avec une maquette simulée pour s'affranchir de capteurs et des GPIO. Cependant vous devez quand même avoir enregistré votre clé d'accès Picovoice.</p>
 <p>Cela est particulièrement utile pour réaliser des modifications sur l'interface graphique.</p>
 <pre><code class="language-bash">$ cargo run 
 </code></pre>
-<h2 id="mots-détecté-avec-la-commande-vocale"><a class="header" href="#mots-détecté-avec-la-commande-vocale">Mots détecté avec la commande vocale</a></h2>
+<h2 id="mots-détectés-avec-la-commande-vocale"><a class="header" href="#mots-détectés-avec-la-commande-vocale">Mots détectés avec la commande vocale</a></h2>
 <ol>
 <li>wake word: "Ok Bateau"</li>
 <li>content:
@@ -227,13 +227,13 @@
 <div style="break-before: page; page-break-before: always;"></div><h1 id="capteur-de-température-humidité-et-pression"><a class="header" href="#capteur-de-température-humidité-et-pression">Capteur de température, humidité et pression</a></h1>
 <p><img src="sensor/./img/weather.png" alt="" /></p>
 <p>La page <em>Weather</em> de l'interface graphique permet d'avoir une prédiction météorologique incluant la température, la vitesse du vent ainsi que sa direction sur 5 jours. <br />
-Grâce à un capteur i2c intégré au bateau, le <em>BME280</em>, une mesure en temps réel de la température, humidité et pression est également disponnible.</p>
+Grâce à un capteur i2c intégré au bateau, le <em>BME280</em>, une mesure en temps réel de la température, humidité et pression est également disponible.</p>
 <h2 id="configuration-du-bme280"><a class="header" href="#configuration-du-bme280">Configuration du BME280</a></h2>
 <p>Avant de réaliser une lecture de donnée météorologique, il est nécessaire de configurer le capteur. On notera 3 registres:</p>
 <div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>Information</th></tr></thead><tbody>
-<tr><td>HUM_CTRL</td><td><em>0xf2</em></td><td></td></tr>
-<tr><td>MEAS_CTRL</td><td><em>0xf4</em></td><td></td></tr>
-<tr><td>CONFIG</td><td><em>0xf5</em></td><td></td></tr>
+<tr><td>HUM_CTRL</td><td><em>0xf2</em></td><td>Configuration du prescaler et de la précision pour la mesure d'humidité</td></tr>
+<tr><td>MEAS_CTRL</td><td><em>0xf4</em></td><td>Configuration du prescaler et de la précision pour la mesure de température et de pression</td></tr>
+<tr><td>CONFIG</td><td><em>0xf5</em></td><td>Configuration du mode d'allimentation</td></tr>
 </tbody></table>
 </div>
 <p>Dans notre cas nous avons décidé d'utiliser les valeurs suivantes:</p>
@@ -247,7 +247,7 @@ Grâce à un capteur i2c intégré au bateau, le <em>BME280</em>, une mesure en 
 }
 <span class="boring">}</span></code></pre></pre>
 <h2 id="lecture-de-la-température"><a class="header" href="#lecture-de-la-température">Lecture de la température</a></h2>
-<p>Une fois que le capteur est configuré nous pouvons commencer par lire la température qui est une valeur sur 3 octets, il faut alors lire les registres suivants: <em>0xfa, 0xfb, 0xfc</em></p>
+<p>Une fois que le capteur est configuré, nous pouvons commencer par lire la température qui est une valeur sur 3 octets, il faut alors lire les registres suivants: <em>0xfa, 0xfb, 0xfc</em></p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn get_temperature(&amp;mut self, gpio: &amp;mut Gpio) -&gt; f32{
@@ -262,15 +262,15 @@ Grâce à un capteur i2c intégré au bateau, le <em>BME280</em>, une mesure en 
     temperature_in_C
 }
 <span class="boring">}</span></code></pre></pre>
-<p>La valeure obtenue <em>temp_raw</em>, correspond à la température brute. Il faut compenser cette valeur à l'aide de constantes propres à chaque capteur qui sont ajusté en usine. <br />
-Pour la température, les registres intéressant sont les suivantes:</p>
+<p>La valeur obtenue <em>temp_raw</em>, correspond à la température brute. Il faut compenser cette valeur à l'aide de constantes propres à chaque capteur qui sont ajustées en usine. <br />
+Pour la température, les registres intéressants sont les suivantes:</p>
 <div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>n bits</th></tr></thead><tbody>
 <tr><td>T1_ADDR</td><td><em>0x89, 0x88</em></td><td>2 * <em>u8</em></td></tr>
 <tr><td>T2_ADDR</td><td><em>0x8b, 0x8a</em></td><td>2 * <em>u8</em></td></tr>
 <tr><td>T3_ADDR</td><td><em>0x8d, 0x8c</em></td><td>2 * <em>u8</em></td></tr>
 </tbody></table>
 </div>
-<p>Avec la fonction <code>compensation_temperature</code> on obtient alors la température en degrés celcius. Les fonctions de compensation sont donnée dans la documentation du BME280.</p>
+<p>Avec la fonction <code>compensation_temperature</code> on obtient alors la température en degrés Celsius. Les fonctions de compensation sont données dans la documentation du BME280.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn compensation_temperature(&amp;mut self, gpio: &amp;mut Gpio, temp_raw: i32) -&gt; i32 {
@@ -441,16 +441,16 @@ fn compensation_humidity(&amp;self, gpio: &amp;Gpio, hum_raw: i32) -&gt; i32{
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="boussole"><a class="header" href="#boussole">Boussole</a></h1>
 <p><img src="sensor/./img/main.png" alt="" /></p>
-<p>La page principal permet de controler le bateau et d'avoir différente informations. Nous allons commencé par l'aiguille blanche présente sur le cadran qui reprèsente la boussole. <br />
-Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en temps réel de la position par rapport au nord est disponnible.</p>
+<p>La page principale permet de contrôler le bateau et d'avoir différentes informations. Nous allons commencer par l'aiguille blanche présente sur le cadran qui représente la boussole. <br />
+Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en temps réel de la position par rapport au nord est disponible.</p>
 <h2 id="configuration-du-bmm150"><a class="header" href="#configuration-du-bmm150">Configuration du BMM150</a></h2>
 <p>Dans un premier temps il est nécessaire de réaliser une configuration du capteur comme pour le <em>BME280</em>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>Information</th></tr></thead><tbody>
-<tr><td>CTRL_POWER_REGISTER</td><td><em>0x4b</em></td><td>Permet de configurer le mode d'allimentation</td></tr>
-<tr><td>MODE_RATE_REGISTER</td><td><em>0x4c</em></td><td>Permet de configurer la fréquence de fonctionnement</td></tr>
-<tr><td>REG_REP_XY</td><td><em>0x51</em></td><td>Permet de configurer la précison des axes X et Y</td></tr>
-<tr><td>REG_REP_Z</td><td><em>0x52</em></td><td>Permet de configurer la précision de l'axe Z</td></tr>
-<tr><td>REG_AXES_ENABLE</td><td><em>0x4e</em></td><td>Permet d'activer ou de désactiver les axes souhaités</td></tr>
+<tr><td>CTRL_POWER_REGISTER</td><td><em>0x4b</em></td><td>Permets de configurer le mode d'alimentation</td></tr>
+<tr><td>MODE_RATE_REGISTER</td><td><em>0x4c</em></td><td>Permets de configurer la fréquence de fonctionnement</td></tr>
+<tr><td>REG_REP_XY</td><td><em>0x51</em></td><td>Permets de configurer la précision des axes X et Y</td></tr>
+<tr><td>REG_REP_Z</td><td><em>0x52</em></td><td>Permets de configurer la précision de l'axe Z</td></tr>
+<tr><td>REG_AXES_ENABLE</td><td><em>0x4e</em></td><td>Permets d'activer ou de désactiver les axes souhaités.</td></tr>
 </tbody></table>
 </div>
 <p>Dans notre cas nous allons utiliser la configuration suivante:</p>
@@ -473,9 +473,9 @@ Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en 
     }
 }
 <span class="boring">}</span></code></pre></pre>
-<p>Les différentes fonctions de configuration sont disponnible dans le fichier <a href="https://github.com/tanguy-rdt/depot-smart-boat/blob/main/src/boat_control/bmm150.rs"><em>bmm150.rs</em></a> de notre dépot.</p>
+<p>Les différentes fonctions de configuration sont disponibles dans le fichier <a href="https://github.com/tanguy-rdt/depot-smart-boat/blob/main/src/boat_control/bmm150.rs"><em>bmm150.rs</em></a> de notre dépôt.</p>
 <h2 id="lecture-des-paramètres-de-compensation"><a class="header" href="#lecture-des-paramètres-de-compensation">Lecture des paramètres de compensation</a></h2>
-<p>Le <em>BMM150</em> est un capteur bosch, comme pour le <em>BME280</em>. Le principe de fonctionnement est le même, les valeurs lus dans les registres sont des données brut. Il faut donc les compensés.</p>
+<p>Le <em>BMM150</em> est un capteur Bosch, comme pour le <em>BME280</em>. Le principe de fonctionnement est le même, les valeurs lues dans les registres sont des données brutes. Il faut donc les compenser.</p>
 <div class="table-wrapper"><table><thead><tr><th>Nom</th><th>Adresse</th><th>n bits</th></tr></thead><tbody>
 <tr><td>DIG_X1</td><td><em>0x5D</em></td><td>1 * <em>u8</em></td></tr>
 <tr><td>DIG_Z4_LSB</td><td><em>0x62</em></td><td>1 * <em>u8</em></td></tr>
@@ -514,9 +514,9 @@ Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en 
     self.trim_data.dig_xyz1 = temp_msb | trim_xy1_xy2[4] as u16;
 }
 <span class="boring">}</span></code></pre></pre>
-<p>C'est valeure ne change pas, il suffit de les lires une fois et de les utiliser au moment de la compensation.</p>
+<p>C'est des valeurs qui ne change pas, il suffit de les lires une fois et de les utiliser au moment de la compensation.</p>
 <h2 id="lecture-des-axes-et-compensations"><a class="header" href="#lecture-des-axes-et-compensations">Lecture des axes et compensations</a></h2>
-<p>La lecture des axes peut être faite en une seule fois puisque les registres ce suivent, le premier registre à lire le <em>REG_DATA_X_LSB</em> correspond à l'adresse <em>0x42</em>.</p>
+<p>La lecture des axes peut être faite en une seule fois puisque les registres se suivent, le premier registre à lire le <em>REG_DATA_X_LSB</em> correspond à l'adresse <em>0x42</em>.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn get_geomagnetic(&amp;mut self, gpio: &amp;mut Gpio) -&gt; (i16, i16, i16){
@@ -548,7 +548,7 @@ Grâce à un capteur i2c intégré au bateau, le <em>BMM150</em>, une mesure en 
     (self.geomagnetic_x, self.geomagnetic_y, self.geomagnetic_z)
 }
 <span class="boring">}</span></code></pre></pre>
-<p>On peut ensuite compenser c'est valeurs grâce aux constantes obtenus précédement et aux fonctions données dans la datasheet.</p>
+<p>On peut ensuite compenser ces valeurs grâce aux constantes obtenues précédemment et aux fonctions données dans la documentation.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn compensate_x(&amp;self, x: i16, r: u16) -&gt; i16{ 
@@ -636,7 +636,7 @@ fn compensate_z(&amp;self, z: i16, r: u16) -&gt; i16{
 }
 <span class="boring">}</span></code></pre></pre>
 <h2 id="conversion-des-coordonnées-xyz-en-degrés-par-rapport-au-nord"><a class="header" href="#conversion-des-coordonnées-xyz-en-degrés-par-rapport-au-nord">Conversion des coordonnées XYZ en degrés par rapport au nord</a></h2>
-<p>La conversion est simple puisqu'il s'agit d'appliquer des formules trigonomètriques et de s'assurer que la valeur obtenus reste entre 0 et 360 degrès.</p>
+<p>La conversion est simple puisqu'il s'agit d'appliquer des formules trigonométriques et de s'assurer que la valeur obtenue reste entre 0 et 360 degrés.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn get_boat_direction_degree(&amp;mut self) -&gt; f32{
@@ -650,11 +650,11 @@ fn compensate_z(&amp;self, z: i16, r: u16) -&gt; i16{
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="girouette"><a class="header" href="#girouette">Girouette</a></h1>
 <p><img src="sensor/./img/main.png" alt="" /></p>
-<p>La page principal permet de controler le bateau et d'avoir différente informations comme la boussole qui a était vu précédement. Sur le cadran ont peut voir une seconde aiguille, qui est bleu cette fois-ci, elle correspond à la direction du vent.
-Nous avons pas pus intégrer ou réaliser une vrais girouette par manque de temps, d'argent et de place. Nous avons décidé de simuler cette fonctionnalité avec un potentiomètre qu'on tourne manuellement pour simuler l'automation du cap par exemple.</p>
-<p>Le raspberry pi, n'intègre pas directement de port analogique. Nous avons utiliser un convertisseur analogique numérique, cette page concèrne d'avantage l'utilisation d'un tel convertisseur plustôt qu'une veritable girouette.</p>
+<p>La page principale permet de contrôler le bateau et d'avoir différentes informations comme la boussole qui a été vu précédemment. Sur le cadran on peut voir une seconde aiguille, qui est bleue cette fois-ci, elle correspond à la direction du vent.
+Nous n’avons pas pu intégrer ou réaliser une vraie girouette par manque de temps, d'argent et de place. Nous avons décidé de simuler cette fonctionnalité avec un potentiomètre qu'on tourne manuellement pour simuler l'automation du cap par exemple.</p>
+<p>Le raspberry pi, n'intègre pas directement de port analogique. Nous avons utilisé un convertisseur analogique numérique, cette page concerne davantage l'utilisation d'un tel convertisseur plutôt qu'une véritable girouette.</p>
 <h2 id="lecture-dun-canal-dun-adc"><a class="header" href="#lecture-dun-canal-dun-adc">Lecture d'un canal d'un ADC</a></h2>
-<p>Nous avons choisis l'ADC <em>MCP3008</em>, ce dernier possède 8 channel et une résolution de 10 bits, ce qui est plus que suffisant pour notre utilisations.</p>
+<p>Nous avons choisi l'ADC <em>MCP3008</em>, ce dernier possède 8 channel et une résolution de 10 bits, ce qui est plus que suffisant pour notre utilisation.</p>
 <p>La lecture est simple et se fait en SPI.</p>
 <div class="table-wrapper"><table><thead><tr><th>CMD</th><th>Start</th><th>SGL (0) - DIFF (1)</th><th>D2</th><th>D1</th><th>D0</th><th>ND</th><th>ND</th><th>ND</th></tr></thead><tbody>
 <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
@@ -662,7 +662,7 @@ Nous avons pas pus intégrer ou réaliser une vrais girouette par manque de temp
 <tr><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
 </tbody></table>
 </div>
-<p>La première commande permet l'initialisation de la communication. La seconde une lecture en mode single sur le channel 0 et la dernière c'est une commande tampon pour laisser le temps à l'ADC de répondre. <br />
+<p>La première commande permet l'initialisation de la communication. La seconde une lecture en mode single sur le canal 0 et la dernière c'est une commande tampon pour laisser le temps à l'ADC de répondre. <br />
 En rust, nous pouvons réaliser c'est commande comme l'exemple ci-dessous.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -673,7 +673,7 @@ En rust, nous pouvons réaliser c'est commande comme l'exemple ci-dessous.</p>
     ((recv_buf[1] as u16) &lt;&lt; 8 | (recv_buf[2] as u16)) &amp; 0x3FF
 }
 <span class="boring">}</span></code></pre></pre>
-<p>Cette fonction retourne une valeure entre 0 et 1023, il faut donc la convertir en degrès et la compenser par rapport au nord grâce à la boussole. Notre girouette est sur le bateau, il est alors nécessaire de la compenser pour obtenir une valeure cohérente.</p>
+<p>Cette fonction retourne une valeur entre 0 et 1023, il faut donc la convertir en degrés et la compenser par rapport au nord grâce à la boussole. Notre girouette est sur le bateau, il est alors nécessaire de la compenser pour obtenir une valeur cohérente.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn compensate_raw_value(&amp;self, raw_value: u16, degrees_from_north: f32) -&gt; f32 {
@@ -683,11 +683,11 @@ En rust, nous pouvons réaliser c'est commande comme l'exemple ci-dessous.</p>
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="capteur-de-profondeur"><a class="header" href="#capteur-de-profondeur">Capteur de profondeur</a></h1>
 <p><img src="sensor/./img/main.png" alt="" /></p>
-<p>Encore une fois nous nous retrouvons sur l'écran principale. <br />
-Cette fois-ci pour une simulation d'un sonar réalisé a l'aide d'un capteur ultrason, le <em>HC-SR05</em>.</p>
+<p>Encore une fois nous nous retrouvons sur l'écran principal. <br />
+Cette fois-ci pour une simulation d'un sonar réalisé à l'aide d'un capteur ultrason, le <em>HC-SR05</em>.</p>
 <h2 id="fonctionnement-du-hc-sr05"><a class="header" href="#fonctionnement-du-hc-sr05">Fonctionnement du HC-SR05</a></h2>
-<p>Ici, aucune configuration est nécessaire. Nous allons émettre une onde que nous pouvons métaphoriquement imaginé à l'aide d'un 1 boolèen. Pour déterminer la distance par rapport au profondeur, nous allons mesurer le temps mis par l'onde pour revenir vers le récepteur. <br />
-Seul les gpio sont utilisés, on emet une impulsion et on la recois, la distance est ensuite calculé en fonction de la différence de temps et la vitesse du son. <br />
+<p>Ici, aucune configuration n’est nécessaire. Nous allons émettre une onde que nous pouvons métaphoriquement imaginer à l'aide d'un 1 booléen. Pour déterminer la distance par rapport aux profondeurs, nous allons mesurer le temps mis par l'onde pour revenir vers le récepteur. <br />
+Seuls les gpio sont utilisés, on émet une impulsion et on la reçois, la distance est ensuite calculée en fonction de la différence de temps et la vitesse du son. <br />
 L'implémentation en rust donne le code suivant.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -706,13 +706,13 @@ L'implémentation en rust donne le code suivant.</p>
 }
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="le-mouvement-des-voiles"><a class="header" href="#le-mouvement-des-voiles">Le mouvement des voiles</a></h1>
-<p>Sur notre maquette nous déplacons les voiles à l'aide de poulis imprimés en 3D et de moteurs <em>FT90MR</em>. Allimenter 4 moteurs grâce au Raspberry Pi peut être insuffisant, c'est pourquoi nous utilisons un contrôleur PWM externe, la carte <em>PCA9685</em>. <br />
-Cette carte de commande fonctionne en i2c, nous pouvons associés deux avantages à cette carte. Le premier et que nous pouvons ajouté une allimentation supplémentaire ce qui évite une sollicitation trop importante du raspberry pi. De plus, nous pouvons contrôller 16 moteurs ou autre actionneur utilisant une commande PWM tout en limitant l'usage des ports GPIO.</p>
+<p>Sur notre maquette nous déplaçons les voiles à l'aide de poulies imprimées en 3D et de moteurs <em>FT90MR</em>. Alimenter 4 moteurs grâce au Raspberry Pi peut être insuffisant, c'est pourquoi nous utilisons un contrôleur PWM externe, la carte <em>PCA9685</em>. <br />
+Cette carte de commande fonctionne en i2c, nous pouvons associer deux avantages à cette carte. Le premier et que nous pouvons ajouté une alimentation supplémentaire, ce qui évite une sollicitation trop importante du raspberry pi. De plus, nous pouvons contrôler 16 moteurs ou autre actionneur utilisant une commande PWM tout en limitant l'usage des ports GPIO.</p>
 <p><img src="sensor/./img/main.png" alt="" /></p>
-<p>Le contrôle des moteurs se fait également sur l'écran d'accueil. grâce aux différent slider.</p>
+<p>Le contrôle des moteurs se fait également sur l'écran d'accueil. Grâce aux différents slider.</p>
 <h2 id="configuration-du-pca9685"><a class="header" href="#configuration-du-pca9685">Configuration du PCA9685</a></h2>
-<p>La seul configuration nécessaire est le <em>prescaler</em> via le registre <em>0xfe</em>. <br />
-Il est également possible, mais optionel, de configuré le PCA dans une mode particulier. Dans notre cas nous avons décidé d'activer le mode iterratif, <em>MODE_AI</em>. Ce mode permet d'écrire dans plusieurs registre à la suite. Par exemple, si l'on souhaite écrire <em>0x00</em> puis <em>0x01</em> à partir du registre <em>0xa0</em>, alors le PCA va comprendre qu'il faut écrire <em>0x00</em> sur <em>0xa0</em> puis <em>0x01</em> sur <em>0xa1</em>.</p>
+<p>La seule configuration nécessaire est le <em>prescaler</em> via le registre <em>0xfe</em>. <br />
+Il est également possible, mais optionnel, de configurer le PCA dans un mode particulier. Dans notre cas nous avons décidé d'activer le mode itératif, <em>MODE_AI</em>. Ce mode permet d'écrire dans plusieurs registres à la suite. Par exemple, si l'on souhaite écrire <em>0x00</em> puis <em>0x01</em> à partir du registre <em>0xa0</em>, alors le PCA va comprendre qu'il faut écrire <em>0x00</em> sur <em>0xa0</em> puis <em>0x01</em> sur <em>0xa1</em>.</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub fn init(&amp;mut self, gpio: &amp;mut Gpio){
@@ -741,29 +741,29 @@ fn init_prescaler(&amp;mut self, gpio: &amp;mut Gpio, frequency: f32){
 }
 <span class="boring">}</span></code></pre></pre>
 <h2 id="fonctionnement-du-pwm"><a class="header" href="#fonctionnement-du-pwm">Fonctionnement du PWM</a></h2>
-<p>La documentation des moteurs FT90MR indique les périodes d'impulsions suivante, elles correspondent au sens de rotation pour une vitesse maximale:</p>
+<p>La documentation des moteurs FT90MR indique les périodes d'impulsions suivantes, elles correspondent au sens de rotation pour une vitesse maximale:</p>
 <ul>
 <li>CC <em>counter clock</em>:  <strong>500/1500 us</strong></li>
 <li>Neutre: <strong>1500 us</strong></li>
 <li>CCW <em>counter clockwise</em>: <strong>1500/2500 us</strong></li>
 </ul>
-<p>Grâce à la formule suivante nous pouvons convertir les largeurs d'impulsions en une valeure <em>PWM</em>.</p>
+<p>Grâce à la formule suivante, nous pouvons convertir les largeurs d'impulsions en une valeur <em>PWM</em>.</p>
 <p>$$
-\text{Valeur PWM} = \left( \frac{\text{Temps en }\mu s}{\text{Période Totale en }\mu s} \right) \times \text{Résolution Maximale}
+\text{Valeur PWM} = \left( \frac{\text{Temps en }\mu s}{\text{Période totale en }\mu s} \right) \times \text{Résolution maximale}
 $$</p>
-<p>Après calcul nous obtenos et nous utiliserons les valeurs suivante:</p>
+<p>Après calcul, nous obtenons et nous utiliserons les valeurs suivantes:</p>
 <ul>
 <li>CC <em>counter clock</em>:  <strong>max 102, utilisation de 184 en hexa 0x00b8</strong></li>
 <li>Neutre: <strong>307 en hexa 0x0133</strong></li>
 <li>CCW <em>counter clockwise</em>: <strong>max 512, utilisation de 430 en hexa 0x01ae</strong></li>
 </ul>
 <h2 id="commande-des-moteurs-avec-le-pca9685"><a class="header" href="#commande-des-moteurs-avec-le-pca9685">Commande des moteurs avec le PCA9685</a></h2>
-<p>Les registres du <em>PCA</em> se suivent et pour un moteur soit un canal nous utilisons 4 octets. Nous pouvons alors facilement naviguer entre les registre d'adresses depuis la premier registre <em>0x06</em> avec la formule suivante.</p>
+<p>Les registres du <em>PCA</em> se suivent et pour un moteur, soit un canal nous utilisons 4 octets. Nous pouvons alors facilement naviguer entre les registres d'adresses depuis le premier registre <em>0x06</em> avec la formule suivante.</p>
 <p>$$
 \text{first_register_channel_x} = ( 0x06 + (channel_x \times 4))
 $$</p>
-<p>Si on veut contrôler le channel 2 cela nous donnera comme premier registre <em>0x0e</em>, il faudra alors écrire nos 4 octets dans <em>0x0e..0x11</em>. <br />
-Pour se déplacer dans le sens horaire avec le moteur connecté au second canal on écrira alors:</p>
+<p>Si on veut contrôler le canal 2, cela nous donnera comme premier registre <em>0x0e</em>, il faudra alors écrire nos 4 octets dans <em>0x0e..0x11</em>. <br />
+Pour se déplacer dans le sens horaire avec le moteur connecté au second canal, on écrira alors:</p>
 <ul>
 <li><em>0x0e</em> : <em>0x0</em></li>
 <li><em>0x0f</em> : <em>0x0</em></li>
@@ -797,12 +797,12 @@ fn set_pwm(&amp;mut self, gpio: &amp;mut Gpio, channel: i32, on: u16, off: u16){
 }
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="bluetooth"><a class="header" href="#bluetooth">Bluetooth</a></h1>
-<p>Il existe plusieurs manière de connecter un périphèrique en bluetooth sur un OS Linux. Si vous utilisé <em>pulseaudio</em> ou <em>pipewire</em>, cette page ne sera pas nécessaire car elle s'appuye sur l'utilisation de <em>Bluealsa</em>.</p>
+<p>Il existe plusieurs manières de connecter un périphérique en Bluetooth sur un OS Linux. Si vous utilisez <em>pulseaudio</em> ou <em>pipewire</em>, cette page ne sera pas nécessaire, car elle s'appuie sur l'utilisation de <em>Bluealsa</em>.</p>
 <h2 id="bluealsa-cest-quoi-"><a class="header" href="#bluealsa-cest-quoi-">Bluealsa c'est quoi ?</a></h2>
-<p>Bluealsa, c'est l'utilisation commune de <em>BlueZ</em> la stack officiel de linux qui permet l'utilisation du bluetooth et de <em>ALSA</em> un utilitaire pour configurer et utilisé des cartes audios. Finalement leurs utilisations commune permet de gérer des périphérique bluetooth audio.</p>
+<p>Bluealsa, c'est l'utilisation commune de <em>BlueZ</em> la stack officiel de Linux qui permet l'utilisation du Bluetooth et de <em>ALSA</em> un utilitaire pour configurer et utiliser des cartes audios. Finalement leurs utilisations communes permettent de gérer des périphériques Bluetooth audio.</p>
 <p><img src="./img/bt.png" alt="" /></p>
 <h2 id="configuration-dun-périphérique-bluetooth"><a class="header" href="#configuration-dun-périphérique-bluetooth">Configuration d'un périphérique Bluetooth</a></h2>
-<p>Avant de contrôler notre bateau par la commande vocal et un équipement bluetooth, il faut connecter l'équipement avec les commandes fournis par BlueZ.
+<p>Avant de contrôler notre bateau par la commande vocale et un équipement Bluetooth, il faut connecter l'équipement avec les commandes fournies par BlueZ.
 Le protocole est assez simple, il s'agit des mêmes étapes qu'avec l'utilisation d'une IHM mais avec des lignes de commandes.</p>
 <pre><code class="language-bash">$ bluetoothctl scan on                # permet de trouver notre équipement 
 $ bluetoothctl trust &lt;MAC_ADRESSE&gt;    # de lui faire confiance
@@ -830,17 +830,44 @@ pcm.!default {
     slave.pcm "btreceiver"
 }
 </code></pre>
-<p>Il est impotant d'utiliser le profile <em>sco</em> qui en réalité n'en est pas un, mais un protocole de communication utilisé par le profil <em>HSP/HFP</em>. Cette mention indique alors qu'on utilise les bons profile. <br />
-Le HSP/HFP les profils qui produisent les meilleurs codec pour une qualité optimal, cependant on utilise que le microphone donc cela n'est pas dérengant. De plus certain profil comme l'<em>A2DP</em> fonctionne uniquement en playback, le microphone n'est pas utilisable. Il est important de configurer notre équipement avec c'est profil pour un bon fonctionnement.</p>
+<p>Il est important d'utiliser le profil <em>sco</em> qui en réalité n'en est pas un, mais un protocole de communication utilisé par le profil <em>HSP/HFP</em>. Cette mention indique alors qu'on utilise les bons profils. <br />
+Le HSP/HFP ne sont pas les profils qui utilisent les meilleurs codecs pour une qualité optimale, cependant on utilise que le microphone donc cela n'est pas dérangeant. De plus certains profils comme l'<em>A2DP</em> fonctionne uniquement en playback, le microphone n'est pas utilisable. Il est important de configurer notre équipement avec ces profils pour un bon fonctionnement.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="larchitecture-du-code"><a class="header" href="#larchitecture-du-code">L'architecture du code</a></h1>
-<p>Dans le cas où vous souhaité réaliser des modifications nous avons respecter une architecture respectant le modèle <em>MVC (Model Vue Controler)</em>. \</p>
+<p>Dans le cas où vous souhaitez réaliser des modifications, nous avons respecté une architecture respectant le modèle <em>MVC (Model Vue Controler)</em>. \</p>
 <ul>
 <li>Le code lié à l'utilisation des capteurs et actionneur se trouve dans <em>boat controler</em></li>
 <li>Le code lié à la commande vocale dans <em>voice controler</em></li>
 <li>Le code lié à l'IHM dans <em>gui</em> et <em>model</em></li>
 </ul>
-<p>N'oublié pas que vous pouvez vous affranchire de la maquette en utilisant le mode stub, expliqué dans la section <a href="./overview.html#sur-un-os-diff%C3%A9rent-de-la-cible-mode-stub"><em>Aperçu général</em></a></p>
+<p>N'oublier pas que vous pouvez vous affranchir de la maquette en utilisant le mode stub, expliqué dans la section <a href="./overview.html#sur-un-os-diff%C3%A9rent-de-la-cible-mode-stub"><em>Aperçu général</em></a></p>
 <p><img src="./img/arch.png" alt="" /></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="création-dune-nouvelle-release"><a class="header" href="#création-dune-nouvelle-release">Création d'une nouvelle release</a></h1>
+<p>Plusieurs solutions s'offrent à vous si vous avez réalisé des modifications et que vous souhaitez compiler un nouveau package d'application.</p>
+<h2 id="pour-debian---deb"><a class="header" href="#pour-debian---deb">Pour debian  → <code>.deb</code></a></h2>
+<h3 id="sur-debian"><a class="header" href="#sur-debian">Sur debian</a></h3>
+<p>Cette méthode est simple, il suffit d'exécuter un script qui réalisera pour vous un <code>.deb</code> qui est placé après compilation dans le dossier <code>./deb</code>.</p>
+<pre><code class="language-bash">$ ./package-builder/debian/bd_smart-boat-gui_debian.sh
+</code></pre>
+<p><em>Cependant, si vous ne développez pas sur Linux alors il faut utiliser les méthodes suivantes.</em></p>
+<h3 id="sur-un-os-différent-avec-docker"><a class="header" href="#sur-un-os-différent-avec-docker">Sur un OS différent avec Docker</a></h3>
+<p>Nous avons mis en place un conteneur docker pour réaliser un package compatible sur debian en mode natif et stub depuis un OS de compilation différent. \</p>
+<p>Pour utiliser docker il vous suffit:</p>
+<ol>
+<li>D'installer docker</li>
+<li>Compilation de l'image docker
+<pre><code class="language-bash">$ ./package-builder/debian/docker/bd_docker-img_debian.sh
+</code></pre>
+</li>
+<li>Lancement du conteneur
+<pre><code class="language-bash">$ ./package-builder/debian/run_docker-img_debian.sh
+</code></pre>
+</li>
+</ol>
+<p>Après exécution du conteneur, vous pouvez trouver le fichier <code>.deb</code> dans le dossier <code>./deb</code>. Le docker exécute simplement un conteneur debian et le script que vous auriez exécuté si vous utilisez un OS de compilation Linux.</p>
+<h2 id="pour-debian-et-macos-avec-github-action"><a class="header" href="#pour-debian-et-macos-avec-github-action">Pour Debian et MacOS avec GitHub action</a></h2>
+<p>Nous avons mis en place un workflow qui permet de compiler l'application et d'en réaliser un package en mode natif et stub. \</p>
+<p>Pour que ce workflow se lance, il vous suffit de pousser vos modifications avec un tag qui débute par <em>'v'</em> suivie d'un numéro de version, par exemple <em>v1.0.0</em>. <br />
+L'action GitHub va alors se lancer et après sont succès vous pouvez trouver tous les packages dans une nouvelle <a href="https://github.com/tanguy-rdt/depot-smart-boat/releases">release</a> qui porte comme nom la version du tag que vous avez utilisé.</p>
 
                     </main>
 
