@@ -32,14 +32,14 @@ jobs:
         run: cargo build --release
 
       - name: Move stub executable
-        if: matrix.platform == 'ubuntu-20.04'
         run: |
-          mkdir -p smart-boat-debian/usr/bin/
-          cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat-stub
-        if: matrix.platform == 'macos-latest'
-        run: |
-          mkdir -p smart-boat-macos.app/Contents/MacOS/
-          cp target/release/smart-boat smart-boat-macos.app/Contents/MacOS/smart-boat
+          if [ "${{ matrix.platform }}" = "ubuntu-20.04" ]; then
+            mkdir -p smart-boat-debian/usr/bin/
+            cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat-stub
+          elif [ "${{ matrix.platform }}" = "macos-latest" ]; then
+            mkdir -p smart-boat-macos.app/Contents/MacOS/
+            cp target/release/smart-boat smart-boat-macos.app/Contents/MacOS/smart-boat
+          fi
 
       - name: Run natif build (debian only)
         if: matrix.platform == 'ubuntu-20.04'
@@ -49,28 +49,24 @@ jobs:
           cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat
 
       - name: Create package
-        if: matrix.platform == 'ubuntu-20.04'
         run: |
-          dpkg-deb --build smart-boat-debian/
-        if: matrix.platform == 'macos-latest'
-        run: |
-          hdiutil create -volname "SmartBoatStubGUI" -srcfolder smart-boat-macos.app -ov -format UDZO SmartBoatStubGUI.dmg
+          if [ "${{ matrix.platform }}" = "ubuntu-20.04" ]; then
+            dpkg-deb --build smart-boat-debian/
+          elif [ "${{ matrix.platform }}" = "macos-latest" ]; then
+            hdiutil create -volname "SmartBoatStubGUI" -srcfolder smart-boat-macos.app -ov -format UDZO SmartBoatStubGUI.dmg
+          fi
 
       - name: Get tag name
         id: tag
         run: echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
 
       - name: Upload package to artifact
-        if: matrix.platform == 'ubuntu-20.04'
         uses: actions/upload-artifact@v2
         with:
-          name: smart-boat-debian
-          path: smart-boat-debian.deb 
-        if: matrix.platform == 'macos-latest'
-        uses: actions/upload-artifact@v2
-        with:
-          name: smart-boat-macos
-          path: SmartBoatStubGUI.dmg
+          name: package-${{ matrix.platform }}
+          path: |
+            ${{ matrix.platform == 'ubuntu-20.04' && 'smart-boat-debian.deb' || '' }}
+            ${{ matrix.platform == 'macos-latest' && 'SmartBoatStubGUI.dmg' || '' }}
 
       - name: Add package to release
         uses: softprops/action-gh-release@v1
