@@ -12,18 +12,16 @@ use crate::msgq::MsgQ;
 use std::{path::PathBuf, env, thread, time::Duration};
 use std::sync::{mpsc, Arc, Mutex};
 
-fn main(){
-    let input_audio_path = PathBuf::from("./ressources/audio.wav");
-    
+fn main(){    
     #[cfg(target_os = "macos")]
-    let keyword_path = "./ressources/Ok-Bateau_fr_mac_v3_0_0.ppn";
+    let keyword_path = "./resources/Ok-Bateau_fr_mac_v3_0_0.ppn";
     #[cfg(target_os = "macos")]
-    let context_path = "./ressources/smart-boat_fr_mac_v3_0_0.rhn";
+    let context_path = "./resources/smart-boat_fr_mac_v3_0_0.rhn";
     
     #[cfg(target_os = "linux")]
-    let keyword_path = "./ressources/Ok-Bateau_fr_raspberry-pi_v3_0_0.ppn";
+    let keyword_path = "./resources/Ok-Bateau_fr_raspberry-pi_v3_0_0.ppn";
     #[cfg(target_os = "linux")]
-    let context_path = "./ressources/smart-boat_fr_raspberry-pi_v3_0_0.rhn";
+    let context_path = "./resources/smart-boat_fr_raspberry-pi_v3_0_0.rhn";
 
     let access_key: String = match env::var("PICOVOICE_ACCES_KEY") {
         Ok(key) => key,
@@ -39,7 +37,7 @@ fn main(){
     model.init_model();
 
     
-    let picovoice = VoiceAssistant::new(input_audio_path, keyword_path, context_path, access_key, Arc::clone(&msgq.tx_model));
+    let picovoice = VoiceAssistant::new(keyword_path, context_path, access_key, Arc::clone(&msgq.tx_model));
 
     thread::spawn(move || {
         picovoice.start();

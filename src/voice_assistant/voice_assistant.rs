@@ -4,8 +4,8 @@ use picovoice::{rhino::RhinoInference, PicovoiceBuilder};
 use pv_recorder::PvRecorderBuilder;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-const PPN_MODEL_PATH: &str = "./ressources/porcupine_params_fr.pv";
-const RHN_MODEL_PATH: &str = "./ressources/rhino_params_fr.pv";
+const PPN_MODEL_PATH: &str = "./resources/porcupine_params_fr.pv";
+const RHN_MODEL_PATH: &str = "./resources/rhino_params_fr.pv";
 
 const HEADWIND: f32 = 0.5;
 const CLOSEWIND_BABORD: f32 = 0.375;
@@ -19,7 +19,6 @@ const CLOSEWIND_TRIBORD: f32 = 0.625;
 static LISTENING: AtomicBool = AtomicBool::new(false);
 
 pub struct VoiceAssistant {
-    input_audio: PathBuf, 
     keyword_path: &'static str, 
     context_path: &'static str, 
     access_key: String,
@@ -29,9 +28,8 @@ pub struct VoiceAssistant {
 }
 
 impl VoiceAssistant {
-    pub fn new(input_audio: PathBuf, keyword_path: &'static str, context_path: &'static str, access_key: String, msgq_tx: Arc<Mutex<mpsc::Sender<(String, f32)>>>) -> Self {
+    pub fn new(keyword_path: &'static str, context_path: &'static str, access_key: String, msgq_tx: Arc<Mutex<mpsc::Sender<(String, f32)>>>) -> Self {
         Self {
-            input_audio,
             keyword_path,
             context_path,
             access_key,

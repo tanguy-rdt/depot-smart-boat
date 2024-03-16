@@ -36,6 +36,10 @@ jobs:
         run: |
           mkdir -p smart-boat-debian/usr/bin/
           cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat-stub
+        if: matrix.platform == 'macos-latest'
+        run: |
+          mkdir -p smart-boat-macos.app/Contents/MacOS/
+          cp target/release/smart-boat smart-boat-macos.app/Contents/MacOS/smart-boat
 
       - name: Run natif build (debian only)
         if: matrix.platform == 'ubuntu-20.04'
@@ -44,10 +48,13 @@ jobs:
           cargo build --release --features=on_target
           cp target/release/smart-boat smart-boat-debian/usr/bin/smart-boat
 
-      - name: Create deb package
+      - name: Create package
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           dpkg-deb --build smart-boat-debian/
+        if: matrix.platform == 'macos-latest'
+        run: |
+          hdiutil create -volname "SmartBoatStubGUI" -srcfolder smart-boat-macos.app -ov -format UDZO SmartBoatStubGUI.dmg
 
       - name: Get tag name
         id: tag
@@ -58,14 +65,19 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: smart-boat-debian
-          path: smart-boat-debian/*.deb
+          path: smart-boat-debian.deb 
+        if: matrix.platform == 'macos-latest'
+        uses: actions/upload-artifact@v2
+        with:
+          name: smart-boat-macos
+          path: SmartBoatStubGUI.dmg
 
-      - name: Add debian package to release
-        if: matrix.platform == 'ubuntu-20.04'
+      - name: Add package to release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            smart-boat-debian/*.deb
+            smart-boat-debian.deb
+            SmartBoatStubGUI.dmg
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Smart Boat GUI ${{ steps.tag.outputs.tag }}
         env:
